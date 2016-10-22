@@ -7,5 +7,8 @@ int main() {
 	TRun_VM vm = (TRun_VM)GetProcAddress(kernel, "Run_VM");
 	if (vm) vm();
 	FreeLibrary(kernel);
+
+	system("pause"); // TODO: smazat, jen pro debug
+
 	return 0;
 }

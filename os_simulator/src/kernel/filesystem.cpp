@@ -21,8 +21,26 @@ namespace FS {
 		return this->data;
 	}
 
+	HRESULT File::setData(std::string data)
+	{
+		this->data = data;
+		return S_OK;
+	}
+
 
 	// === Directory members
+
+	Directory::~Directory() {
+		while(!this->children.empty()) {
+			auto item = *(this->children.begin());
+
+			Directory* subdir = dynamic_cast<Directory*>(item.second);
+			if (subdir != nullptr)
+				this->deleteDir(item.first);
+			else
+				this->deleteFile(item.first);
+		}
+	}
 
 	Node* Directory::getChild(std::string name)
 	{
@@ -92,14 +110,6 @@ namespace FS {
 		if (dir == nullptr)
 			return S_FALSE;
 
-		for (auto item : dir->children) {
-			Directory* subdir = dynamic_cast<Directory*>(item.second);
-			if (subdir != nullptr)
-				this->deleteDir(item.first);
-			else
-				this->deleteFile(item.first);
-		}
-
 		delete dir;
 		this->children.erase(name);
 
@@ -126,5 +136,27 @@ namespace FS {
 		return S_OK;
 	}
 
+
+
+
+	// === FileHandle members
+
+
+	FileHandle::FileHandle(File* file)
+	{
+		this->file = file;
+	}
+
+	void FileHandle::writeFile(const void* buffer, const size_t buffer_size, size_t& written)
+	{
+		std::stringbuf *pbuf = this->ss.rdbuf();
+		pbuf->sputn((const char*) buffer, buffer_size);
+		written = buffer_size;
+	}
+
+	void FileHandle::closeFile()
+	{
+		this->file->setData(this->ss.str());
+	}
 
 }

@@ -2,6 +2,7 @@
 
 #include "kernel.h"
 #include "io.h"
+#include "filesystem.h"
 
 HMODULE User_Programs;
 
@@ -31,7 +32,29 @@ void SysCall(CONTEXT &regs) {
 
 }
 
+using namespace FS;
+
 void Run_VM() {
+
+
+	Directory* root = new Directory();
+
+	auto* dir = root->createDir("dir");
+	auto* subdir = dir->createDir("subdir");
+	auto* ssf = subdir->createFile("subsubfile");
+
+	delete dir;
+
+	File* file = root->createFile("ahoj");
+	FileHandle* fh = new FileHandle(file);
+	size_t written = 0;
+
+	fh->writeFile("test", 4, written);
+	fh->closeFile();
+
+
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 	Initialize_Kernel();
 
 	//spustime shell - v realnem OS bychom ovsem spousteli login

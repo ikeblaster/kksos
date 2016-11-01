@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <sstream> 
 #include <map>
 #include <windows.h>
 
@@ -27,7 +28,7 @@ namespace FS {
 
 		public:
 		std::string getData();
-		HRESULT setData(std::string);
+		HRESULT setData(std::string data);
 	};
 
 	class Directory : public Node {
@@ -36,6 +37,7 @@ namespace FS {
 		Node* getChild(std::string name);
 
 		public:
+		~Directory();
 		File* createFile(std::string name);
 		File* getFile(std::string name);
 		HRESULT deleteFile(std::string name);
@@ -47,6 +49,17 @@ namespace FS {
 		HRESULT moveChild(std::string name, Directory* dstdir, std::string dstname);
 
 		std::map<std::string, Node*> getFiles();
+	};
+
+	class FileHandle {
+		private:
+		File* file;
+		std::stringstream ss;
+
+		public:
+		FileHandle(File* file);
+		void writeFile(const void *buffer, const size_t buffer_size, size_t &written);
+		void closeFile();
 	};
 
 }

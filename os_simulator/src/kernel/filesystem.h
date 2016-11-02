@@ -1,14 +1,14 @@
 #pragma once
-
 #include <string>
-#include <sstream> 
 #include <map>
-#include <windows.h>
+#include <windows.h> // HRESULT
 
-namespace FS {
+namespace FileSystem {
 
 	class Directory;
 	class File;
+
+	static const std::string PathSeparator = "\\";
 
 	class Node {
 		friend class Directory;
@@ -16,10 +16,12 @@ namespace FS {
 
 		private:
 		Directory* parent;
+		std::string name;
 
 		public:
 		virtual ~Node();
 		Directory* getParent();
+		std::string getName();
 	};
 
 	class File : public Node {
@@ -27,11 +29,14 @@ namespace FS {
 		std::string data;
 
 		public:
+		~File();
 		std::string getData();
 		HRESULT setData(std::string data);
 	};
 
 	class Directory : public Node {
+		friend class File;
+
 		private:
 		std::map<std::string, Node*> children;
 		Node* getChild(std::string name);
@@ -39,27 +44,16 @@ namespace FS {
 		public:
 		~Directory();
 		File* createFile(std::string name);
-		File* getFile(std::string name);
+		File* findFile(std::string name);
 		HRESULT deleteFile(std::string name);
 
-		Directory* createDir(std::string name);
-		Directory* getDir(std::string name);
-		HRESULT deleteDir(std::string name);
+		Directory* createDirectory(std::string name);
+		Directory* findDirectory(std::string name);
+		HRESULT deleteDirectory(std::string name);
 
 		HRESULT moveChild(std::string name, Directory* dstdir, std::string dstname);
 
 		std::map<std::string, Node*> getFiles();
-	};
-
-	class FileHandle {
-		private:
-		File* file;
-		std::stringstream ss;
-
-		public:
-		FileHandle(File* file);
-		void writeFile(const void *buffer, const size_t buffer_size, size_t &written);
-		void closeFile();
 	};
 
 }

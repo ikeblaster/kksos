@@ -3,6 +3,7 @@
 #include "kernel.h"
 #include "io.h"
 #include "filesystem.h"
+#include "filesystem.utils.h"
 
 HMODULE User_Programs;
 
@@ -27,30 +28,49 @@ void Shutdown_Kernel() {
 void SysCall(CONTEXT &regs) {
 
 	switch (Get_AH((__int16) regs.Rax)) {
-		case scIO:		HandleIO(regs);
+		case scIO:		
+			HandleIO(regs);
 	}
 
 }
 
-using namespace FS;
+using namespace FileSystem;
+using namespace FileSystem::Utils;
 
 void Run_VM() {
 
+	Directory* fs = new Directory();
+	auto* cdrive = fs->createDirectory("C:");
 
-	Directory* root = new Directory();
+	auto* dir = cdrive->createDirectory("dir");
+	auto* subdir = dir->createDirectory("subdir");
+	auto* ssf = subdir->createFile("subsubfile.txt");
 
-	auto* dir = root->createDir("dir");
-	auto* subdir = dir->createDir("subdir");
-	auto* ssf = subdir->createFile("subsubfile");
+	printf("%s\n", Path::generate(Path::getDriveRoot(subdir)).c_str());
 
-	delete dir;
+	Path::parse(dir, "subdir\\subsubfile.txt");
 
-	File* file = root->createFile("ahoj");
-	FileHandle* fh = new FileHandle(file);
+	delete fs;
+
+	/*File* file = root->createFile("ahoj");
+	file->setData("ahoj");
+	FileHandle* fh = new FileHandle(file,false);
 	size_t written = 0;
 
-	fh->writeFile("test", 4, written);
+	char buff[100] = { 0 };
+	char* p = &buff[0];
+
+	fh->readFile(&p, 100, &written);
+
+	int posseek = fh->seek(0, std::ios_base::end);
+	fh->writeFile(" svete", 6, &written);
+
+	int pos = fh->tell();
+
 	fh->closeFile();
+
+	printf("%s\n", buff);
+	printf("%s %d %d\n\n", file->getData().c_str(), posseek, pos);*/
 
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////

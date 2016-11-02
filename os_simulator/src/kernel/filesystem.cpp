@@ -1,6 +1,6 @@
 #include "filesystem.h"
 
-namespace FS {
+namespace FileSystem {
 
 	// === Node members
 
@@ -13,8 +13,18 @@ namespace FS {
 		return this->parent;
 	}
 
+	std::string Node::getName()
+	{
+		return this->name;
+	}
+
 
 	// === File members
+
+	File::~File()
+	{
+		this->parent->children.erase(this->name);
+	}
 
 	std::string File::getData()
 	{
@@ -33,13 +43,11 @@ namespace FS {
 	Directory::~Directory() {
 		while(!this->children.empty()) {
 			auto item = *(this->children.begin());
-
-			Directory* subdir = dynamic_cast<Directory*>(item.second);
-			if (subdir != nullptr)
-				this->deleteDir(item.first);
-			else
-				this->deleteFile(item.first);
+			delete item.second; // calls Directory or File dtor
 		}
+
+		if (this->parent != nullptr) 
+			this->parent->children.erase(this->name); // delete from parents children
 	}
 
 	Node* Directory::getChild(std::string name)
@@ -53,34 +61,51 @@ namespace FS {
 
 	File* Directory::createFile(std::string name)
 	{
-		if (this->getChild(name) != nullptr)
+		if (name.empty()) 
+			return nullptr; // empty name
+
+		if (this->getChild(name) != nullptr) 
 			return nullptr; // already exists
 
 		File* file = new File();
 		file->parent = this;
+		file->name = name;
 		this->children.insert(std::make_pair(name, file));
 		return file;
 	}
 
-	File* Directory::getFile(std::string name)
+	File* Directory::findFile(std::string name)
 	{
 		Node* node = this->getChild(name);
 		File* file = dynamic_cast<File*>(node);
 		return file == NULL ? nullptr : file;
 	}
 
-	Directory* Directory::createDir(std::string name)
+	Directory* Directory::createDirectory(std::string name)
 	{
-		if (this->getChild(name) != nullptr)
+		if (name.empty())
+			return nullptr; // empty name
+
+		if (name.find(FileSystem::PathSeparator) != std::string::npos)
+			return nullptr; // invalid char (backslash)
+
+		if (name.find(":") != std::string::npos && this->parent != nullptr)
+			return nullptr; // invalid char (semicolon) - directory is not drive
+
+		if (name.find(":") == std::string::npos && this->parent == nullptr)
+			return nullptr; // missing semicolon - drives
+
+		if (this->getChild(name) != nullptr) 
 			return nullptr; // already exists
 
 		Directory* dir = new Directory();
 		dir->parent = this;
+		dir->name = name;
 		this->children.insert(std::make_pair(name, dir));
 		return dir;
 	}
 
-	Directory* Directory::getDir(std::string name)
+	Directory* Directory::findDirectory(std::string name)
 	{
 		Node* node = this->getChild(name);
 		Directory* dir = dynamic_cast<Directory*>(node);
@@ -94,34 +119,33 @@ namespace FS {
 
 	HRESULT Directory::deleteFile(std::string name)
 	{
-		File* file = this->getFile(name);
+		File* file = this->findFile(name);
 		if (file == nullptr)
 			return S_FALSE;
 
 		delete file;
-		this->children.erase(name);
-
 		return S_OK;
 	}
 
-	HRESULT Directory::deleteDir(std::string name)
+	HRESULT Directory::deleteDirectory(std::string name)
 	{
-		Directory* dir = this->getDir(name);
+		Directory* dir = this->findDirectory(name);
 		if (dir == nullptr)
 			return S_FALSE;
 
 		delete dir;
-		this->children.erase(name);
-
 		return S_OK;
 	}
 
 	HRESULT Directory::moveChild(std::string name, Directory* dstdir, std::string dstname)
 	{
-		if (name == dstname && dstdir == this)
+		if (dstname.empty()) 
+			return S_FALSE; // dstname is empty
+
+		if (dstdir == this && dstname == name) 
 			return S_OK; // src = dst
 
-		if (dstdir->getChild(dstname) != nullptr)
+		if (dstdir->getChild(dstname) != nullptr) 
 			return S_FALSE; // dstname already exists in dst directory
 
 		Node* node = this->getChild(name); // find src node
@@ -131,32 +155,11 @@ namespace FS {
 		this->children.erase(name); // delete from src directory
 
 		node->parent = dstdir; // set new parent
+		node->name = dstname; // set new name
 		dstdir->children.insert(std::make_pair(dstname, node)); // insert into dst directory
 
 		return S_OK;
 	}
 
-
-
-
-	// === FileHandle members
-
-
-	FileHandle::FileHandle(File* file)
-	{
-		this->file = file;
-	}
-
-	void FileHandle::writeFile(const void* buffer, const size_t buffer_size, size_t& written)
-	{
-		std::stringbuf *pbuf = this->ss.rdbuf();
-		pbuf->sputn((const char*) buffer, buffer_size);
-		written = buffer_size;
-	}
-
-	void FileHandle::closeFile()
-	{
-		this->file->setData(this->ss.str());
-	}
 
 }

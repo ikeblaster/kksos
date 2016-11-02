@@ -1,7 +1,6 @@
 #include "freq.h"
 
 	
-
 std::string freq(std::string input) {
 	const int MAX_VALUES = 256;
 	int bytes[MAX_VALUES] = { 0 };

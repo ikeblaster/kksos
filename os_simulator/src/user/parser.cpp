@@ -1,11 +1,8 @@
 #include "Parser.h"
 
 static std::tr1::unordered_set<std::string> Commands{ "echo", "cd", "dir", "md", "rd", "type", "wc", "sort", "ps", "rgen", "freq" }; /* Allowed commands */
-std::queue<Command> commandList; /* Vector of commands */
-std::string temp = ""; /* Actual processing string */
 
-
-void saveData() {
+void parser::saveData() {
 	if (temp != "" && temp != " ") {
 		if (getStdin) {
 			commandList.back().redirectStdin = temp; /* add stdin for command to struct */
@@ -34,10 +31,8 @@ void saveData() {
 	}
 }
 
-int parse(std::string input)
+bool parser::parse(std::string input)
 {
-	//std::string input = "sort < vstup.txt < vstup2.txt nejaky data \"asd asd as < cesta\\k\\souboru\" >> vystupniSoubor.txt | wc /W/D>vystupniProWC.txt \"params for\" wcc1|dir path\\to\\dir";	/*test input*/
-
 	/* processes input string char by char */
 	for (char& c : input) {
 		/* Firstly must be placed allowed command */
@@ -55,7 +50,7 @@ int parse(std::string input)
 			else {
 				if (temp.length() > 4) {
 					std::cout << temp << " is not allowed command!" << std::endl;
-					return -1;
+					return false;
 				}
 			}
 		}
@@ -124,7 +119,7 @@ int parse(std::string input)
 						}
 						else {
 							std::cout << "Parammeter: " << c << " is not supported" << std::endl;
-							return -1;
+							return false;
 						}
 					}
 					else {
@@ -137,7 +132,6 @@ int parse(std::string input)
 	}
 
 	saveData(); /* Save data for command */
-
 
 	/* Prints all commands from line - pak zmenime na volani trid pro obsluhu jednotlivych prikazu */
 	while (!(commandList.empty())) {
@@ -152,5 +146,5 @@ int parse(std::string input)
 		commandList.pop();
 	}
 
-	return 0;
+	return true;
 }

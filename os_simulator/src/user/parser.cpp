@@ -1,6 +1,6 @@
 #include "Parser.h"
 
-static std::tr1::unordered_set<std::string> Commands{ "echo", "cd", "dir", "md", "rd", "type", "wc", "sort", "ps", "rgen", "freq" }; /* Allowed commands */
+static std::unordered_set<std::string> Commands{ "echo", "cd", "dir", "md", "rd", "type", "wc", "sort", "ps", "rgen", "freq" }; /* Allowed commands */
 
 void parser::saveData() {
 	if (temp != "" && temp != " ") {

@@ -1,11 +1,8 @@
 #pragma once
-#include <cstdio>
 #include <iostream>
 #include <string>
-#include <vector>
 #include <queue>
 #include <unordered_set>
-#include <cstdlib>
 
 /* Structure for storing one command */
 struct Command {

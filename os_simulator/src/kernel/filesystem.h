@@ -1,12 +1,24 @@
 #pragma once
 #include <string>
 #include <map>
-#include <windows.h> // HRESULT
 
 namespace FileSystem {
 
 	class Directory;
 	class File;
+
+	enum class RESULT {
+		OK,
+		GENERAL_ERROR,
+		ALREADY_EXISTS,
+		NOT_FOUND,
+		FILE_ALREADY_EXISTS,
+		FILE_NOT_FOUND,
+		DIRECTORY_ALREADY_EXISTS,
+		DIRECTORY_NOT_FOUND,
+		INVALID_PATH,
+		MISSING_LAST_PART
+	};
 
 	static const std::string PathSeparator = "\\";
 
@@ -31,7 +43,7 @@ namespace FileSystem {
 		public:
 		~File();
 		std::string getData();
-		HRESULT setData(std::string data);
+		void setData(std::string data);
 	};
 
 	class Directory : public Node {
@@ -45,13 +57,13 @@ namespace FileSystem {
 		~Directory();
 		File* createFile(std::string name);
 		File* findFile(std::string name);
-		HRESULT deleteFile(std::string name);
+		RESULT deleteFile(std::string name);
 
 		Directory* createDirectory(std::string name);
 		Directory* findDirectory(std::string name);
-		HRESULT deleteDirectory(std::string name);
+		RESULT deleteDirectory(std::string name);
 
-		HRESULT moveChild(std::string name, Directory* dstdir, std::string dstname);
+		RESULT moveChild(std::string name, Directory* dstdir, std::string dstname);
 
 		std::map<std::string, Node*> getFiles();
 	};

@@ -31,10 +31,9 @@ namespace FileSystem {
 		return this->data;
 	}
 
-	HRESULT File::setData(std::string data)
+	void File::setData(std::string data)
 	{
 		this->data = data;
-		return S_OK;
 	}
 
 
@@ -117,40 +116,40 @@ namespace FileSystem {
 		return this->children;
 	}
 
-	HRESULT Directory::deleteFile(std::string name)
+	RESULT Directory::deleteFile(std::string name)
 	{
 		File* file = this->findFile(name);
 		if (file == nullptr)
-			return S_FALSE;
+			return RESULT::FILE_NOT_FOUND;
 
 		delete file;
-		return S_OK;
+		return RESULT::OK;
 	}
 
-	HRESULT Directory::deleteDirectory(std::string name)
+	RESULT Directory::deleteDirectory(std::string name)
 	{
 		Directory* dir = this->findDirectory(name);
 		if (dir == nullptr)
-			return S_FALSE;
+			return RESULT::DIRECTORY_NOT_FOUND;
 
 		delete dir;
-		return S_OK;
+		return RESULT::OK;
 	}
 
-	HRESULT Directory::moveChild(std::string name, Directory* dstdir, std::string dstname)
+	RESULT Directory::moveChild(std::string name, Directory* dstdir, std::string dstname)
 	{
 		if (dstname.empty()) 
-			return S_FALSE; // dstname is empty
+			return RESULT::GENERAL_ERROR; // dstname is empty
 
 		if (dstdir == this && dstname == name) 
-			return S_OK; // src = dst
+			return RESULT::OK; // src = dst
 
 		if (dstdir->getChild(dstname) != nullptr) 
-			return S_FALSE; // dstname already exists in dst directory
+			return RESULT::ALREADY_EXISTS; // dstname already exists in dst directory
 
 		Node* node = this->getChild(name); // find src node
 		if (node == nullptr)
-			return S_FALSE; // node not found
+			return RESULT::NOT_FOUND; // node not found
 
 		this->children.erase(name); // delete from src directory
 
@@ -158,7 +157,7 @@ namespace FileSystem {
 		node->name = dstname; // set new name
 		dstdir->children.insert(std::make_pair(dstname, node)); // insert into dst directory
 
-		return S_OK;
+		return RESULT::OK;
 	}
 
 

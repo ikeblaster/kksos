@@ -46,9 +46,25 @@ void Run_VM() {
 	auto* subdir = dir->createDirectory("subdir");
 	auto* ssf = subdir->createFile("subsubfile.txt");
 
-	printf("%s\n", Path::generate(Path::getDriveRoot(subdir)).c_str());
+	//printf("%s\n", Path::generate(Path::getDriveRoot(subdir)).c_str());
 
-	Path::parse(dir, "subdir\\subsubfile.txt");
+
+	// vytvareni/otevirani souboru - bud je soubor nalezen, nebo je nalezena cela cesta krome souboru, ktery vytvorime (obdobne to bude fungovat pro mkdir)
+	Directory* directory;
+	File* file;
+
+	std::string path = "C:\\dir\\somefile.txt";
+
+	RESULT res = Path::parse(dir, path, &directory, &file);
+
+	if (res == RESULT::MISSING_LAST_PART) {
+		file = directory->createFile(Path::getBasename(path));
+		res = RESULT::OK;
+	}
+	if (res == RESULT::OK) {
+		printf("Directory: %s\n", Path::generate(directory).c_str());
+		printf("File: %s\n", Path::generate(file).c_str());
+	}
 
 	delete fs;
 

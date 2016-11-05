@@ -2,6 +2,7 @@
 #include <sstream> 
 #include "filesystem.h"
 
+#define OPEN_EXISTING 3
 
 namespace FileSystem {
 	namespace Utils {
@@ -18,6 +19,8 @@ namespace FileSystem {
 			fpos_t tell();
 			void read(char** buffer, const size_t buffer_size, size_t* read);
 			void close();
+
+			static FileHandle* CreateFileHandle(Directory* cwd, std::string path, size_t flags);
 		};
 
 		class Path {

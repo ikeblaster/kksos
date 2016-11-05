@@ -1,8 +1,9 @@
 #pragma once
-
 #include "..\common\api.h"
+#include "filesystem.h"
 
 extern HMODULE User_Programs;
+extern FileSystem::Directory* fs_cwd; // TODO: bude se predavat v kontextu procesu, nebude zde; v kernelu musi byt jen nekde vytvoreni FS + C
 
 void Set_Error(const bool failed, CONTEXT &regs);
 

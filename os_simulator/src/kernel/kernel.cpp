@@ -1,11 +1,9 @@
 #pragma once
-
 #include "kernel.h"
 #include "io.h"
-#include "filesystem.h"
-#include "filesystem.utils.h"
 
 HMODULE User_Programs;
+FileSystem::Directory* fs_cwd;
 
 void Set_Error(const bool failed, CONTEXT &regs) {
 	if (failed) {
@@ -35,13 +33,15 @@ void SysCall(CONTEXT &regs) {
 }
 
 using namespace FileSystem;
-using namespace FileSystem::Utils;
 
 void Run_VM() {
 
 	Directory* fs = new Directory();
 	auto* cdrive = fs->createDirectory("C:");
 
+	fs_cwd = cdrive;
+
+	/*
 	auto* dir = cdrive->createDirectory("dir");
 	auto* subdir = dir->createDirectory("subdir");
 	auto* ssf = subdir->createFile("subsubfile.txt");
@@ -68,7 +68,7 @@ void Run_VM() {
 
 	delete fs;
 
-	printf("-------------------\n");
+	printf("-------------------\n");*/
 
 	/*File* file = root->createFile("ahoj");
 	file->setData("ahoj");

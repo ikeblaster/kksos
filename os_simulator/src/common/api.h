@@ -56,6 +56,8 @@ const __int8 scIO = 1; // IO operace
 // al hodnoty pro scIO 
 const __int8 scCreateFile = 1;
 const __int8 scWriteFile = 2;
+const __int8 scReadFile = 3;
+const __int8 scSeekFile = 4;
 const __int8 scCloseFile = 5;
 
 

@@ -44,6 +44,8 @@ namespace FileSystem {
 		~File();
 		std::string getData();
 		void setData(std::string data);
+
+		static File* createSpecialFile(std::string);
 	};
 
 	class Directory : public Node {

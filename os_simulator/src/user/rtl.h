@@ -10,6 +10,8 @@ THandle Create_File(const char* file_name, size_t flags);
 bool Write_File(const THandle file_handle, const void *buffer, const size_t buffer_size, size_t &written);
 		//zapise do souboru identifikovaneho deskriptor data z buffer o velikosti buffer_size a vrati pocet zapsanych dat ve writtent
 		//vraci true, kdyz vse OK
+bool Read_File(const THandle file_handle, const void **buffer, const size_t buffer_size, size_t &written);
+
 bool Close_File(const THandle file_handle);
 		//uzavre soubor identifikovany pomoci deskriptoru
 		//vraci true, kdyz vse OK

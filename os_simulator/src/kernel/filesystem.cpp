@@ -23,7 +23,8 @@ namespace FileSystem {
 
 	File::~File()
 	{
-		this->parent->children.erase(this->name);
+		if(this->parent != nullptr)
+			this->parent->children.erase(this->name);
 	}
 
 	std::string File::getData()
@@ -34,6 +35,13 @@ namespace FileSystem {
 	void File::setData(std::string data)
 	{
 		this->data = data;
+	}
+
+	File* File::createSpecialFile(std::string name)
+	{
+		File* file = new File();
+		file->name = name;
+		return file;
 	}
 
 

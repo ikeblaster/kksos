@@ -38,12 +38,23 @@ THandle Create_File(const char* file_name, size_t flags) {
 
 bool Write_File(const THandle file_handle, const void *buffer, const size_t buffer_size, size_t &written) {
 	CONTEXT regs = Prepare_SysCall_Context(scIO, scWriteFile);
-	regs.Rdx = (decltype(regs.Rdx)) file_handle;
-	regs.Rdi = (decltype(regs.Rdi)) buffer;
-	regs.Rcx = buffer_size;	
+	regs.Rdx = (decltype(regs.Rdx))file_handle;
+	regs.Rdi = (decltype(regs.Rdi))buffer;
+	regs.Rcx = buffer_size;
 
 	const bool result = Do_SysCall(regs);
 	written = regs.Rax;
+	return result;
+}
+
+bool Read_File(const THandle file_handle, const void **buffer, const size_t buffer_size, size_t &read) {
+	CONTEXT regs = Prepare_SysCall_Context(scIO, scReadFile);
+	regs.Rdx = (decltype(regs.Rdx))file_handle;
+	regs.Rdi = (decltype(regs.Rdi))buffer;
+	regs.Rcx = buffer_size;
+
+	const bool result = Do_SysCall(regs);
+	read = regs.Rax;
 	return result;
 }
 

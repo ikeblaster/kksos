@@ -14,7 +14,7 @@ typedef void (__stdcall *TSysCall)(CONTEXT &context);			//prototyp funkce, ktera
 	 AH - major cislo aka id skupiny fci
 	 AL - minor cislo aka cisle konkretni fce
 
-	 je po ovlani nastavena vlajka carry, tj. CONTEXT::Eflags & CF != 0, pak Rax je kod chyby
+	 pokud je po volani nastaven carry flag, tj. CONTEXT::Eflags & CF != 0, pak Rax je kod chyby
 
       AH == 1 : IO operace
 		AL: cislo IO operace	//konzole je take jenom soubor

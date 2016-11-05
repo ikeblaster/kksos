@@ -26,8 +26,6 @@ namespace FileSystem {
 			static Directory* getDriveRoot(Directory* directory);
 			static std::string generate(Node* node);
 		};
-
-		// TODO path parser
-
+		
 	}
 }

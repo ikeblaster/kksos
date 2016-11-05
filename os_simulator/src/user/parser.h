@@ -18,13 +18,13 @@ struct Command {
 };
 
 class parser {
-public:	
+	public:	
 	void saveData(); /* Saves data into command struct */					 
 	bool parse(std::string input); /* Parsing string input */
 
 	std::queue<Command> commandList; /* Vector of commands */
 
-private:
+	private:
 	/* Special symbols */
 	static const char PIPE = '|'; /* pipe */
 	static const char STDIN = '<'; /* stdin redirect */

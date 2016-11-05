@@ -1,5 +1,4 @@
 #include "rtl.h"
-
 #include <atomic>
 
 extern "C" __declspec(dllimport) void __stdcall SysCall(CONTEXT &context);
@@ -22,7 +21,7 @@ bool Do_SysCall(CONTEXT &regs) {
 
 	const bool failed = test_cf(regs.EFlags);
 	if (failed) LastError = regs.Rax;
-		else LastError = 0;
+	else LastError = 0;
 
 	return !failed;
 }

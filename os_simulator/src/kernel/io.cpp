@@ -24,7 +24,7 @@ void HandleIO(CONTEXT &regs) {
 
 
 		case scCloseFile: {
-			Set_Error(!CloseHandle((HANDLE)regs.Rdx), regs);			
+				Set_Error(!CloseHandle((HANDLE)regs.Rdx), regs);			
 			}
 			break;	//CloseFile
 	}

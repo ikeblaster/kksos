@@ -13,11 +13,11 @@ namespace FileSystem {
 
 			public:
 			FileHandle(File* file, bool newFile = true);
-			void writeFile(const void* buffer, const size_t buffer_size, size_t* written);
+			void write(const void* buffer, const size_t buffer_size, size_t* written);
 			fpos_t seek(const fpos_t pos, std::ios_base::seekdir way);
 			fpos_t tell();
-			void readFile(char** buffer, const size_t buffer_size, size_t* read);
-			void closeFile();
+			void read(char** buffer, const size_t buffer_size, size_t* read);
+			void close();
 		};
 
 		class Path {

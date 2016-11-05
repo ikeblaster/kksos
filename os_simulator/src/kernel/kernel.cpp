@@ -52,6 +52,8 @@ void Run_VM() {
 
 	delete fs;
 
+	printf("-------------------\n");
+
 	/*File* file = root->createFile("ahoj");
 	file->setData("ahoj");
 	FileHandle* fh = new FileHandle(file,false);
@@ -77,11 +79,11 @@ void Run_VM() {
 
 	Initialize_Kernel();
 
-	//spustime shell - v realnem OS bychom ovsem spousteli login
+	// spustime shell - v realnem OS bychom ovsem spousteli login
 	TEntryPoint shell = (TEntryPoint)GetProcAddress(User_Programs, "shell");
 	if (shell) {
-		CONTEXT regs;  //ted je regs jenom nejak vyplneno kvuli preakladci
-		GetThreadContext(GetCurrentThread(), &regs);  //ale pak bude jeden z registru ukazovat na nejaky startup info blok
+		CONTEXT regs; // ted je regs jenom nejak vyplneno kvuli preakladci
+		GetThreadContext(GetCurrentThread(), &regs); // ale pak bude jeden z registru ukazovat na nejaky startup info blok
 		shell(regs);
 	}
 

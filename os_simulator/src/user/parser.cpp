@@ -2,7 +2,8 @@
 
 static std::unordered_set<std::string> Commands{ "echo", "cd", "dir", "md", "rd", "type", "wc", "sort", "ps", "rgen", "freq" }; /* Allowed commands */
 
-void parser::saveData() {
+void parser::saveData() 
+{
 	if (temp != "" && temp != " ") {
 		if (getStdin) {
 			commandList.back().redirectStdin = temp; /* add stdin for command to struct */

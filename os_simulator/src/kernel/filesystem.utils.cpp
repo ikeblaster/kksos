@@ -29,7 +29,7 @@ namespace FileSystem {
 			return this->ss.tellg();
 		}
 		
-		void FileHandle::writeFile(const void* buffer, const size_t buffer_size, size_t* written)
+		void FileHandle::write(const void* buffer, const size_t buffer_size, size_t* written)
 		{
 			this->ss.clear();
 			this->ss.write((const char*) buffer, buffer_size);
@@ -41,7 +41,7 @@ namespace FileSystem {
 				*written = buffer_size;
 		}
 
-		void FileHandle::readFile(char** buffer, const size_t buffer_size, size_t* read)
+		void FileHandle::read(char** buffer, const size_t buffer_size, size_t* read)
 		{
 			this->ss.clear();
 			this->ss.read(*buffer, buffer_size);		
@@ -49,7 +49,7 @@ namespace FileSystem {
 				*read = this->ss.gcount();
 		}
 
-		void FileHandle::closeFile()
+		void FileHandle::close()
 		{
 			this->ss.clear();
 			this->file->setData(this->ss.str());

@@ -1,6 +1,6 @@
 #pragma once
-
 #include "..\common\api.h"
+#include "rtl.h"
 
 extern "C" size_t __stdcall shell(const CONTEXT &regs);
 
@@ -11,7 +11,6 @@ extern "C" size_t __stdcall mk(const CONTEXT &regs) { return 0; }
 extern "C" size_t __stdcall rd(const CONTEXT &regs) { return 0; }
 extern "C" size_t __stdcall echo(const CONTEXT &regs) { return 0; }
 extern "C" size_t __stdcall wc(const CONTEXT &regs) { return 0; }
-extern "C" size_t __stdcall sort(const CONTEXT &regs) { return 0; }
 extern "C" size_t __stdcall rgen(const CONTEXT &regs) { return 0; }
 extern "C" size_t __stdcall freq(const CONTEXT &regs) { return 0; }
 extern "C" size_t __stdcall ps(const CONTEXT &regs) { return 0; }

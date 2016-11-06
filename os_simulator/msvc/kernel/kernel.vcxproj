@@ -21,14 +21,16 @@
   <ItemGroup>
     <ClCompile Include="..\..\src\kernel\dllmain.cpp" />
     <ClCompile Include="..\..\src\kernel\filesystem.cpp" />
-    <ClCompile Include="..\..\src\kernel\filesystem.utils.cpp" />
+    <ClCompile Include="..\..\src\kernel\filesystem.filehandle.cpp" />
+    <ClCompile Include="..\..\src\kernel\filesystem.path.cpp" />
     <ClCompile Include="..\..\src\kernel\io.cpp" />
     <ClCompile Include="..\..\src\kernel\kernel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\common\api.h" />
     <ClInclude Include="..\..\src\kernel\filesystem.h" />
-    <ClInclude Include="..\..\src\kernel\filesystem.utils.h" />
+    <ClInclude Include="..\..\src\kernel\filesystem.filehandle.h" />
+    <ClInclude Include="..\..\src\kernel\filesystem.path.h" />
     <ClInclude Include="..\..\src\kernel\io.h" />
     <ClInclude Include="..\..\src\kernel\kernel.h" />
   </ItemGroup>

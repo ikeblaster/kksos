@@ -1,10 +1,8 @@
 #include "io.h"
 #include "kernel.h"
-#include "filesystem.utils.h"
-
+#include "filesystem.filehandle.h"
 
 using namespace FileSystem;
-using namespace FileSystem::Utils;
 
 void HandleIO(CONTEXT &regs) {
 

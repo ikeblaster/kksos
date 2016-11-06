@@ -1,21 +1,19 @@
 #include "filesystem.filehandle.h"
 
+
 namespace FileSystem {
 
 	// === FileHandle members
 
-	FileHandle::FileHandle(File* file, bool newFile)
+	FileHandle::FileHandle(File* file, size_t flags)
 	{
 		this->file = file;
-		if (this->file->getName() == "CONOUT$") return;
-		if(!newFile) this->ss.str(this->file->getData());
+		if(flags & OPEN_EXISTING) this->ss.str(this->file->getData());
 		this->seek(0, std::ios_base::beg);
 	}
 
 	fpos_t FileHandle::seek(const fpos_t pos, std::ios_base::seekdir way)
 	{
-		if (this->file->getName() == "CONOUT$") return 0;
-
 		this->ss.clear();
 		this->ss.seekg(pos, way);
 
@@ -27,24 +25,17 @@ namespace FileSystem {
 
 	fpos_t FileHandle::tell()
 	{
-		if (this->file->getName() == "CONOUT$") return 0;
-
 		this->ss.clear();
 		return this->ss.tellg();
 	}
 		
 	void FileHandle::write(const void* buffer, const size_t buffer_size, size_t* written)
 	{
-		if (this->file->getName() == "CONOUT$") {
-			printf("%s", (const char*) buffer); // TODO: vyresit nejak lepe, mozna rozhrani/nadrazena trida a jina trida nez FileHandle
-		}
-		else {
-			this->ss.clear();
-			this->ss.write((const char*)buffer, buffer_size);
+		this->ss.clear();
+		this->ss.write((const char*)buffer, buffer_size);
 
-			this->ss.clear();
-			this->ss.seekg(this->ss.tellp()); // sync positions (get->put)
-		}
+		this->ss.clear();
+		this->ss.seekg(this->ss.tellp()); // sync positions (get->put)
 
 		if(written != nullptr)
 			*written = buffer_size;
@@ -52,8 +43,6 @@ namespace FileSystem {
 
 	void FileHandle::read(char** buffer, const size_t buffer_size, size_t* read)
 	{
-		if (this->file->getName() == "CONOUT$") return;
-
 		this->ss.clear();
 		this->ss.read(*buffer, buffer_size);		
 		if (read != nullptr)
@@ -62,11 +51,6 @@ namespace FileSystem {
 
 	void FileHandle::close()
 	{
-		if (this->file->getName() == "CONOUT$") {
-			delete this->file;
-			return;
-		}
-
 		this->ss.clear();
 		this->file->setData(this->ss.str());
 	}

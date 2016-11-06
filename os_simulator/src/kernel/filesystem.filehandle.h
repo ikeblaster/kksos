@@ -14,7 +14,7 @@ namespace FileSystem {
 		std::stringstream ss;
 
 		public:
-		FileHandle(File* file, bool newFile = true);
+		FileHandle(File* file, size_t flags=0);
 		void write(const void* buffer, const size_t buffer_size, size_t* written);
 		fpos_t seek(const fpos_t pos, std::ios_base::seekdir way);
 		fpos_t tell();

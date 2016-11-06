@@ -5,7 +5,6 @@
 #include "filesystem.consolehandle.h"
 #include "filesystem.filehandle.h"
 
-#define OPEN_EXISTING 3
 
 namespace FileSystem {
 	namespace Utils {

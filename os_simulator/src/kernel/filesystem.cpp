@@ -6,6 +6,8 @@ namespace FileSystem {
 
 	Node::~Node()
 	{
+		if (this->parent != nullptr)
+			this->parent->children.erase(this->name);
 	}
 
 	Directory* Node::getParent()
@@ -23,8 +25,6 @@ namespace FileSystem {
 
 	File::~File()
 	{
-		if(this->parent != nullptr)
-			this->parent->children.erase(this->name);
 	}
 
 	std::string File::getData()
@@ -47,14 +47,12 @@ namespace FileSystem {
 
 	// === Directory members
 
-	Directory::~Directory() {
+	Directory::~Directory() 
+	{
 		while(!this->children.empty()) {
 			auto item = *(this->children.begin());
 			delete item.second; // calls Directory or File dtor
 		}
-
-		if (this->parent != nullptr) 
-			this->parent->children.erase(this->name); // delete from parents children
 	}
 
 	Node* Directory::getChild(std::string name)

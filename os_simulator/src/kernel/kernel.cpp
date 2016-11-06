@@ -102,5 +102,7 @@ void Run_VM() {
 		shell(regs);
 	}
 
+	delete fs;
+
 	Shutdown_Kernel();
 }

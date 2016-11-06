@@ -2,30 +2,6 @@
 
 namespace FileSystem {
 
-	// === Static members
-
-	FileHandle* FileHandle::CreateFileHandle(Directory* cwd, std::string path, size_t flags)
-	{
-		Directory* directory;
-		File* file;
-
-		if (path == "CONOUT$") {
-			file = File::createSpecialFile("CONOUT$");
-		}
-		else {
-			RESULT res = Path::parse(cwd, path, &directory, &file);
-
-			if (res == RESULT::MISSING_LAST_PART) {
-				file = directory->createFile(Path::getBasename(path));
-				res = RESULT::OK;
-			}
-			if (res != RESULT::OK) return nullptr;
-		}
-
-		return new FileHandle(file, (flags & OPEN_EXISTING) == 1);
-	}
-
-
 	// === FileHandle members
 
 	FileHandle::FileHandle(File* file, bool newFile)

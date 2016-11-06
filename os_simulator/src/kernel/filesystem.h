@@ -49,6 +49,7 @@ namespace FileSystem {
 	};
 
 	class Directory : public Node {
+		friend class Node;
 		friend class File;
 
 		private:

@@ -1,6 +1,6 @@
 #include "io.h"
 #include "kernel.h"
-#include "filesystem.filehandle.h"
+#include "filesystem_utils.h"
 
 using namespace FileSystem;
 
@@ -10,7 +10,7 @@ void HandleIO(CONTEXT &regs) {
 	switch (Get_AL((__int16) regs.Rax)) {
 		case scCreateFile: 
 			{
-				FileHandle* fh = FileHandle::CreateFileHandle(fs_cwd, (char*)regs.Rdx, (DWORD)regs.Rcx);
+				IHandle* fh = FileSystem::Utils::CreateHandle(fs_cwd, (char*)regs.Rdx, (DWORD)regs.Rcx);
 				regs.Rax = (decltype(regs.Rax))fh;
 				Set_Error(fh == nullptr, regs);
 

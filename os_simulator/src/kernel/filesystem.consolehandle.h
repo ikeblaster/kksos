@@ -1,20 +1,13 @@
 #pragma once
 #include <sstream> 
-#include "filesystem.h"
-#include "filesystem.path.h"
-#include "filesystem.ihandle.h"
+#include "filesystem.ihandle.h" 
 
 #define OPEN_EXISTING 3
 
 namespace FileSystem {
 
-	class FileHandle : public IHandle {
-		private:
-		File* file;
-		std::stringstream ss;
-
+	class ConsoleHandle : public IHandle {
 		public:
-		FileHandle(File* file, bool newFile = true);
 		void write(const void* buffer, const size_t buffer_size, size_t* written);
 		fpos_t seek(const fpos_t pos, std::ios_base::seekdir way);
 		fpos_t tell();

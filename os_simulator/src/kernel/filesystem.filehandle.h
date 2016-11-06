@@ -4,7 +4,6 @@
 #include "filesystem.path.h"
 #include "filesystem.ihandle.h"
 
-#define OPEN_EXISTING 3
 
 namespace FileSystem {
 

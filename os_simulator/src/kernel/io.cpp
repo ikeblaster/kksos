@@ -10,7 +10,7 @@ void HandleIO(CONTEXT &regs) {
 	switch (Get_AL((__int16) regs.Rax)) {
 		case scCreateFile: 
 			{
-				IHandle* fh = FileSystem::Utils::CreateHandle(fs_cwd, (char*)regs.Rdx, (DWORD)regs.Rcx);
+				IHandle* fh = FileSystem::Utils::CreateHandle(fs_cwd, (char*)regs.Rdx, (size_t)regs.Rcx);
 				regs.Rax = (decltype(regs.Rax))fh;
 				Set_Error(fh == nullptr, regs);
 
@@ -36,7 +36,7 @@ void HandleIO(CONTEXT &regs) {
 
 		case scReadFile:
 			{
-				size_t read;
+				size_t read = 0;
 				FileHandle* fh = (FileHandle*)regs.Rdx;
 				fh->read((char**)regs.Rdi, regs.Rcx, &read);
 				regs.Rax = (DWORD)read;

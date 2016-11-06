@@ -1,6 +1,11 @@
 #pragma once
 #include <Windows.h>
 
+// Filesystem constants
+#define OPEN_EXISTING 3
+#define HANDLE_STDOUT 1001
+
+
 typedef HANDLE THandle;
 
 typedef size_t (__stdcall *TEntryPoint)(const CONTEXT syscall); // vstupni bod uzivatelskeho programu
@@ -35,6 +40,18 @@ typedef void (__stdcall *TSysCall)(CONTEXT &context); // prototyp funkce, ktera 
 */
 
 
+// ah hodnoty 
+const __int8 scIO = 1; // IO operace
+
+// al hodnoty pro scIO 
+const __int8 scCreateFile = 1;
+const __int8 scWriteFile = 2;
+const __int8 scReadFile = 3;
+const __int8 scSeekFile = 4;
+const __int8 scCloseFile = 5;
+
+
+
 const __int64 CarryFlag = 1;
 constexpr DWORD clc(const DWORD flags) {
 	return flags & (~CarryFlag);
@@ -48,18 +65,6 @@ constexpr bool test_cf(const DWORD flags) {
 	return flags & CarryFlag;
 }
 
-// ah hodnoty 
-const __int8 scIO = 1; // IO operace
-
-
-// al hodnoty pro scIO 
-const __int8 scCreateFile = 1;
-const __int8 scWriteFile = 2;
-const __int8 scReadFile = 3;
-const __int8 scSeekFile = 4;
-const __int8 scCloseFile = 5;
-
-
 constexpr __int16 Compose_AX(const __int8 ah, const __int8 al) {
 	return (ah << 8) | al;
 }
@@ -71,4 +76,3 @@ constexpr __int8 Get_AH(const __int16 ax) {
 constexpr __int8 Get_AL(const __int16 ax) {
 	return ax & 0xFF;
 }
-

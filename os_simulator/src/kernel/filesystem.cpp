@@ -69,6 +69,9 @@ namespace FileSystem {
 		if (name.empty()) 
 			return nullptr; // empty name
 
+		if (name.find(":") != std::string::npos)
+			return nullptr; // invalid char (semicolon)
+
 		if (this->getChild(name) != nullptr) 
 			return nullptr; // already exists
 

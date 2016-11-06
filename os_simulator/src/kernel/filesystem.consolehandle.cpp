@@ -14,7 +14,7 @@ namespace FileSystem {
 		
 	void ConsoleHandle::write(const void* buffer, const size_t buffer_size, size_t* written)
 	{
-		printf("%s", (const char*) buffer); // TODO: resit nejak jinak nez printf?
+		printf((const char*) buffer); // TODO: resit nejak jinak nez printf?
 
 		if (written != nullptr)
 			*written = buffer_size;

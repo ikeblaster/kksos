@@ -1,11 +1,12 @@
 #include "filesystem_utils.h"
 
+
 namespace FileSystem {
 	namespace Utils {
 
-		IHandle* CreateHandle(Directory* cwd, std::string path, size_t flags)
+		IHandle* CreateHandle(Directory* cwd, char* path, size_t flags)
 		{
-			if (path == "CONOUT$") 
+			if ((flags & HANDLE_STDOUT) == HANDLE_STDOUT)
 				return new ConsoleHandle();
 			
 			Directory* directory;

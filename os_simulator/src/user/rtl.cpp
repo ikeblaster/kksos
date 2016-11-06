@@ -6,17 +6,20 @@ extern "C" __declspec(dllimport) void __stdcall SysCall(CONTEXT &context);
 
 std::atomic<size_t> LastError;
 
-size_t Get_Last_Error() {
+size_t Get_Last_Error() 
+{
 	return LastError;
 }
 
-CONTEXT Prepare_SysCall_Context(__int8 major, __int8 minor) {
+CONTEXT Prepare_SysCall_Context(__int8 major, __int8 minor) 
+{
 	CONTEXT regs;
 	regs.Rax = Compose_AX(major, minor);
 	return regs;
 }
 
-bool Do_SysCall(CONTEXT &regs) {
+bool Do_SysCall(CONTEXT &regs) 
+{
 	SysCall(regs);
 
 	const bool failed = test_cf(regs.EFlags);
@@ -28,15 +31,17 @@ bool Do_SysCall(CONTEXT &regs) {
 
 
 
-THandle Create_File(const char* file_name, size_t flags) {
+THandle Create_File(const char* file_name, size_t flags) 
+{
 	CONTEXT regs = Prepare_SysCall_Context(scIO, scCreateFile);
-	regs.Rdx = (decltype(regs.Rdx)) file_name;
+	regs.Rdx = (decltype(regs.Rdx))file_name;
 	regs.Rcx = flags;
 	Do_SysCall(regs);
-	return (THandle) regs.Rax;
+	return (THandle)regs.Rax;
 }
 
-bool Write_File(const THandle file_handle, const void *buffer, const size_t buffer_size, size_t &written) {
+bool Write_File(const THandle file_handle, const void *buffer, const size_t buffer_size, size_t &written) 
+{
 	CONTEXT regs = Prepare_SysCall_Context(scIO, scWriteFile);
 	regs.Rdx = (decltype(regs.Rdx))file_handle;
 	regs.Rdi = (decltype(regs.Rdi))buffer;
@@ -47,7 +52,8 @@ bool Write_File(const THandle file_handle, const void *buffer, const size_t buff
 	return result;
 }
 
-bool Read_File(const THandle file_handle, const void **buffer, const size_t buffer_size, size_t &read) {
+bool Read_File(const THandle file_handle, const void **buffer, const size_t buffer_size, size_t &read) 
+{
 	CONTEXT regs = Prepare_SysCall_Context(scIO, scReadFile);
 	regs.Rdx = (decltype(regs.Rdx))file_handle;
 	regs.Rdi = (decltype(regs.Rdi))buffer;
@@ -58,8 +64,10 @@ bool Read_File(const THandle file_handle, const void **buffer, const size_t buff
 	return result;
 }
 
-bool Close_File(const THandle file_handle) {
+bool Close_File(const THandle file_handle) 
+{
 	CONTEXT regs = Prepare_SysCall_Context(scIO, scCloseFile);
 	regs.Rdx = (decltype(regs.Rdx))file_handle;
 	return Do_SysCall(regs);
 }
+

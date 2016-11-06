@@ -8,7 +8,7 @@ namespace FileSystem {
 	FileHandle::FileHandle(File* file, size_t flags)
 	{
 		this->file = file;
-		if(flags & OPEN_EXISTING) this->ss.str(this->file->getData());
+		if((flags & OPEN_EXISTING) == OPEN_EXISTING) this->ss.str(this->file->getData());
 		this->seek(0, std::ios_base::beg);
 	}
 

@@ -63,7 +63,7 @@ namespace FileSystem {
 
 	void ConsoleHandle::close()
 	{
-
+		delete this;
 	}
 
 }

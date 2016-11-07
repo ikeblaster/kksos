@@ -5,6 +5,7 @@
 #include "filesystem.ihandle.h"
 #include "filesystem.consolehandle.h"
 #include "filesystem.filehandle.h"
+#include "filesystem.pipehandle.h"
 
 
 namespace FileSystem {

@@ -8,6 +8,9 @@ namespace FileSystem {
 		{
 			if ((flags & IHANDLE_CONSOLE) == IHANDLE_CONSOLE)
 				return new ConsoleHandle();
+
+			if ((flags & IHANDLE_PIPE) == IHANDLE_PIPE)
+				return new PipeHandle();
 			
 			Directory* directory;
 			File* file = nullptr;

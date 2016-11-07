@@ -4,6 +4,7 @@
 // Filesystem constants
 #define OPEN_EXISTING 3
 #define IHANDLE_CONSOLE 1001
+#define IHANDLE_PIPE 1002
 
 
 typedef HANDLE THandle;

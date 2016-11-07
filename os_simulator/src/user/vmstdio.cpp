@@ -2,7 +2,7 @@
 
 std::unique_ptr<const char[]> vmgetline(size_t* pread)
 {
-	THandle console = Create_File(nullptr, IHANDLE_CONSOLE);
+	THandle console = Create_File(nullptr, IHANDLE_CONSOLE); // TODO: ziskat stdin aktualniho procesu
 	auto ret = vmgetline(console, pread);
 	Close_File(console);
 	return std::move(ret); 

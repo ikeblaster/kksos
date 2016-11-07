@@ -30,7 +30,7 @@ size_t __stdcall shell(const CONTEXT &regs)
 		Read_File(testtxt, (const void **) &p_buffer, 1, read);
 		Close_File(testtxt);*/
 
-		printf("%s\n\n", vmgetline().get());
+		//printf("%s\n\n", vmgetline().get());
 	}
 
 	CONTEXT sortregs;

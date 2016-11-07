@@ -16,11 +16,14 @@ std::unique_ptr<const char[]> vmgetline(const THandle file_handle, size_t* read)
 	size_t chrread = 0;
 	size_t length = 0;
 
+	if (read != nullptr)
+		*read = length;
+
 	while (true) {
 		Read_File(file_handle, (const void **)&chrp, 1, chrread);
-		if (chrread == 0 && length == 0)
+		if (chrread <= 0 && length == 0)
 			return nullptr;
-		if (chrread == 0 || chr[0] == '\n')
+		if (chrread <= 0 || chr[0] == '\n' || chr[0] == 26) // 26 = ctrl-z as part of text; see `echo hello ^Z world` in `cmd`
 			break;
 
 		chars.push_back(chr[0]);

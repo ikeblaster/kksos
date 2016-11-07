@@ -6,7 +6,7 @@ namespace FileSystem {
 
 		IHandle* CreateHandle(Directory* cwd, char* path, size_t flags)
 		{
-			if ((flags & HANDLE_STDOUT) == HANDLE_STDOUT)
+			if ((flags & IHANDLE_CONSOLE) == IHANDLE_CONSOLE)
 				return new ConsoleHandle();
 			
 			Directory* directory;

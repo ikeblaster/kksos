@@ -3,7 +3,7 @@
 
 // Filesystem constants
 #define OPEN_EXISTING 3
-#define HANDLE_STDOUT 1001
+#define IHANDLE_CONSOLE 1001
 
 
 typedef HANDLE THandle;

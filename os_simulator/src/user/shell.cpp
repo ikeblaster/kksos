@@ -10,7 +10,7 @@ size_t __stdcall shell(const CONTEXT &regs)
 		size_t written;
 
 		THandle testtxt = Create_File("test.txt", 0); // nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN
-		const char* hello = "Hello world!\nAhoj svete!\nC test";
+		const char* hello = "Hello world!\nAhoj svete!\nC test\nZ\nA";
 		Write_File(testtxt, hello, strlen(hello), written);
 		Close_File(testtxt);
 
@@ -22,13 +22,20 @@ size_t __stdcall shell(const CONTEXT &regs)
 		buffer[read] = 0;
 		Close_File(testtxt);
 
-		THandle conout = Create_File("STDOUT", 0); // nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN
-		Write_File(conout, buffer, 255, written);
-		Close_File(conout);
+		//THandle conout = Create_File(nullptr, IHANDLE_STDOUT); // nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN
+		//Write_File(conout, buffer, read, written);
+		//Close_File(conout);
+
+		/*testtxt = Create_File(nullptr, IHANDLE_CONSOLE);
+		Read_File(testtxt, (const void **) &p_buffer, 1, read);
+		Close_File(testtxt);*/
+
+		printf("%s\n\n", vmgetline().get());
 	}
 
 	CONTEXT sortregs;
-	sortregs.Rcx = (decltype(regs.Rcx)) new std::string[1]{ "text.txt" };
+	std::vector<std::string> args{ "test.txt" };
+	sortregs.Rcx = (decltype(regs.Rcx)) &args;
 
 	sort(sortregs);
 

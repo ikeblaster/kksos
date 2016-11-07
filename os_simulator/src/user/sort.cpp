@@ -12,13 +12,13 @@ void call_from_thread() {
 
 size_t __stdcall sort(const CONTEXT &regs)
 {
-	auto testtxt = Create_File("test.txt", OPEN_EXISTING); // nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN
-	size_t read;
+	std::vector<std::string> args = *(std::vector<std::string>*) regs.Rcx;
 
+	auto testtxt = Create_File(args.at(0).c_str(), OPEN_EXISTING); // nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN
 	std::map<std::string, std::unique_ptr<const char[]>> lines;
 
 	while(true) {
-		auto line = vmgetline(testtxt, read);
+		auto line = vmgetline(testtxt);
 		if (line == nullptr) break;
 		lines.insert(std::make_pair(std::string(line.get()), std::move(line))); // TODO: razeni podle urciteho sloupce
 	}

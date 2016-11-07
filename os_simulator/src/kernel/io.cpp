@@ -23,7 +23,7 @@ void HandleIO(CONTEXT &regs) {
 		case scWriteFile:
 			{
 				size_t written;
-				FileHandle* fh = (FileHandle*)regs.Rdx;
+				IHandle* fh = (IHandle*)regs.Rdx;
 				fh->write((void*)regs.Rdi, regs.Rcx, &written);
 				regs.Rax = (DWORD)written;
 
@@ -37,7 +37,7 @@ void HandleIO(CONTEXT &regs) {
 		case scReadFile:
 			{
 				size_t read = 0;
-				FileHandle* fh = (FileHandle*)regs.Rdx;
+				IHandle* fh = (IHandle*)regs.Rdx;
 				fh->read((char**)regs.Rdi, regs.Rcx, &read);
 				regs.Rax = (DWORD)read;
 				Set_Error(false, regs);
@@ -47,7 +47,7 @@ void HandleIO(CONTEXT &regs) {
 
 		case scCloseFile: 
 			{
-				FileHandle* fh = (FileHandle*)regs.Rdx;
+				IHandle* fh = (IHandle*)regs.Rdx;
 				fh->close();
 				Set_Error(false, regs);
 				

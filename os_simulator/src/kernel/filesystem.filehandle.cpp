@@ -53,6 +53,8 @@ namespace FileSystem {
 	{
 		this->ss.clear();
 		this->file->setData(this->ss.str());
+
+		delete this;
 	}
 
 

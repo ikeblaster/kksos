@@ -1,6 +1,7 @@
 #include "shell.h"
 #include "parser.h"
 #include "sort.h"
+#include "wc.h"
 
 
 size_t __stdcall shell(const CONTEXT &regs)
@@ -10,7 +11,7 @@ size_t __stdcall shell(const CONTEXT &regs)
 		size_t written;
 
 		THandle testtxt = Create_File("test.txt", 0); // nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN
-		const char* hello = "Hello world!\nAhoj svete!\nC test\nZ\nA";
+		const char* hello = "Hello world!\nAhoj svete!\n\nC test\nZ\nA";
 		Write_File(testtxt, hello, strlen(hello), written);
 		Close_File(testtxt);
 
@@ -38,6 +39,8 @@ size_t __stdcall shell(const CONTEXT &regs)
 	sortregs.Rcx = (decltype(regs.Rcx)) &args;
 
 	sort(sortregs);
+
+	wc(sortregs);
 
 
 	//std::string text = buffer.str(); // text will now contain "Bla\n"

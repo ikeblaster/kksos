@@ -39,7 +39,7 @@
     <ClCompile Include="..\..\src\kernel\filesystem_utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\kernel\pcb.cpp">
+    <ClCompile Include="..\..\src\kernel\process.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\kernel\filesystem.pipehandle.cpp">
@@ -74,7 +74,7 @@
     <ClInclude Include="..\..\src\kernel\filesystem_utils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\kernel\pcb.h">
+    <ClInclude Include="..\..\src\kernel\process.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\kernel\filesystem.pipehandle.h">

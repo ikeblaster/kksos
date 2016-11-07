@@ -27,6 +27,7 @@
     <ClCompile Include="..\..\src\user\parser.cpp" />
     <ClCompile Include="..\..\src\user\sort.cpp" />
     <ClCompile Include="..\..\src\user\vmstdio.cpp" />
+    <ClCompile Include="..\..\src\user\wc.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\common\api.h" />
@@ -37,6 +38,7 @@
     <ClInclude Include="..\..\src\user\parser.h" />
     <ClInclude Include="..\..\src\user\sort.h" />
     <ClInclude Include="..\..\src\user\vmstdio.h" />
+    <ClInclude Include="..\..\src\user\wc.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{A5F63FF3-DE9A-4B0B-BBF9-AD27200CE81F}</ProjectGuid>

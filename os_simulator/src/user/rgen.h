@@ -1,4 +1,5 @@
 #pragma once
+#include "..\common\api.h"
 #include <cstdio>
 
 //Vrati vygenerovane nahodne cislo typu float v rozsahu od "from" do "to" 

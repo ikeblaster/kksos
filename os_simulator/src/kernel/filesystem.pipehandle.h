@@ -12,8 +12,7 @@ namespace FileSystem {
 		std::queue<char> queue;
 		std::mutex mtx;
 		std::condition_variable cv;
-		bool readClosed = false;
-		bool writeClosed = false;
+		bool pipeOpened = true;
 
 		public:
 		void write(const void* buffer, const size_t buffer_size, size_t* pwritten);

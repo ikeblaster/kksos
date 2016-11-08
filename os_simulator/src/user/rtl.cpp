@@ -51,7 +51,7 @@ bool Join_Process(int PID) {
 	CONTEXT regs = Prepare_SysCall_Context(scProcess, scJoinProcess);
 	regs.Rdx = (decltype(regs.Rdx))PID;
 	Do_SysCall(regs);
-	return (bool)regs.Rax;
+	return regs.Rax != 0;
 }
 
 

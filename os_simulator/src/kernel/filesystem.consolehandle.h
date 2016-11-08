@@ -9,6 +9,9 @@
 namespace FileSystem {
 
 	class ConsoleHandle : public IHandle {
+		private:
+		bool mStdInOpen = true;
+
 		public:
 		void write(const void* buffer, const size_t buffer_size, size_t* pwritten);
 		fpos_t seek(const fpos_t pos, std::ios_base::seekdir way);

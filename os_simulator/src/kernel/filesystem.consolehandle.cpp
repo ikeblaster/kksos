@@ -5,6 +5,9 @@ namespace FileSystem {
 
 	fpos_t ConsoleHandle::seek(const fpos_t pos, std::ios_base::seekdir way)
 	{
+		if (way == std::ios_base::beg + std::ios_base::end) {
+			mStdInOpen = true;
+		}
 		return 0;
 	}
 
@@ -27,7 +30,7 @@ namespace FileSystem {
 		_setmode(_fileno(stdin), _O_BINARY);
 		HANDLE mStdIn = GetStdHandle(STD_INPUT_HANDLE);
 		bool mRedirectedStdIn = mStdIn != (HANDLE) 3;
-		bool mStdInOpen = true;
+		
 
 		int offset = 0;
 		DWORD read;
@@ -40,7 +43,7 @@ namespace FileSystem {
 
 			BOOL res = ReadFile(mStdIn, buffer[offset], lengthtrim, &read, NULL);
 
-			mStdInOpen = (res) & (read>0);
+			mStdInOpen = (res) & (read > 0);
 
 			if ((mStdInOpen) & (!mRedirectedStdIn)) {
 				mStdInOpen = !
@@ -48,14 +51,14 @@ namespace FileSystem {
 					(*buffer[read - 3] == 0x1a) & (*buffer[read - 2] == 0x0d) & (*buffer[read - 1] == 0x0a));
 				if ((!mStdInOpen) & (read>2)) read -= 3;
 				//delete the sequence, if it is necessary
-				read = read > 0 ? read : -1;
+				read = read > 0 ? read : 0;
 			}
 			else {
-				read = mStdInOpen ? read : -1;
+				read = mStdInOpen ? read : 0;
 			}
 		}
 		else {
-			read = -1;	//stdin is no longer open
+			read = 0;	//stdin is no longer open
 		}
 
 		if(pread != nullptr)

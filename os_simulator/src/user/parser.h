@@ -4,7 +4,9 @@
 #include <queue>
 #include <unordered_set>
 
-/* Structure for storing one command */
+/// <summary>
+/// Structure for storing one command
+/// </summary>
 struct Command {
 	std::string nazev;
 	std::vector<char> params;
@@ -14,10 +16,22 @@ struct Command {
 	std::queue<std::string> data;
 };
 
+/// <summary>
+/// Class for parsing data from command line
+/// </summary>
 class parser {
 	public:	
-	void saveData(); /* Saves data into command struct */					 
-	bool parse(std::string input); /* Parsing string input */
+	/// <summary>
+	/// Saves data into command struct
+	/// </summary>
+	void saveData();
+
+	/// <summary>
+	/// Parsing string input
+	/// </summary>
+	/// <param name="input">Input from stdin</param>
+	/// <returns>True if parsing ok, false if not</returns>
+	bool parse(std::string input);
 
 	std::queue<Command> commandList; /* Vector of commands */
 

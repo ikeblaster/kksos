@@ -14,6 +14,8 @@ namespace FileSystem {
 
 	fpos_t FileHandle::seek(const fpos_t pos, std::ios_base::seekdir way)
 	{
+		if (way == std::ios_base::beg + std::ios_base::end) return 0;
+
 		this->ss.clear();
 		this->ss.seekg(pos, way);
 

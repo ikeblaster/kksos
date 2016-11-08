@@ -2,15 +2,15 @@
 #include <string>
 #include <memory>
 #include <vector>
+#include <thread>
 #include "rtl.h"
 
 
 template <typename... Args>
 void vmprintf(const char* format, Args... args)
 {
-	THandle console = Create_File(nullptr, IHANDLE_CONSOLE); // TODO: ziskat stdout aktualniho procesu
+	THandle console = Get_Std_Handle(IHANDLE_STDOUT); 
 	vmprintf(console, format, args...);
-	Close_File(console);
 }
 
 template <typename... Args>

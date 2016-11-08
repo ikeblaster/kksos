@@ -1,9 +1,8 @@
 #include "kernel.h"
-#include "io.h"
-#include "process.h"
 
 HMODULE User_Programs;
 FileSystem::Directory* fs_cwd;
+FileSystem::Directory* fs;
 
 void Set_Error(const bool failed, CONTEXT &regs) {
 	if (failed) {
@@ -36,14 +35,20 @@ void SysCall(CONTEXT &regs) {
 
 }
 
-using namespace FileSystem;
+
+void Initialize_FS() {
+	fs = new FileSystem::Directory();
+	fs_cwd = fs->createDirectory("C:");
+}
+
+void Shutdown_FS() {
+	delete fs; 
+}
+
 
 void Run_VM() {
 
-	Directory* fs = new Directory();
-	auto* cdrive = fs->createDirectory("C:"); // TODO: oddelit do initIO
-
-	fs_cwd = cdrive;
+	Initialize_FS();
 
 	/*
 	auto* dir = cdrive->createDirectory("dir");
@@ -99,15 +104,28 @@ void Run_VM() {
 
 	Initialize_Kernel();
 
-	// spustime shell - v realnem OS bychom ovsem spousteli login
-	TEntryPoint shell = (TEntryPoint)GetProcAddress(User_Programs, "shell");
-	if (shell) {
-		CONTEXT regs; // ted je regs jenom nejak vyplneno kvuli preakladci
-		GetThreadContext(GetCurrentThread(), &regs); // ale pak bude jeden z registru ukazovat na nejaky startup info blok
-		shell(regs);
-	}
+	PROCESSSTARTUPINFO psi;
+	psi.process_name = "shell";
+	psi.p_stdin = FileSystem::Utils::CreateHandle(fs_cwd, nullptr, IHANDLE_CONSOLE);
+	psi.p_stdout = psi.p_stdin;
+	psi.p_stderr = psi.p_stdin;
 
-	delete fs; // TODO: oddelit do freeIO
+	int pid = Process::create_process(psi);
+	Process::join_process(pid);
 
+
+	//// spustime shell - v realnem OS bychom ovsem spousteli login
+	//TEntryPoint shell = (TEntryPoint)GetProcAddress(User_Programs, "shell");
+	//if (shell) {
+	//	CONTEXT regs; // ted je regs jenom nejak vyplneno kvuli preakladci
+	//	GetThreadContext(GetCurrentThread(), &regs); // ale pak bude jeden z registru ukazovat na nejaky startup info blok
+	//	/*Process::current_thread_pcb = new Process::PCB();
+	//	Process::current_thread_pcb->psi = psi;*/
+
+	//	shell(regs);
+	//}
+
+	Shutdown_FS();
 	Shutdown_Kernel();
 }
+

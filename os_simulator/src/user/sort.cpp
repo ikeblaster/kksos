@@ -19,25 +19,21 @@ void call_from_thread(THandle handle) {
 
 size_t __stdcall sort(const CONTEXT &regs)
 {
-	THandle pipe = Create_File(nullptr, IHANDLE_PIPE); // TODO: ziskat stdout aktualniho procesu
-	std::thread thr(call_from_thread, pipe);
+	PROCESSSTARTUPINFO psi = *(PROCESSSTARTUPINFO*) regs.Rcx;
+	THandle input = psi.p_stdin;
 
-	vmprintf(pipe, "%s%c", "ahoj", 26);
+	THandle textfile = Create_File(psi.data.at(0).c_str(), OPEN_EXISTING); // nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN
+	if (textfile != nullptr) input = textfile;
 
-	thr.join();
-
-	std::vector<std::string> args = *(std::vector<std::string>*) regs.Rcx; // TODO: cteni ze stdin, pokud chybi parametr
-
-	auto testtxt = Create_File(args.at(0).c_str(), OPEN_EXISTING); // nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN
 	std::multimap<std::string, std::unique_ptr<const char[]>> lines; 
 
 	while(true) {
-		auto line = vmgetline(testtxt);
+		auto line = vmgetline(input);
 		if (line == nullptr) break;
 		lines.insert(std::make_pair(line.get(), std::move(line))); // TODO: 1. parametr, razeni podle urciteho sloupce
 	}
 
-	Close_File(testtxt);
+	if (textfile != nullptr) Close_File(input);
 
 	for (const auto& kv : lines) {
 		vmprintf("%s\n", kv.second.get());

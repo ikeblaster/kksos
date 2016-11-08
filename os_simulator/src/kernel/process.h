@@ -7,6 +7,7 @@
 #include "..\common\api.h"
 #include "kernel.h"
 #include "filesystem.h"
+#include "filesystem.ihandle.h"
 
 namespace Process {
 
@@ -24,9 +25,11 @@ namespace Process {
 	const size_t PROCESS_TABLE_SIZE = 1024;
 
 	extern const PCB* table[];
+	extern thread_local PCB* current_thread_pcb;
 
 
 	int create_process(PROCESSSTARTUPINFO psi);
+	bool join_process(int pid);
 	int get_free_spot_in_TT();
 }
 

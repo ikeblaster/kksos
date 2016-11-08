@@ -1,5 +1,6 @@
 #include "filesystem.path.h"
 
+
 namespace FileSystem {
 
 	/// <summary>
@@ -163,6 +164,9 @@ namespace FileSystem {
 	/// <returns><c>path</c> without trailing separators.</returns>
 	std::string Path::trimTrailingSeparators(std::string path)
 	{
+		if (path.length() == 0) 
+			return path;
+
 		size_t seplength = FileSystem::PathSeparator.length();
 		size_t endpos = path.length();
 

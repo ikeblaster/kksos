@@ -1,10 +1,12 @@
 #include "vmstdio.h"
 
+thread_local THandle hstdin = nullptr;
+thread_local THandle hstdout = nullptr;
+
 std::unique_ptr<const char[]> vmgetline(size_t* pread)
 {
-	THandle console = Create_File(nullptr, IHANDLE_CONSOLE); // TODO: ziskat stdin aktualniho procesu
+	THandle console = Get_Std_Handle(IHANDLE_STDIN);
 	auto ret = vmgetline(console, pread);
-	Close_File(console);
 	return std::move(ret); 
 }
 

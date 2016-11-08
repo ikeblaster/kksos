@@ -14,16 +14,21 @@ int Create_Process(std::string process_name, std::vector<char> params,
 
 bool Join_Process(int PID);
 
+THandle Get_Std_Handle(DWORD nStdHandle);
+
+
+//podle flags otevre, vytvori soubor a vrati jeho deskriptor
+//vraci nenulovy handle, kdyz vse OK
 THandle Create_File(const char* file_name, size_t flags);
-		//podle flags otevre, vytvori soubor a vrati jeho deskriptor
-		//vraci nenulovy handle, kdyz vse OK
+
+//zapise do souboru identifikovaneho deskriptor data z buffer o velikosti buffer_size a vrati pocet zapsanych dat ve writtent
+//vraci true, kdyz vse OK
 bool Write_File(const THandle file_handle, const void *buffer, const size_t buffer_size, size_t &written);
-		//zapise do souboru identifikovaneho deskriptor data z buffer o velikosti buffer_size a vrati pocet zapsanych dat ve writtent
-		//vraci true, kdyz vse OK
+
 bool Read_File(const THandle file_handle, const void **buffer, const size_t buffer_size, size_t &written);
 
-bool Close_File(const THandle file_handle);
-		//uzavre soubor identifikovany pomoci deskriptoru
-		//vraci true, kdyz vse OK
+fpos_t Seek_File(const THandle file_handle, const fpos_t pos, std::ios_base::seekdir way);
 
-int Seek_File(const fpos_t pos, std::ios_base::seekdir way);
+//uzavre soubor identifikovany pomoci deskriptoru
+//vraci true, kdyz vse OK
+bool Close_File(const THandle file_handle);

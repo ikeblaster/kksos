@@ -9,8 +9,11 @@
 
 size_t __stdcall wc(const CONTEXT &regs)
 {
-	std::vector<std::string> args = *(std::vector<std::string>*) regs.Rcx;
-	auto testtxt = Create_File(args.at(0).c_str(), OPEN_EXISTING); // nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN (Psal Vojtik tak to tak necham)
+	PROCESSSTARTUPINFO psi = *(PROCESSSTARTUPINFO*) regs.Rcx;
+	THandle input = psi.p_stdin;
+
+	THandle textfile = Create_File(psi.data.at(0).c_str(), OPEN_EXISTING); // nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN (Psal Vojtik tak to tak necham)
+	if (textfile != nullptr) input = textfile;
 
 	bool count_lines = true;
 
@@ -20,7 +23,7 @@ size_t __stdcall wc(const CONTEXT &regs)
 
 	while (true) {
 
-		auto line = vmgetline(testtxt);
+		auto line = vmgetline(input);
 		if (line == nullptr) break;
 
 		linecount++;
@@ -52,7 +55,7 @@ size_t __stdcall wc(const CONTEXT &regs)
 
 	vmprintf("Word count: %d\nLine count: %d\n", wordcount, linecount);
 
-	Close_File(testtxt);
+	if (textfile != nullptr) Close_File(input);
 
 	return 0;
 }

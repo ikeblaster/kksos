@@ -7,13 +7,15 @@
 #define OPEN_EXISTING 3
 #define IHANDLE_CONSOLE 1001
 #define IHANDLE_PIPE 1002
+#define IHANDLE_STDIN 1003
+#define IHANDLE_STDOUT 1004
+#define IHANDLE_STDERR 1005
 
 
 typedef HANDLE THandle;
 
 typedef size_t (__stdcall *TEntryPoint)(const CONTEXT syscall); // vstupni bod uzivatelskeho programu
 typedef void (__stdcall *TSysCall)(CONTEXT &context); // prototyp funkce, ktera realizuje syscall
-
 
 typedef struct PROCESSSTARTUPINFO
 {
@@ -71,6 +73,7 @@ const __int8 scCloseFile = 5;
 // al hodnoty pro scProcess
 const __int8 scCreateProcess = 1;
 const __int8 scJoinProcess = 2;
+const __int8 scGetStdHandle = 3;
 
 
 

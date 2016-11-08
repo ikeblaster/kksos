@@ -34,13 +34,14 @@ size_t __stdcall shell(const CONTEXT &regs)
 		//printf("%s\n\n", vmgetline().get());
 	}
 
-	CONTEXT sortregs;
-	std::vector<std::string> args{ "test.txt" };
-	sortregs.Rcx = (decltype(regs.Rcx)) &args;
+	THandle pipe = Create_File(nullptr, IHANDLE_PIPE);
 
-	sort(sortregs);
+	int p1 = Create_Process("sort", {}, { "test.txt" }, Get_Std_Handle(IHANDLE_STDIN), pipe, Get_Std_Handle(IHANDLE_STDERR));
+	int p2 = Create_Process("wc", {}, { "" }, pipe, Get_Std_Handle(IHANDLE_STDOUT), Get_Std_Handle(IHANDLE_STDERR));
 
-	wc(sortregs);
+	Join_Process(p1);
+	Join_Process(p2);
+
 
 
 	//std::string text = buffer.str(); // text will now contain "Bla\n"

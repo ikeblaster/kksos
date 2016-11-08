@@ -5,6 +5,11 @@ namespace FileSystem {
 
 	fpos_t PipeHandle::seek(const fpos_t pos, std::ios_base::seekdir way)
 	{
+		if (way == std::ios_base::beg + std::ios_base::end) {
+			std::unique_lock<std::mutex> lck(mtx);
+			pipeOpened = false;
+			cv.notify_all();
+		}
 		return 0;
 	}
 
@@ -28,7 +33,7 @@ namespace FileSystem {
 			}
 
 			if(size == MAX_BUFFER_SIZE) {
-				printf("W");
+				//printf("W");
 				cv.notify_all();
 				cv.wait(lck);
 				continue;
@@ -55,7 +60,7 @@ namespace FileSystem {
 			if (size == 0) {
 				if (!pipeOpened) break;
 
-				printf("R");
+				//printf("R");
 				cv.notify_all();
 				cv.wait(lck);
 				continue; // recheck emptiness

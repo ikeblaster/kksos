@@ -36,7 +36,7 @@ using namespace FileSystem;
 void Run_VM() {
 
 	Directory* fs = new Directory();
-	auto* cdrive = fs->createDirectory("C:");
+	auto* cdrive = fs->createDirectory("C:"); // TODO: oddelit do initIO
 
 	fs_cwd = cdrive;
 
@@ -102,7 +102,7 @@ void Run_VM() {
 		shell(regs);
 	}
 
-	delete fs;
+	delete fs; // TODO: oddelit do freeIO
 
 	Shutdown_Kernel();
 }

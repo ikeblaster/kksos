@@ -27,7 +27,16 @@ namespace FileSystem {
 				break;
 			}
 
-			this->queue.push(str[i]);
+			if(size == MAX_BUFFER_SIZE) {
+				printf("W");
+				cv.notify_all();
+				cv.wait(lck);
+				continue;
+			}
+
+			data_buffer[last] = str[i];
+			last = (last + 1) % MAX_BUFFER_SIZE;
+			size++;
 			i++;
 		}
 
@@ -43,15 +52,21 @@ namespace FileSystem {
 
 		int i = 0;
 		while(i < buffer_size) {
-			if (this->queue.empty()) {
+			if (size == 0) {
 				if (!pipeOpened) break;
+
+				printf("R");
+				cv.notify_all();
 				cv.wait(lck);
 				continue; // recheck emptiness
 			}
 
-			(*buffer)[i++] = this->queue.front();
-			this->queue.pop();
+			(*buffer)[i++] = data_buffer[first];
+			//nastavit data_buffer[first] na null, nebo nechat byt a usetrit rezii?
+			first = (first + 1) % MAX_BUFFER_SIZE;	
+			size--;
 		}
+		cv.notify_all();
 
 		if (pread != nullptr)
 			*pread = i;

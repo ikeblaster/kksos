@@ -114,7 +114,7 @@ bool parser::parse(std::string input)
 				default:
 					/* Save parameter */
 					if (getParam) {
-						if (isalpha(c)) {
+						if (isalpha(c) || c == '?') {
 							commandList.back().params.push_back(c); /* add param for command to struct */
 							getParam = false;
 						}

@@ -18,16 +18,32 @@ namespace FileSystem {
 		std::unique_lock<std::mutex> lck(mtx);
 		const char* str = static_cast<const char*>(buffer);
 
-		for (int i = 0; i < buffer_size && !writeClosed; i++) {
-			this->queue.push(str[i]); // TODO: nic nezapisovat, pokud stdout je zavreny - jak zjistit?
-			if (str[i] == 26)
-				writeClosed = true;
+		int i = 0;
+
+		// TODO: zavreni pipy - nejak lepe? (staci, aby kdokoliv zapsal 26, potom read funguje, dokud je neco v bufferu; write vraci 0)
+		while(i < buffer_size && pipeOpened) {
+			if (str[i] == 26) {
+				pipeOpened = false;
+				break;
+			}
+
+			if(size == MAX_BUFFER_SIZE) {
+				printf("W");
+				cv.notify_all();
+				cv.wait(lck);
+				continue;
+			}
+
+			data_buffer[last] = str[i];
+			last = (last + 1) % MAX_BUFFER_SIZE;
+			size++;
+			i++;
 		}
 
 		cv.notify_all();
 
 		if (pwritten != nullptr)
-			*pwritten = buffer_size;
+			*pwritten = i;
 	}
 
 	void PipeHandle::read(char** buffer, const size_t buffer_size, size_t* pread)
@@ -35,18 +51,22 @@ namespace FileSystem {
 		std::unique_lock<std::mutex> lck(mtx);
 
 		int i = 0;
-		while(i < buffer_size && !readClosed) {
-			while (this->queue.empty()) 
-				cv.wait(lck);
+		while(i < buffer_size) {
+			if (size == 0) {
+				if (!pipeOpened) break;
 
-			if (this->queue.front() == 26) { // TODO: nejak lepe?
-				readClosed = true;
-				break;
+				printf("R");
+				cv.notify_all();
+				cv.wait(lck);
+				continue; // recheck emptiness
 			}
 
-			(*buffer)[i++] = this->queue.front();
-			this->queue.pop();
+			(*buffer)[i++] = data_buffer[first];
+			//nastavit data_buffer[first] na null, nebo nechat byt a usetrit rezii?
+			first = (first + 1) % MAX_BUFFER_SIZE;	
+			size--;
 		}
+		cv.notify_all();
 
 		if (pread != nullptr)
 			*pread = i;

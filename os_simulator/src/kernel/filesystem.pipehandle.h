@@ -1,14 +1,12 @@
 #pragma once
 #include <sstream> 
-#include <queue>
 #include <mutex>
 #include "filesystem.ihandle.h" 
 
 
 namespace FileSystem {
 	class PipeHandle : public IHandle {
-		private:
-		std::queue<char> queue;
+		private:		
 		std::mutex mtx;
 		std::condition_variable cv;
 		bool pipeOpened = true;

@@ -1,5 +1,7 @@
 #pragma once
 #include <Windows.h>
+#include <string>
+#include <vector>
 
 // Filesystem constants
 #define OPEN_EXISTING 3
@@ -12,6 +14,20 @@ typedef HANDLE THandle;
 typedef size_t (__stdcall *TEntryPoint)(const CONTEXT syscall); // vstupni bod uzivatelskeho programu
 typedef void (__stdcall *TSysCall)(CONTEXT &context); // prototyp funkce, ktera realizuje syscall
 
+
+typedef struct PROCESSSTARTUPINFO
+{
+	std::string startup_directory;
+	
+	std::string process_name; // ?
+	std::vector<char> params;
+	std::vector<std::string> data;
+
+	THandle p_stdin;
+	THandle p_stdout;
+	THandle p_stderr;
+
+} PROCESSSTARTUPINFO;
 
 /*
 
@@ -43,6 +59,7 @@ typedef void (__stdcall *TSysCall)(CONTEXT &context); // prototyp funkce, ktera 
 
 // ah hodnoty 
 const __int8 scIO = 1; // IO operace
+const __int8 scProcess = 2;
 
 // al hodnoty pro scIO 
 const __int8 scCreateFile = 1;
@@ -50,6 +67,10 @@ const __int8 scWriteFile = 2;
 const __int8 scReadFile = 3;
 const __int8 scSeekFile = 4;
 const __int8 scCloseFile = 5;
+
+// al hodnoty pro scProcess
+const __int8 scCreateProcess = 1;
+const __int8 scJoinProcess = 2;
 
 
 

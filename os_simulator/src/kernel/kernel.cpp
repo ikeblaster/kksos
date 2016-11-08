@@ -1,5 +1,6 @@
 #include "kernel.h"
 #include "io.h"
+#include "process.h"
 
 HMODULE User_Programs;
 FileSystem::Directory* fs_cwd;
@@ -27,6 +28,10 @@ void SysCall(CONTEXT &regs) {
 	switch (Get_AH((__int16) regs.Rax)) {
 		case scIO:		
 			HandleIO(regs);
+			break;
+		case scProcess:
+			HandleProcess(regs);
+			break;
 	}
 
 }

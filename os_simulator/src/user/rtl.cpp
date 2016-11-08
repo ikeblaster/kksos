@@ -1,5 +1,4 @@
 #include "rtl.h"
-#include <atomic>
 
 extern "C" __declspec(dllimport) void __stdcall SysCall(CONTEXT &context);
 
@@ -29,6 +28,31 @@ bool Do_SysCall(CONTEXT &regs)
 	return !failed;
 }
 
+
+int Create_Process(std::string process_name, std::vector<char> params, std::vector<std::string> data, const THandle hstdin, const THandle hstdout, const THandle hstderr)
+{
+	CONTEXT regs = Prepare_SysCall_Context(scProcess, scCreateProcess);
+
+	PROCESSSTARTUPINFO psi;
+	psi.process_name = process_name;
+	psi.params = params;
+	psi.data = data;
+	psi.p_stdin = hstdin;
+	psi.p_stdout = hstdout;
+	psi.p_stderr = hstderr;
+
+	regs.Rcx = (decltype(regs.Rcx))&psi;
+
+	Do_SysCall(regs);
+	return (int)regs.Rax;
+}
+
+bool Join_Process(int PID) {
+	CONTEXT regs = Prepare_SysCall_Context(scProcess, scJoinProcess);
+	regs.Rdx = (decltype(regs.Rdx))PID;
+	Do_SysCall(regs);
+	return (bool)regs.Rax;
+}
 
 
 THandle Create_File(const char* file_name, size_t flags) 

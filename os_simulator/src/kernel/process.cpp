@@ -23,27 +23,31 @@ namespace Process
 		TEntryPoint program = (TEntryPoint) GetProcAddress(User_Programs, psi.process_name.c_str());
 
 		if (!program)
-			return -1; // TODO: errors enum + osetreni na vyssi urovni
+			return -PROCESS_TABLE_SIZE; // TODO: errors enum + osetreni na vyssi urovni
+
+		std::unique_lock<std::mutex> lck(table_mtx);
 
 		int pid = get_free_spot_in_TT();
-		if (pid >= 0) {
 
+		if (pid >= 0) {
 			PCB* pcb = new PCB();
 
-			pcb->pid = pid;
-			pcb->psi = psi;
-
-			if (current_thread_pcb != nullptr)
-				pcb->current_dir = current_thread_pcb->current_dir;
-			else
-				pcb->current_dir = FileSystem::fs_root;
-
-			std::unique_lock<std::mutex> lck(table_mtx);
-			
 			table[pcb->pid] = pcb;
 
-			std::thread* thr = new std::thread(program_thread, program, pcb);
-			pcb->thread = thr;
+			pcb->psi = psi;
+			pcb->pid = pid;
+
+			if (current_thread_pcb != nullptr) {
+				pcb->current_dir = current_thread_pcb->current_dir;
+				pcb->ppid = current_thread_pcb->pid;
+			}
+			else {
+				pcb->current_dir = FileSystem::fs_root;
+				pcb->ppid = -PROCESS_TABLE_SIZE;
+			}
+
+			pcb->thread = new std::thread(program_thread, program, pcb);
+
 		}
 		else {
 			notify_handles_exit(psi);
@@ -53,7 +57,6 @@ namespace Process
 	}
 
 	bool join_process(int pid) {
-
 		if (table[pid] == nullptr)
 			return false;
 
@@ -88,7 +91,7 @@ namespace Process
 
 	std::string get_cwd(int pid) {
 		PCB* pcb = current_thread_pcb;
-		if (pid > 0) pcb = table[pid];
+		if (pid >= 0) pcb = table[pid];
 		if (pcb == nullptr) return nullptr;
 
 		return FileSystem::Path::generate(pcb->current_dir);
@@ -96,7 +99,7 @@ namespace Process
 
 	bool set_cwd(std::string path, int pid) {
 		PCB* pcb = current_thread_pcb;
-		if (pid > 0) pcb = table[pid];
+		if (pid >= 0) pcb = table[pid];
 		if (pcb == nullptr) 
 			return false;
 
@@ -119,11 +122,10 @@ namespace Process
 	}
 
 	int get_free_spot_in_TT() {
-		
-		std::unique_lock<std::mutex> lck(table_mtx);
-		
 		for (int i = 0; i < PROCESS_TABLE_SIZE; i++) {
-			if (table[i] == nullptr) return i;
+			if (table[i] == nullptr) {
+				return i;
+			}
 		}
 		return -1; // no free slot in task table
 	}

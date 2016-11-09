@@ -12,6 +12,7 @@ namespace Process {
 
 	typedef struct PCB
 	{
+		int ppid;
 		int pid;
 		std::thread* thread;
 		PROCESSSTARTUPINFO psi;

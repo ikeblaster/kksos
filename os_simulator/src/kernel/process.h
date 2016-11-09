@@ -11,6 +11,7 @@
 
 namespace Process {
 
+
 	typedef struct PCB
 	{
 		int pid;
@@ -24,6 +25,7 @@ namespace Process {
 
 	const size_t PROCESS_TABLE_SIZE = 1024;
 
+	extern std::mutex table_mtx;
 	extern PCB* table[];
 	extern thread_local PCB* current_thread_pcb;
 

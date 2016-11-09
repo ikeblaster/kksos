@@ -4,6 +4,7 @@
 
 namespace Process
 {
+	std::mutex table_mtx;
 	PCB* table[PROCESS_TABLE_SIZE] = { nullptr }; // TODO: mutex, cv
 	thread_local PCB* current_thread_pcb = nullptr;
 
@@ -37,6 +38,8 @@ namespace Process
 			else
 				pcb->current_dir = FileSystem::fs_root;
 
+			std::unique_lock<std::mutex> lck(table_mtx);
+			
 			table[pcb->pid] = pcb;
 
 			std::thread* thr = new std::thread(program_thread, program, pcb);
@@ -50,13 +53,17 @@ namespace Process
 	}
 
 	bool join_process(int pid) {
+
 		if (table[pid] == nullptr)
 			return false;
 
 		table[pid]->thread->join();
 
+		std::unique_lock<std::mutex> lck(table_mtx);
+
 		delete table[pid]->thread;
 		delete table[pid];
+
 		table[pid] = nullptr;
 
 		return true;
@@ -112,6 +119,9 @@ namespace Process
 	}
 
 	int get_free_spot_in_TT() {
+		
+		std::unique_lock<std::mutex> lck(table_mtx);
+		
 		for (int i = 0; i < PROCESS_TABLE_SIZE; i++) {
 			if (table[i] == nullptr) return i;
 		}

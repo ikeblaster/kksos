@@ -35,8 +35,10 @@ size_t __stdcall shell(const CONTEXT &regs)
 	THandle pipe = Create_File(nullptr, IHANDLE_PIPE);
 	//THandle file = Create_File("test.txt", OPEN_EXISTING);
 
-	int p1 = Create_Process("sort", {}, {}, Get_Std_Handle(IHANDLE_STDIN), pipe, Get_Std_Handle(IHANDLE_STDERR));	
+	int p1 = Create_Process("sort", {}, { "test.txt" }, Get_Std_Handle(IHANDLE_STDIN), pipe, Get_Std_Handle(IHANDLE_STDERR));	
 	int p2 = Create_Process("wc", {}, {}, pipe, Get_Std_Handle(IHANDLE_STDOUT), Get_Std_Handle(IHANDLE_STDERR));
+
+	//Seek_File(pipe, 0, std::ios_base::beg + std::ios_base::end); // set pipe to closed // pokud by se misto procesu poustel prikaz, tak rovnou zavrit pipe
 
 	Join_Process(p1);
 	Join_Process(p2);

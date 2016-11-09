@@ -4,8 +4,8 @@
 
 namespace Process
 {
-	const PCB* table[PROCESS_TABLE_SIZE] = { nullptr };
-	thread_local PCB* current_thread_pcb;
+	PCB* table[PROCESS_TABLE_SIZE] = { nullptr }; // TODO: mutex, cv
+	thread_local PCB* current_thread_pcb = nullptr;
 
 	void program_thread(TEntryPoint program, PCB* pcb) {
 
@@ -15,9 +15,7 @@ namespace Process
 		regs.Rcx = (decltype(regs.Rcx)) &pcb->psi;
 		program(regs);
 
-		((FileSystem::IHandle*) pcb->psi.p_stdout)->seek(0, std::ios_base::beg + std::ios_base::end);
-		((FileSystem::IHandle*) pcb->psi.p_stdin)->seek(0, std::ios_base::beg + std::ios_base::end);
-		((FileSystem::IHandle*) pcb->psi.p_stderr)->seek(0, std::ios_base::beg + std::ios_base::end);
+		notify_handles_exit(pcb->psi);
 	}
 
 	int create_process(PROCESSSTARTUPINFO psi) {
@@ -34,11 +32,18 @@ namespace Process
 			pcb->pid = pid;
 			pcb->psi = psi;
 
-			table[pcb->pid] = pcb;
+			if (current_thread_pcb != nullptr)
+				pcb->current_dir = current_thread_pcb->current_dir;
+			else
+				pcb->current_dir = FileSystem::fs_root;
 
+			table[pcb->pid] = pcb;
 
 			std::thread* thr = new std::thread(program_thread, program, pcb);
 			pcb->thread = thr;
+		}
+		else {
+			notify_handles_exit(psi);
 		}
 
 		return pid;
@@ -57,13 +62,6 @@ namespace Process
 		return true;
 	}
 
-	int get_free_spot_in_TT() {
-		for (int i = 0; i < PROCESS_TABLE_SIZE; i++) {
-			if (table[i] == nullptr) return i;
-		}
-		return -1; // no free slot in task table
-	}
-
 	THandle get_std_handle(DWORD nStdHandle) {
 		switch (nStdHandle) {
 			case IHANDLE_STDIN: return Process::current_thread_pcb->psi.p_stdin;
@@ -72,33 +70,83 @@ namespace Process
 		}
 		return nullptr;
 	}
+
+	void set_std_handle(DWORD nStdHandle, THandle handle) {
+		switch (nStdHandle) {
+			case IHANDLE_STDIN: Process::current_thread_pcb->psi.p_stdin = handle;
+			case IHANDLE_STDOUT: Process::current_thread_pcb->psi.p_stdout = handle;
+			case IHANDLE_STDERR: Process::current_thread_pcb->psi.p_stderr = handle;
+		}
+	}
+
+	std::string get_cwd(int pid) {
+		PCB* pcb = current_thread_pcb;
+		if (pid > 0) pcb = table[pid];
+		if (pcb == nullptr) return nullptr;
+
+		return FileSystem::Path::generate(pcb->current_dir);
+	}
+
+	bool set_cwd(std::string path, int pid) {
+		PCB* pcb = current_thread_pcb;
+		if (pid > 0) pcb = table[pid];
+		if (pcb == nullptr) 
+			return false;
+
+		FileSystem::Directory* dir;
+		FileSystem::File* file;
+
+		auto res = FileSystem::Path::parse(pcb->current_dir, path, &dir, &file);
+		if (res != FileSystem::RESULT::OK) 
+			return false;
+		
+		pcb->current_dir = dir;
+
+		return true;
+	}
+
+	void notify_handles_exit(PROCESSSTARTUPINFO &psi) {
+		((FileSystem::IHandle*) psi.p_stdout)->seek(0, std::ios_base::beg + std::ios_base::end);
+		((FileSystem::IHandle*) psi.p_stdin)->seek(0, std::ios_base::beg + std::ios_base::end);
+		((FileSystem::IHandle*) psi.p_stderr)->seek(0, std::ios_base::beg + std::ios_base::end);
+	}
+
+	int get_free_spot_in_TT() {
+		for (int i = 0; i < PROCESS_TABLE_SIZE; i++) {
+			if (table[i] == nullptr) return i;
+		}
+		return -1; // no free slot in task table
+	}
 }
 
 
 
 void HandleProcess(CONTEXT &regs) {
-
 	switch (Get_AL((__int16) regs.Rax)) {
+
 		case scCreateProcess:
-			{
-				regs.Rax = (decltype(regs.Rax)) Process::create_process(*(PROCESSSTARTUPINFO*) regs.Rcx);
-			}
+			regs.Rax = (decltype(regs.Rax)) Process::create_process(*(PROCESSSTARTUPINFO*) regs.Rcx);
 			break;
 
 		case scJoinProcess:
-			{
-				regs.Rax = (decltype(regs.Rax)) Process::join_process((int) regs.Rdx);
-				//Set_Error(false, regs);
-
-				//const bool failed = !WriteFile((HANDLE)regs.Rdx, (void*)regs.Rdi, (DWORD)regs.Rcx, &written, NULL);
-
-			}
+			regs.Rax = (decltype(regs.Rax)) Process::join_process((int) regs.Rdx);
 			break;
 
 		case scGetStdHandle:
-			{
-				regs.Rax = (decltype(regs.Rax)) Process::get_std_handle((DWORD) regs.Rdx);
-			}
+			regs.Rax = (decltype(regs.Rax)) Process::get_std_handle((DWORD) regs.Rdx);
 			break;
+
+		case scSetStdHandle:
+			Process::set_std_handle((DWORD) regs.Rdx, (THandle) regs.Rcx);
+			break;
+
+		case scGetCwd:
+			regs.Rax = (decltype(regs.Rax)) new std::string(Process::get_cwd((int) regs.Rdx)); // must be on heap
+			break;
+
+		case scSetCwd:
+			regs.Rax = (decltype(regs.Rax)) Process::set_cwd(*(std::string*) regs.Rcx, (int) regs.Rdx);
+			break;
+
 	}
 }

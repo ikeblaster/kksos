@@ -1,8 +1,6 @@
 #include "kernel.h"
 
 HMODULE User_Programs;
-FileSystem::Directory* fs_cwd;
-FileSystem::Directory* fs;
 
 void Set_Error(const bool failed, CONTEXT &regs) {
 	if (failed) {
@@ -37,12 +35,13 @@ void SysCall(CONTEXT &regs) {
 
 
 void Initialize_FS() {
-	fs = new FileSystem::Directory();
-	fs_cwd = fs->createDirectory("C:");
+	FileSystem::fs = new FileSystem::Directory();
+	FileSystem::fs_root = FileSystem::fs->createDirectory("C:");
+	FileSystem::fs_root->createDirectory("slozka")->createDirectory("podslozka"); // TODO: smazat
 }
 
 void Shutdown_FS() {
-	delete fs; 
+	delete FileSystem::fs; 
 }
 
 
@@ -104,7 +103,7 @@ void Run_VM() {
 
 	Initialize_Kernel();
 
-	FileSystem::IHandle* console = FileSystem::Utils::CreateHandle(fs_cwd, nullptr, IHANDLE_CONSOLE);
+	FileSystem::IHandle* console = FileSystem::Utils::CreateHandle(nullptr, nullptr, IHANDLE_CONSOLE);
 
 	PROCESSSTARTUPINFO psi;
 	psi.process_name = "shell";

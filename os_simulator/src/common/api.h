@@ -19,8 +19,6 @@ typedef void (__stdcall *TSysCall)(CONTEXT &context); // prototyp funkce, ktera 
 
 typedef struct PROCESSSTARTUPINFO
 {
-	std::string startup_directory;
-	
 	std::string process_name; // ?
 	std::vector<char> params;
 	std::vector<std::string> data;
@@ -74,6 +72,9 @@ const __int8 scCloseFile = 5;
 const __int8 scCreateProcess = 1;
 const __int8 scJoinProcess = 2;
 const __int8 scGetStdHandle = 3;
+const __int8 scSetStdHandle = 4;
+const __int8 scGetCwd = 5;
+const __int8 scSetCwd = 6;
 
 
 

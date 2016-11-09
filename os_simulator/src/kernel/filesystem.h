@@ -7,6 +7,9 @@ namespace FileSystem {
 	class Directory;
 	class File;
 
+	extern FileSystem::Directory* fs;
+	extern FileSystem::Directory* fs_root;
+
 	enum class RESULT {
 		OK,
 		GENERAL_ERROR,

@@ -47,19 +47,49 @@ int Create_Process(std::string process_name, std::vector<char> params, std::vect
 	return (int) regs.Rax;
 }
 
-bool Join_Process(int PID) {
+bool Join_Process(int pid) {
 	CONTEXT regs = Prepare_SysCall_Context(scProcess, scJoinProcess);
-	regs.Rdx = (decltype(regs.Rdx)) PID;
+	regs.Rdx = (decltype(regs.Rdx)) pid;
 	Do_SysCall(regs);
 	return regs.Rax != 0;
 }
 
-THandle Get_Std_Handle(DWORD nStdHandle)
+THandle Get_Std_Handle(DWORD n_handle)
 {
 	CONTEXT regs = Prepare_SysCall_Context(scProcess, scGetStdHandle);
-	regs.Rdx = (decltype(regs.Rdx)) nStdHandle;
+	regs.Rdx = (decltype(regs.Rdx)) n_handle;
 	Do_SysCall(regs);
 	return (THandle) regs.Rax;
+}
+
+void Set_Std_Handle(DWORD n_handle, THandle handle)
+{
+	CONTEXT regs = Prepare_SysCall_Context(scProcess, scSetStdHandle);
+	regs.Rdx = (decltype(regs.Rdx)) n_handle;
+	regs.Rcx = (decltype(regs.Rcx)) handle;
+	Do_SysCall(regs);
+}
+
+std::string Get_Cwd(int pid)
+{
+	CONTEXT regs = Prepare_SysCall_Context(scProcess, scGetCwd);
+	regs.Rdx = (decltype(regs.Rdx)) pid;
+	Do_SysCall(regs);
+
+	std::string* ret = (std::string*) regs.Rax;
+	std::string path(*ret); // TODO: nejak lepe?
+	delete ret;
+
+	return path;
+}
+
+bool Set_Cwd(std::string path, int pid)
+{
+	CONTEXT regs = Prepare_SysCall_Context(scProcess, scSetCwd);
+	regs.Rcx = (decltype(regs.Rcx)) &path;
+	regs.Rdx = (decltype(regs.Rdx)) pid;
+	Do_SysCall(regs);
+	return regs.Rax != 0;
 }
 
 

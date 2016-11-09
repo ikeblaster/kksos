@@ -1,11 +1,10 @@
 #include "shell.h"
-#include "parser.h"
-#include "sort.h"
-#include "wc.h"
 
 
 size_t __stdcall shell(const CONTEXT &regs)
 {
+	PROCESSSTARTUPINFO psi = *(PROCESSSTARTUPINFO*) regs.Rcx;
+
 	{
 		size_t written;
 
@@ -43,6 +42,13 @@ size_t __stdcall shell(const CONTEXT &regs)
 	Join_Process(p2);
 
 	Close_File(pipe);
+	vmprintf("%s>\n", Get_Cwd().c_str());
+	Set_Cwd("slozka");
+	vmprintf("%s>\n", Get_Cwd().c_str());
+	Set_Cwd("podslozka");
+	vmprintf("%s>\n", Get_Cwd().c_str());
+	Set_Cwd("\\");
+	vmprintf("%s>\n", Get_Cwd().c_str());
 
 
 	//std::string text = buffer.str(); // text will now contain "Bla\n"

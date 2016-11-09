@@ -170,7 +170,7 @@ namespace FileSystem {
 		size_t seplength = FileSystem::PathSeparator.length();
 		size_t endpos = path.length();
 
-		while (path.substr(endpos - seplength, seplength) == FileSystem::PathSeparator) {
+		while (endpos > seplength && path.substr(endpos - seplength, seplength) == FileSystem::PathSeparator) {
 			endpos -= seplength;
 		}
 			

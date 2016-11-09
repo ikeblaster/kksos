@@ -2,6 +2,9 @@
 
 namespace FileSystem {
 
+	FileSystem::Directory* fs = nullptr;
+	FileSystem::Directory* fs_root = nullptr;
+
 	// === Node members
 
 	Node::~Node()

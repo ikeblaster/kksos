@@ -21,9 +21,12 @@ size_t __stdcall sort(const CONTEXT &regs)
 {
 	PROCESSSTARTUPINFO psi = *(PROCESSSTARTUPINFO*) regs.Rcx;
 	THandle input = psi.p_stdin;
+	THandle textfile = nullptr;
 
-	THandle textfile = Create_File(psi.data.at(0).c_str(), OPEN_EXISTING); // nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN
-	if (textfile != nullptr) input = textfile;
+	if (psi.data.size() > 0) {
+		textfile = Create_File(psi.data.at(0).c_str(), OPEN_EXISTING); // TODO: nevytvaret soubor, pokud neexistuje
+		if (textfile != nullptr) input = textfile;
+	}
 
 	std::multimap<std::string, std::unique_ptr<const char[]>> lines; 
 

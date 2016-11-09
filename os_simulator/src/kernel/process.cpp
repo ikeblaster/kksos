@@ -24,7 +24,7 @@ namespace Process
 		TEntryPoint program = (TEntryPoint) GetProcAddress(User_Programs, psi.process_name.c_str());
 
 		if (!program)
-			return -1; // TODO: errors enum
+			return -1; // TODO: errors enum + osetreni na vyssi urovni
 
 		int pid = get_free_spot_in_TT();
 		if (pid >= 0) {
@@ -49,6 +49,11 @@ namespace Process
 			return false;
 
 		table[pid]->thread->join();
+
+		delete table[pid]->thread;
+		delete table[pid];
+		table[pid] = nullptr;
+
 		return true;
 	}
 

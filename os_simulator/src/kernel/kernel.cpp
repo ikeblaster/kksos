@@ -104,15 +104,19 @@ void Run_VM() {
 
 	Initialize_Kernel();
 
+	FileSystem::IHandle* console = FileSystem::Utils::CreateHandle(fs_cwd, nullptr, IHANDLE_CONSOLE);
+
 	PROCESSSTARTUPINFO psi;
 	psi.process_name = "shell";
-	psi.p_stdin = FileSystem::Utils::CreateHandle(fs_cwd, nullptr, IHANDLE_CONSOLE);
-	psi.p_stdout = psi.p_stdin;
-	psi.p_stderr = psi.p_stdin;
+	psi.p_stdin = console;
+	psi.p_stdout = console;
+	psi.p_stderr = console;
 
 	int pid = Process::create_process(psi);
 	Process::join_process(pid);
-
+	
+	console->close();
+	
 
 	//// spustime shell - v realnem OS bychom ovsem spousteli login
 	//TEntryPoint shell = (TEntryPoint)GetProcAddress(User_Programs, "shell");

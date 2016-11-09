@@ -11,9 +11,12 @@ size_t __stdcall wc(const CONTEXT &regs)
 {
 	PROCESSSTARTUPINFO psi = *(PROCESSSTARTUPINFO*) regs.Rcx;
 	THandle input = psi.p_stdin;
+	THandle textfile = nullptr;
 
-	THandle textfile = Create_File(psi.data.at(0).c_str(), OPEN_EXISTING); // nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN (Psal Vojtik tak to tak necham)
-	if (textfile != nullptr) input = textfile;
+	if (psi.data.size() > 0) {
+		textfile = Create_File(psi.data.at(0).c_str(), OPEN_EXISTING); // TODO: nevytvaret soubor, pokud neexistuje
+		if (textfile != nullptr) input = textfile;
+	}
 
 	bool count_lines = true;
 
@@ -22,7 +25,6 @@ size_t __stdcall wc(const CONTEXT &regs)
 
 
 	while (true) {
-
 		auto line = vmgetline(input);
 		if (line == nullptr) break;
 
@@ -34,14 +36,11 @@ size_t __stdcall wc(const CONTEXT &regs)
 		while (isspace(*chr))
 			chr++;
 
-
 		for (; *chr != 0; chr++)
 		{
 			if (isspace(*chr))
 			{
 				wordcount++;
-
-				chr++;
 
 				// Skip over unnecessary spaces
 				while (isspace(*chr)) 

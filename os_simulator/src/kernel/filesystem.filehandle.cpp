@@ -3,9 +3,28 @@
 
 namespace FileSystem {
 
-	// === FileHandle members
+	// === static members
 
-	FileHandle::FileHandle(File* file, size_t flags)
+	FileHandle* FileHandle::CreateHandle(Directory* cwd, char* path, flags_t flags)
+	{
+		Directory* directory;
+		File* file = nullptr;
+
+		RESULT res = Path::parse(cwd, path, &directory, &file);
+
+		if (res == RESULT::MISSING_LAST_PART)
+			file = directory->createFile(Path::getBasename(path));
+
+		if (file == nullptr)
+			return nullptr;
+
+		return new FileHandle(file, flags);
+	}
+
+
+	// === members
+
+	FileHandle::FileHandle(File* file, flags_t flags)
 	{
 		this->file = file;
 		if((flags & OPEN_EXISTING) == OPEN_EXISTING) this->ss.str(this->file->getData());
@@ -14,8 +33,6 @@ namespace FileSystem {
 
 	fpos_t FileHandle::seek(const fpos_t pos, std::ios_base::seekdir way)
 	{
-		if (way == std::ios_base::beg + std::ios_base::end) return 0;
-
 		this->ss.clear();
 		this->ss.seekg(pos, way);
 

@@ -93,7 +93,15 @@ bool Set_Cwd(std::string path, int pid)
 }
 
 
-THandle Create_File(const char* file_name, size_t flags)
+void Create_Pipe(THandle &readable, THandle &writeable)
+{
+	CONTEXT regs = Prepare_SysCall_Context(scIO, scCreatePipe);
+	Do_SysCall(regs);
+	readable = (THandle) regs.Rcx;
+	writeable = (THandle) regs.Rdx;
+}
+
+THandle Create_File(const char* file_name, flags_t flags)
 {
 	CONTEXT regs = Prepare_SysCall_Context(scIO, scCreateFile);
 	regs.Rdx = (decltype(regs.Rdx)) file_name;

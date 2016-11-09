@@ -7,7 +7,7 @@ std::unique_ptr<const char[]> vmgetline(size_t* pread)
 {
 	THandle console = Get_Std_Handle(IHANDLE_STDIN);
 	auto ret = vmgetline(console, pread);
-	return std::move(ret); 
+	return std::move(ret);
 }
 
 std::unique_ptr<const char[]> vmgetline(const THandle file_handle, size_t* read)
@@ -22,7 +22,7 @@ std::unique_ptr<const char[]> vmgetline(const THandle file_handle, size_t* read)
 		*read = length;
 
 	while (true) {
-		Read_File(file_handle, (const void **)&chrp, 1, chrread);
+		Read_File(file_handle, (const void **) &chrp, 1, chrread);
 		if (chrread <= 0 && length == 0)
 			return nullptr;
 		if (chrread <= 0 || chr[0] == '\n' || chr[0] == 26) // 26 = ctrl-z as part of text; see `echo hello ^Z world` in `cmd`

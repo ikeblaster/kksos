@@ -1,22 +1,38 @@
 #pragma once
+#include <mutex>
 #include "filesystem.ihandle.h" 
-#include "filesystem.pipe.h" 
+#include "filesystem.pipehandle.h" 
 
 
 namespace FileSystem {
 
-	class Pipe;
-	enum class PIPETYPE;
+	class PipeHandle;
+	enum class PIPETYPE { READABLE, WRITEABLE };
 
-	class PipeHandle : public IHandle {
-		public:
-		
-		private:
-		PIPETYPE type;
-		Pipe* pipe;
+	class Pipe : public IHandle {
+		private:		
+		std::mutex mtx;
+		std::condition_variable cv;
+
+		PipeHandle* pipeReadable;
+		PipeHandle* pipeWriteable;
+		bool pipeOpened = true;
+
+		static const int MAX_BUFFER_SIZE = 5; // max velikost bufferu
+		char data_buffer[MAX_BUFFER_SIZE]; // buffer pro vymenu dat ze stdout do stdin
+		int size = 0; // pocet nactenych prvku
+		int first = 0; // index zacatku bufferu
+		int last = 0; // index pro dalsi vkladany prvek
 
 		public:		
-		PipeHandle(PIPETYPE type, Pipe* pipe);
+
+		Pipe();
+
+		~Pipe();
+
+		void closePipeHandle(PIPETYPE type);
+
+		PipeHandle * getPipeHandle(PIPETYPE type);
 
 		/// <summary>
 		/// Writes into pipe buffer

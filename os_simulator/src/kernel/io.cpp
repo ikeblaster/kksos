@@ -1,6 +1,4 @@
 #include "io.h"
-#include "kernel.h"
-#include "filesystem_utils.h"
 
 using namespace FileSystem;
 
@@ -9,7 +7,7 @@ void HandleIO(CONTEXT &regs) {
 	switch (Get_AL((__int16) regs.Rax)) {
 		case scCreateFile:
 			{
-				IHandle* fh = FileSystem::Utils::CreateHandle(Process::current_thread_pcb->current_dir, (char*) regs.Rdx, (size_t) regs.Rcx);
+				IHandle* fh = FileHandle::CreateHandle(Process::current_thread_pcb->current_dir, (char*) regs.Rdx, (size_t) regs.Rcx);
 				regs.Rax = (decltype(regs.Rax)) fh;
 
 				// regs.Rax = (decltype(regs.Rax))CreateFileA((char*)regs.Rdx, GENERIC_READ | GENERIC_WRITE, (DWORD)regs.Rcx, 0, OPEN_EXISTING, 0, 0);
@@ -53,6 +51,14 @@ void HandleIO(CONTEXT &regs) {
 				IHandle* fh = (IHandle*) regs.Rdx;
 				fh->close();
 				//Set_Error(!CloseHandle((HANDLE)regs.Rdx), regs);
+			}
+			break;
+
+		case scCreatePipe:
+			{
+				Pipe* pipe = new Pipe();
+				regs.Rcx = (decltype(regs.Rcx)) pipe->getPipeHandle(PIPETYPE::READABLE);
+				regs.Rdx = (decltype(regs.Rdx)) pipe->getPipeHandle(PIPETYPE::WRITEABLE);
 			}
 			break;
 

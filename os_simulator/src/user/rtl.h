@@ -1,16 +1,12 @@
 #pragma once
 #include <atomic>
 #include <memory>
-#include <sstream> 
-#include <vector>
 #include "..\common\api.h"
 
 size_t Get_Last_Error();
 
 
-
 // ================================= PROCESSES =================================
-
 
 /// <summary>
 /// Creates new process.
@@ -23,8 +19,8 @@ size_t Get_Last_Error();
 /// <param name="hstderr">Handle to standard error stream.</param>
 /// <returns>PID of created process or error code.</returns>
 int Create_Process(
-	std::string process_name, 
-	std::vector<char> params, std::vector<std::string> data, 
+	std::string process_name,
+	std::vector<char> params, std::vector<std::string> data,
 	const THandle hstdin, const THandle hstdout, const THandle hstderr
 );
 
@@ -49,12 +45,23 @@ THandle Get_Std_Handle(DWORD nStdHandle);
 /// <param name="handle">New handle.</param>
 void Set_Std_Handle(DWORD n_handle, THandle handle);
 
+/// <summary>
+/// Gets current working directory path.
+/// </summary>
+/// <param name="pid">PID of desired process; -1 for current process.</param>
+/// <returns>Path.</returns>
 std::string Get_Cwd(int pid = -1);
 
+/// <summary>
+/// Sets current working directory.
+/// </summary>
+/// <param name="path">Path.</param>
+/// <param name="pid">PID of desired process; -1 for current process.</param>
+/// <returns>Success.</returns>
 bool Set_Cwd(std::string path, int pid = -1);
 
-// =================================== FILES ===================================
 
+// =================================== IO ===================================
 
 /// <summary>
 /// Opens/creates file (according to flags).
@@ -62,7 +69,7 @@ bool Set_Cwd(std::string path, int pid = -1);
 /// <param name="file_name">Path to file.</param>
 /// <param name="flags">Flags.</param>
 /// <returns>Non-<c>nullptr</c> file handle on success.</returns>
-THandle Create_File(const char* file_name, size_t flags);
+THandle Create_File(const char* file_name, flags_t flags);
 
 /// <summary>
 /// Writes data to file handle.
@@ -100,3 +107,10 @@ fpos_t Seek_File(const THandle file_handle, const fpos_t pos, std::ios_base::see
 /// <param name="file_handle">File handle.</param>
 /// <returns>Success.</returns>
 bool Close_File(const THandle file_handle);
+
+/// <summary>
+/// Creates pipe.
+/// </summary>
+/// <param name="readable">[out] Handle for readable end of pipe.</param>
+/// <param name="writeable">[out] Handle for writeable end of pipe.</param>
+void Create_Pipe(THandle &readable, THandle &writeable);

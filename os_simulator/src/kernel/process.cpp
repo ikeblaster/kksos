@@ -113,9 +113,9 @@ namespace Process
 	}
 
 	void notify_handles_exit(PROCESSSTARTUPINFO &psi) {
-		((FileSystem::IHandle*) psi.p_stdout)->seek(0, std::ios_base::beg + std::ios_base::end);
-		((FileSystem::IHandle*) psi.p_stdin)->seek(0, std::ios_base::beg + std::ios_base::end);
-		((FileSystem::IHandle*) psi.p_stderr)->seek(0, std::ios_base::beg + std::ios_base::end);
+		((FileSystem::IHandle*) psi.p_stdout)->close();
+		((FileSystem::IHandle*) psi.p_stdin)->close();
+		((FileSystem::IHandle*) psi.p_stderr)->close();
 	}
 
 	int get_free_spot_in_TT() {

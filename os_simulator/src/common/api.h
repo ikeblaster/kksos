@@ -3,13 +3,13 @@
 #include <string>
 #include <vector>
 
+typedef unsigned __int64 flags_t;
+
 // Filesystem constants
 #define OPEN_EXISTING 3
-#define IHANDLE_CONSOLE 1001
-#define IHANDLE_PIPE 1002
-#define IHANDLE_STDIN 1003
-#define IHANDLE_STDOUT 1004
-#define IHANDLE_STDERR 1005
+#define IHANDLE_STDIN 1000
+#define IHANDLE_STDOUT 1001
+#define IHANDLE_STDERR 1002
 
 
 typedef HANDLE THandle;
@@ -67,6 +67,7 @@ const __int8 scWriteFile = 2;
 const __int8 scReadFile = 3;
 const __int8 scSeekFile = 4;
 const __int8 scCloseFile = 5;
+const __int8 scCreatePipe = 6;
 
 // al hodnoty pro scProcess
 const __int8 scCreateProcess = 1;

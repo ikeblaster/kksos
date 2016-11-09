@@ -20,30 +20,25 @@ size_t __stdcall shell(const CONTEXT &regs)
 		Read_File(testtxt, (const void **)&p_buffer, 255, read);
 		buffer[read] = 0;
 		Close_File(testtxt);
-
-		//THandle conout = Create_File(nullptr, IHANDLE_STDOUT); // nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN
-		//Write_File(conout, buffer, read, written);
-		//Close_File(conout);
-
-		/*testtxt = Create_File(nullptr, IHANDLE_CONSOLE);
-		Read_File(testtxt, (const void **) &p_buffer, 1, read);
-		Close_File(testtxt);*/
-
-		//printf("%s\n\n", vmgetline().get());
 	}
 
-	THandle pipe = Create_File(nullptr, IHANDLE_PIPE);
-	//THandle file = Create_File("test.txt", OPEN_EXISTING);
+	THandle pRead1, pWrite1;
+	THandle pRead2, pWrite2;
 
-	int p1 = Create_Process("sort", {}, { "test.txt" }, Get_Std_Handle(IHANDLE_STDIN), pipe, Get_Std_Handle(IHANDLE_STDERR));	
-	int p2 = Create_Process("wc", {}, {}, pipe, Get_Std_Handle(IHANDLE_STDOUT), Get_Std_Handle(IHANDLE_STDERR));
+	Create_Pipe(pRead1, pWrite1);
+	Create_Pipe(pRead2, pWrite2);
 
-	//Seek_File(pipe, 0, std::ios_base::beg + std::ios_base::end); // set pipe to closed // pokud by se misto procesu poustel prikaz, tak rovnou zavrit pipe
+	int p1 = Create_Process("sort", {}, { "test.txt" }, Get_Std_Handle(IHANDLE_STDIN), pWrite1, Get_Std_Handle(IHANDLE_STDERR));
+	int p2 = Create_Process("wc", {}, {}, pRead1, pWrite2, Get_Std_Handle(IHANDLE_STDERR));
+	int p3 = Create_Process("sort", {}, {}, pRead2, Get_Std_Handle(IHANDLE_STDOUT), Get_Std_Handle(IHANDLE_STDERR));
 
 	Join_Process(p1);
 	Join_Process(p2);
+	Join_Process(p3);
 
-	Close_File(pipe);
+
+	vmprintf("\n");
+
 	vmprintf("%s>\n", Get_Cwd().c_str());
 	Set_Cwd("slozka");
 	vmprintf("%s>\n", Get_Cwd().c_str());
@@ -52,8 +47,6 @@ size_t __stdcall shell(const CONTEXT &regs)
 	Set_Cwd("\\");
 	vmprintf("%s>\n", Get_Cwd().c_str());
 
-
-	//std::string text = buffer.str(); // text will now contain "Bla\n"
 
 
 	//THandle conout = Create_File("STDOUT", FILE_SHARE_WRITE); // nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN

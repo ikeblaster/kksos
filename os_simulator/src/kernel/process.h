@@ -1,16 +1,14 @@
 #pragma once
-
-#include <Windows.h>
 #include <string>
-#include <vector>
+#include <mutex>
 #include <thread>
 #include "..\common\api.h"
 #include "kernel.h"
 #include "filesystem.h"
 #include "filesystem.ihandle.h"
 
-namespace Process {
 
+namespace Process {
 
 	typedef struct PCB
 	{
@@ -35,6 +33,7 @@ namespace Process {
 	std::string get_cwd(int pid = -1);
 	bool set_cwd(std::string path, int pid = -1);
 	int get_free_spot_in_TT();
+
 }
 
 void HandleProcess(CONTEXT &regs);

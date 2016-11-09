@@ -13,7 +13,7 @@ void Set_Error(const bool failed, CONTEXT &regs) {
 
 
 void Initialize_Kernel() {
-	User_Programs = LoadLibrary(L"user.dll");	
+	User_Programs = LoadLibrary(L"user.dll");
 }
 
 void Shutdown_Kernel() {
@@ -23,7 +23,7 @@ void Shutdown_Kernel() {
 void SysCall(CONTEXT &regs) {
 
 	switch (Get_AH((__int16) regs.Rax)) {
-		case scIO:		
+		case scIO:
 			HandleIO(regs);
 			break;
 		case scProcess:
@@ -41,7 +41,7 @@ void Initialize_FS() {
 }
 
 void Shutdown_FS() {
-	delete FileSystem::fs; 
+	delete FileSystem::fs;
 }
 
 
@@ -103,7 +103,8 @@ void Run_VM() {
 
 	Initialize_Kernel();
 
-	FileSystem::IHandle* console = FileSystem::Utils::CreateHandle(nullptr, nullptr, IHANDLE_CONSOLE);
+
+	FileSystem::ConsoleHandle* console = new FileSystem::ConsoleHandle();
 
 	PROCESSSTARTUPINFO psi;
 	psi.process_name = "shell";
@@ -113,20 +114,9 @@ void Run_VM() {
 
 	int pid = Process::create_process(psi);
 	Process::join_process(pid);
-	
-	console->close();
-	
 
-	//// spustime shell - v realnem OS bychom ovsem spousteli login
-	//TEntryPoint shell = (TEntryPoint)GetProcAddress(User_Programs, "shell");
-	//if (shell) {
-	//	CONTEXT regs; // ted je regs jenom nejak vyplneno kvuli preakladci
-	//	GetThreadContext(GetCurrentThread(), &regs); // ale pak bude jeden z registru ukazovat na nejaky startup info blok
-	//	/*Process::current_thread_pcb = new Process::PCB();
-	//	Process::current_thread_pcb->psi = psi;*/
+	delete console;
 
-	//	shell(regs);
-	//}
 
 	Shutdown_FS();
 	Shutdown_Kernel();

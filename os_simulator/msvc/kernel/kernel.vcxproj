@@ -24,8 +24,8 @@
     <ClCompile Include="..\..\src\kernel\filesystem.filehandle.cpp" />
     <ClCompile Include="..\..\src\kernel\filesystem.consolehandle.cpp" />
     <ClCompile Include="..\..\src\kernel\filesystem.path.cpp" />
+    <ClCompile Include="..\..\src\kernel\filesystem.pipe.cpp" />
     <ClCompile Include="..\..\src\kernel\filesystem.pipehandle.cpp" />
-    <ClCompile Include="..\..\src\kernel\filesystem_utils.cpp" />
     <ClCompile Include="..\..\src\kernel\io.cpp" />
     <ClCompile Include="..\..\src\kernel\kernel.cpp" />
     <ClCompile Include="..\..\src\kernel\process.cpp" />
@@ -37,8 +37,8 @@
     <ClInclude Include="..\..\src\kernel\filesystem.filehandle.h" />
     <ClInclude Include="..\..\src\kernel\filesystem.ihandle.h" />
     <ClInclude Include="..\..\src\kernel\filesystem.path.h" />
+    <ClInclude Include="..\..\src\kernel\filesystem.pipe.h" />
     <ClInclude Include="..\..\src\kernel\filesystem.pipehandle.h" />
-    <ClInclude Include="..\..\src\kernel\filesystem_utils.h" />
     <ClInclude Include="..\..\src\kernel\io.h" />
     <ClInclude Include="..\..\src\kernel\kernel.h" />
     <ClInclude Include="..\..\src\kernel\process.h" />

@@ -2,8 +2,7 @@
 
 	
 std::string freq(std::string input) {
-	const int MAX_VALUES = 256;
-	int bytes[MAX_VALUES] = { 0 };
+	int bytes[UCHAR_MAX] = { 0 };
 	char buff[65535] = {0};
 	int curpos = 0;
 
@@ -11,7 +10,7 @@ std::string freq(std::string input) {
 		bytes[c]++;
 	}
 
-	for (int i = 0; i < MAX_VALUES; i++) {
+	for (int i = 0; i < UCHAR_MAX; i++) {
 		int act_num = bytes[i];
 
 		if (act_num > 0) {

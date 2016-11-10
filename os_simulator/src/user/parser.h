@@ -13,14 +13,14 @@ struct Command {
 	std::string redirectStdin;
 	std::string redirectStdout;
 	std::string redirectAStdout;
-	std::queue<std::string> data;
+	std::vector<std::string> data;
 };
 
 /// <summary>
 /// Class for parsing data from command line
 /// </summary>
 class parser {
-	public:	
+public:
 	/// <summary>
 	/// Saves data into command struct
 	/// </summary>
@@ -35,7 +35,7 @@ class parser {
 
 	std::queue<Command> commandList; /* Vector of commands */
 
-	private:
+private:
 	/* Special symbols */
 	static const char PIPE = '|'; /* pipe */
 	static const char STDIN = '<'; /* stdin redirect */
@@ -44,8 +44,9 @@ class parser {
 	static const char QUOTE = '"'; /* start of string */
 	static const char SPACE = ' '; /* space */
 
-	/* Temp bools */
+								   /* Temp bools */
 	bool commandOK = false; /* Command is allowed */
+	bool pipe = false; /*  */
 	bool getParam = false; /* Next char is param */
 	bool out = false; /* Temp Astdout or stdout */
 	bool getStdin = false; /* Next is stdin */

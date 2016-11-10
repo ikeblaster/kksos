@@ -1,8 +1,8 @@
 #include "Parser.h"
 
-static std::unordered_set<std::string> Commands{ "echo", "cd", "dir", "md", "rd", "type", "wc", "sort", "ps", "rgen", "freq" }; /* Allowed commands */
+static std::unordered_set<std::string> Commands{ "echo", "cd", "dir", "md", "rd", "type", "wc", "sort", "ps", "rgen", "freq", "shell" }; /* Allowed commands */
 
-void parser::saveData() 
+void parser::saveData()
 {
 	if (temp != "" && temp != " ") {
 		if (getStdin) {
@@ -22,7 +22,7 @@ void parser::saveData()
 		}
 		else {
 			if (temp != "") {
-				commandList.back().data.push(temp); /* add data for command to struct */
+				commandList.back().data.push_back(temp); /* add data for command to struct */
 				temp = "";
 			}
 		}
@@ -44,13 +44,14 @@ bool parser::parse(std::string input)
 			/* If command is allowed */
 			if (Commands.count(temp)) {
 				commandOK = true;
+				pipe = false;
 				commandList.push(Command()); /* add to vector new command */
 				commandList.back().nazev = temp; /* add command name to struct */
 				temp = "";
 			}
 			else {
 				if (temp.length() > 4) {
-					std::cout << temp << " is not allowed command!" << std::endl;
+					std::cout << "This command is not allowed!" << std::endl;
 					return false;
 				}
 			}
@@ -83,8 +84,9 @@ bool parser::parse(std::string input)
 					/* Saves data and prepares values for new command */
 				case PIPE:
 					saveData(); /* Save data for command */
-					/* vaules for new command */
+								/* vaules for new command */
 					commandOK = false;
+					pipe = true;
 					temp = "";
 					break;
 					/* Start of param */
@@ -131,20 +133,23 @@ bool parser::parse(std::string input)
 			}
 		}
 	}
-
-	saveData(); /* Save data for command */
-
-	/* Prints all commands from line - pak zmenime na volani trid pro obsluhu jednotlivych prikazu */
-	while (!(commandList.empty())) {
-		std::cout << std::endl;
-		std::cout << "nazev: " << commandList.front().nazev << std::endl;
-		while (!(commandList.front().params.empty())) { std::cout << "params: " << commandList.front().params.back(); commandList.front().params.pop_back(); std::cout << std::endl; }
-		while (!(commandList.front().data.empty())) { std::cout << "data: " << commandList.front().data.front() << std::endl; commandList.front().data.pop(); }
-		std::cout << "stdin: " << commandList.front().redirectStdin << std::endl;
-		std::cout << "stdout: " << commandList.front().redirectStdout << std::endl;
-		std::cout << "Astdout: " << commandList.front().redirectAStdout << std::endl;
-
-		commandList.pop();
+	/* Whole input was processed */
+	
+	/* Check if pipe has follower */
+	if (!commandOK && pipe) {
+		std::cout << "After pipe must follow a valid command!" << std::endl;
+		return false;
+	}
+	/* Save data for command */
+	else if (!commandList.empty()) {
+		saveData(); /* Save data for command */
+	}	
+	/* Input isn't valid command */
+	else {
+		if(temp != "") {
+			std::cout << "This command is not allowed!" << std::endl;
+		}
+		return false;
 	}
 
 	return true;

@@ -31,8 +31,8 @@ namespace Process {
 	int create_process(PROCESSSTARTUPINFO psi);
 	bool join_process(int pid);
 	void notify_handles_exit(PROCESSSTARTUPINFO &psi);
-	std::string get_cwd(int pid = -1);
-	bool set_cwd(std::string path, int pid = -1);
+	std::string get_cwd(int pid = 0);
+	bool set_cwd(std::string path, int pid = 0);
 	int get_free_spot_in_TT();
 
 }

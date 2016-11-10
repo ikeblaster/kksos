@@ -23,16 +23,16 @@ namespace Process
 		TEntryPoint program = (TEntryPoint) GetProcAddress(User_Programs, psi.process_name.c_str());
 
 		if (!program)
-			return -PROCESS_TABLE_SIZE; // TODO: errors enum + osetreni na vyssi urovni
+			return -1; // TODO: errors enum + osetreni na vyssi urovni
 
 		std::unique_lock<std::mutex> lck(table_mtx);
 
 		int pid = get_free_spot_in_TT();
 
-		if (pid >= 0) {
+		if (pid > 0) {
 			PCB* pcb = new PCB();
 
-			table[pcb->pid] = pcb;
+			table[pid] = pcb;
 
 			pcb->psi = psi;
 			pcb->pid = pid;
@@ -43,7 +43,7 @@ namespace Process
 			}
 			else {
 				pcb->current_dir = FileSystem::fs_root;
-				pcb->ppid = -PROCESS_TABLE_SIZE;
+				pcb->ppid = -1;
 			}
 
 			pcb->thread = new std::thread(program_thread, program, pcb);
@@ -57,7 +57,7 @@ namespace Process
 	}
 
 	bool join_process(int pid) {
-		if (table[pid] == nullptr)
+		if (pid <= 0 || pid >= PROCESS_TABLE_SIZE || table[pid] == nullptr)
 			return false;
 
 		table[pid]->thread->join();
@@ -90,18 +90,19 @@ namespace Process
 	}
 
 	std::string get_cwd(int pid) {
-		PCB* pcb = current_thread_pcb;
-		if (pid >= 0) pcb = table[pid];
+		PCB* pcb = nullptr;
+		if (pid == 0) pcb = current_thread_pcb;
+		if (pid > 0 && pid < PROCESS_TABLE_SIZE) pcb = table[pid];
 		if (pcb == nullptr) return nullptr;
 
 		return FileSystem::Path::generate(pcb->current_dir);
 	}
 
 	bool set_cwd(std::string path, int pid) {
-		PCB* pcb = current_thread_pcb;
-		if (pid >= 0) pcb = table[pid];
-		if (pcb == nullptr) 
-			return false;
+		PCB* pcb = nullptr;
+		if (pid == 0) pcb = current_thread_pcb;
+		if (pid > 0 && pid < PROCESS_TABLE_SIZE) pcb = table[pid];
+		if (pcb == nullptr) return false;
 
 		FileSystem::Directory* dir;
 		FileSystem::File* file;
@@ -122,7 +123,7 @@ namespace Process
 	}
 
 	int get_free_spot_in_TT() {
-		for (int i = 0; i < PROCESS_TABLE_SIZE; i++) {
+		for (int i = 1; i < PROCESS_TABLE_SIZE; i++) {
 			if (table[i] == nullptr) {
 				return i;
 			}

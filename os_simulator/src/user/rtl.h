@@ -50,7 +50,7 @@ void Set_Std_Handle(DWORD n_handle, THandle handle);
 /// </summary>
 /// <param name="pid">PID of desired process; -1 for current process.</param>
 /// <returns>Path.</returns>
-std::string Get_Cwd(int pid = -1);
+std::string Get_Cwd(int pid = 0);
 
 /// <summary>
 /// Sets current working directory.
@@ -58,7 +58,7 @@ std::string Get_Cwd(int pid = -1);
 /// <param name="path">Path.</param>
 /// <param name="pid">PID of desired process; -1 for current process.</param>
 /// <returns>Success.</returns>
-bool Set_Cwd(std::string path, int pid = -1);
+bool Set_Cwd(std::string path, int pid = 0);
 
 
 // =================================== IO ===================================

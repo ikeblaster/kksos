@@ -21,6 +21,9 @@ std::unique_ptr<const char[]> vmgetline(const THandle file_handle, size_t* read)
 	if (read != nullptr)
 		*read = length;
 
+	if (file_handle == nullptr)
+		return nullptr;
+
 	while (true) {
 		Read_File(file_handle, (const void **) &chrp, 1, chrread);
 		if (chrread <= 0 && length == 0)

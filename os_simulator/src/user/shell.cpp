@@ -92,6 +92,7 @@ size_t __stdcall shell(const CONTEXT &regs)
 					}
 					else if (p.commandList.front().redirectAStdout.length() > 0) { //pokud append do souboru
 						hstdout = Create_File(p.commandList.front().redirectStdout.c_str(), OPEN_EXISTING); //vystup do souboru
+						Seek_File(hstdout, std::ios_base::end, 0); // posunout se na konec souboru // TODO: predelat jako flag FILE_APPEND?
 					}
 					else if (p.commandList.size() == 1) { //posledni prikaz muze mit vystup do console
 						hstdout = Get_Std_Handle(IHANDLE_STDOUT);
@@ -122,6 +123,7 @@ size_t __stdcall shell(const CONTEXT &regs)
 		}
 	}
 	
+	/*
 	THandle pRead1, pWrite1;
 	THandle pRead2, pWrite2;
 
@@ -144,7 +146,7 @@ size_t __stdcall shell(const CONTEXT &regs)
 	Set_Cwd("podslozka");
 	vmprintf("%s>\n", Get_Cwd().c_str());
 	Set_Cwd("\\");
-	vmprintf("%s>\n", Get_Cwd().c_str());
+	vmprintf("%s>\n", Get_Cwd().c_str());*/
 
 
 

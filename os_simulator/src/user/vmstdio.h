@@ -16,6 +16,8 @@ void vmprintf(const char* format, Args... args)
 template <typename... Args>
 void vmprintf(const THandle handle, const char* format, Args... args)
 {
+	if (handle == nullptr) return;
+
 	size_t length = std::snprintf(nullptr, 0, format, args...);
 
 	auto buffer = std::make_unique<char[]>(length + 1);

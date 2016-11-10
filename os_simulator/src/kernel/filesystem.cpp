@@ -40,7 +40,7 @@ namespace FileSystem {
 		this->data = data;
 	}
 
-	File* File::createSpecialFile(std::string name)
+	File* File::createSpecialFile(std::string name) // TODO: smazat? Nikde se nepouziva
 	{
 		File* file = new File();
 		file->name = name;

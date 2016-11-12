@@ -5,21 +5,21 @@
 namespace Process
 {
 	std::mutex table_mtx;
-	PCB* table[PROCESS_TABLE_SIZE] = { nullptr }; // TODO: mutex, cv
+	PCB* table[PROCESS_TABLE_SIZE] = { nullptr };
 	thread_local PCB* current_thread_pcb = nullptr;
 
 	void program_thread(TEntryPoint program, PCB* pcb) {
 
 		current_thread_pcb = pcb;
 
-		CONTEXT regs; // ted je regs jenom nejak vyplneno kvuli prekladaci
+		CONTEXT regs;
 		regs.Rcx = (decltype(regs.Rcx)) &pcb->psi;
-		program(regs);
+		program(regs); // TODO: nepredavat 
 
 		notify_handles_exit(pcb->psi);
 	}
 
-	int create_process(PROCESSSTARTUPINFO psi) {
+	pid_t create_process(PROCESSSTARTUPINFO psi) {
 		TEntryPoint program = (TEntryPoint) GetProcAddress(User_Programs, psi.process_name.c_str());
 
 		if (!program)
@@ -27,7 +27,7 @@ namespace Process
 
 		std::unique_lock<std::mutex> lck(table_mtx);
 
-		int pid = get_free_spot_in_TT();
+		pid_t pid = get_free_spot_in_TT();
 
 		if (pid > 0) {
 			PCB* pcb = new PCB();
@@ -56,7 +56,7 @@ namespace Process
 		return pid;
 	}
 
-	bool join_process(int pid) {
+	bool join_process(pid_t pid) {
 		if (pid <= 0 || pid >= PROCESS_TABLE_SIZE || table[pid] == nullptr)
 			return false;
 
@@ -89,7 +89,7 @@ namespace Process
 		}
 	}
 
-	std::string get_cwd(int pid) {
+	std::string get_cwd(pid_t pid) {
 		PCB* pcb = nullptr;
 		if (pid == 0) pcb = current_thread_pcb;
 		if (pid > 0 && pid < PROCESS_TABLE_SIZE) pcb = table[pid];
@@ -98,7 +98,7 @@ namespace Process
 		return FileSystem::Path::generate(pcb->current_dir);
 	}
 
-	bool set_cwd(std::string path, int pid) {
+	bool set_cwd(std::string path, pid_t pid) {
 		PCB* pcb = nullptr;
 		if (pid == 0) pcb = current_thread_pcb;
 		if (pid > 0 && pid < PROCESS_TABLE_SIZE) pcb = table[pid];
@@ -122,7 +122,7 @@ namespace Process
 		((FileSystem::IHandle*) psi.p_stderr)->close();
 	}
 
-	int get_free_spot_in_TT() {
+	pid_t get_free_spot_in_TT() {
 		for (int i = 1; i < PROCESS_TABLE_SIZE; i++) {
 			if (table[i] == nullptr) {
 				return i;

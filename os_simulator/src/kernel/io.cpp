@@ -7,7 +7,7 @@ void HandleIO(CONTEXT &regs) {
 	switch (Get_AL((__int16) regs.Rax)) {
 		case scCreateFile:
 			{
-				IHandle* fh = FileHandle::CreateHandle(Process::current_thread_pcb->current_dir, (char*) regs.Rdx, (size_t) regs.Rcx);
+				IHandle* fh = FileHandle::CreateHandle(Process::current_thread_pcb->current_dir, (char*) regs.Rdx, (flags_t) regs.Rcx);
 				regs.Rax = (decltype(regs.Rax)) fh;
 
 				// regs.Rax = (decltype(regs.Rax))CreateFileA((char*)regs.Rdx, GENERIC_READ | GENERIC_WRITE, (DWORD)regs.Rcx, 0, OPEN_EXISTING, 0, 0);

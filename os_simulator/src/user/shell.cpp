@@ -4,7 +4,6 @@
 size_t __stdcall shell(const CONTEXT &regs)
 {
 	PROCESSSTARTUPINFO psi = *(PROCESSSTARTUPINFO*)regs.Rcx;
-	THandle input = psi.p_stdin; //stdin for shell
 
 	{
 		size_t written;
@@ -23,12 +22,19 @@ size_t __stdcall shell(const CONTEXT &regs)
 		Close_File(testtxt);
 	}
 
+
 	/* Shell loop */
 	while (true) {
-		vmprintf("%s>", Get_Cwd().c_str());
+		vmprintf("%s>", Get_Cwd().c_str()); 
 
-		auto line = vmgetline(input);
-		if (line == nullptr) break;	
+		std::unique_ptr<const char[]> line;
+		while(true) {
+			line = vmgetline();
+			if (line == nullptr) break;
+			if (strlen(line.get()) != 0) break; // fix problemu: 1) spustit wc 2) napsat test, ctrl-z, enter
+		}
+
+		if(line == nullptr) break;
 
 		parser p;
 		/* If is parsing ok */

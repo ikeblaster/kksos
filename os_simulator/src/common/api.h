@@ -3,15 +3,14 @@
 #include <string>
 #include <vector>
 
-typedef unsigned __int64 flags_t;
-
 // Filesystem constants
 #define OPEN_EXISTING 3
 #define IHANDLE_STDIN 1000
 #define IHANDLE_STDOUT 1001
 #define IHANDLE_STDERR 1002
 
-
+typedef DWORD pid_t;
+typedef DWORD flags_t;
 typedef HANDLE THandle;
 
 typedef size_t (__stdcall *TEntryPoint)(const CONTEXT syscall); // vstupni bod uzivatelskeho programu
@@ -19,7 +18,7 @@ typedef void (__stdcall *TSysCall)(CONTEXT &context); // prototyp funkce, ktera 
 
 typedef struct PROCESSSTARTUPINFO
 {
-	std::string process_name; // ?
+	std::string process_name; 
 	std::vector<char> params;
 	std::vector<std::string> data;
 

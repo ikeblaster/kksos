@@ -1,6 +1,8 @@
 #include "Parser.h"
 
 static std::unordered_set<std::string> Commands{ "echo", "cd", "dir", "md", "rd", "type", "wc", "sort", "ps", "rgen", "freq", "shell" }; /* Allowed commands */
+static std::unordered_set<char> specialSymbols{ ' ', '<', '>', '|', '/', '.' }; /* Symbols with special meaning */
+char* errMsg = nullptr;
 
 void parser::saveData()
 {
@@ -34,26 +36,38 @@ void parser::saveData()
 
 bool parser::parse(std::string input)
 {
-	/* processes input string char by char */
-	for (char& c : input) {
+	last = input.length() - 1;
+
+	/* processes input string char by char */		
+	for (i = 0; i < input.length(); i++) {
+		char& c = input.at(i); //current char				
+
 		/* Firstly must be placed allowed command */
-		if (!commandOK) {
-			if (c != ' ') {
-				temp += c;
-			}
-			/* If command is allowed */
-			if (Commands.count(temp)) {
-				commandOK = true;
-				pipe = false;
-				commandList.push(Command()); /* add to vector new command */
-				commandList.back().nazev = temp; /* add command name to struct */
-				temp = "";
+		if (!commandOK) {			
+			if (i == last || specialSymbols.count(c)) {
+				if (i == last) {	
+					if(c != ' ')
+						temp += c;
+				}
+				/* If command is allowed */
+				if (Commands.count(temp)) {					
+					commandOK = true;
+					pipe = false;
+					commandList.push(Command()); /* add to vector new command */
+					commandList.back().name = temp; /* add command name to struct */
+					temp = "";
+					if(c != ' ' && i != last)
+						i -= 1; //if char c is special symbol, we need use it in next step again					
+				}
+				else {
+					if (temp.length() > 4) {												
+						std::cout << "Command " << temp << " is not allowed!" << std::endl;
+						return false;
+					}
+				}				
 			}
 			else {
-				if (temp.length() > 4) {
-					std::cout << "This command is not allowed!" << std::endl;
-					return false;
-				}
+				temp += c;
 			}
 		}
 		/* Processing data for current command */
@@ -81,35 +95,35 @@ bool parser::parse(std::string input)
 			/* Processing current character */
 			else {
 				switch (c) {
-					/* Saves data and prepares values for new command */
+				/* Saves data and prepares values for new command */
 				case PIPE:
 					saveData(); /* Save data for command */
-								/* vaules for new command */
+					/* vaules for new command */
 					commandOK = false;
 					pipe = true;
 					temp = "";
 					break;
-					/* Start of param */
+				/* Start of param */
 				case PARAMPREFIX:
 					saveData(); /* Save data for command */
 					getParam = true;
 					break;
-					/* Start of stdin */
+				/* Start of stdin */
 				case STDIN:
 					saveData(); /* Save data for command */
 					getStdin = true;
 					break;
-					/* Start of stdout */
+				/* Start of stdout */
 				case STDOUT:
 					saveData(); /* Save data for command */
 					out = true;
 					break;
-					/* Start of line in quotes */
+				/* Start of line in quotes */
 				case QUOTE:
 					openQuote = true;
 					temp = "";
 					break;
-					/* For space */
+				/* For space */
 				case SPACE:
 					saveData(); /* Save data for command */
 					break;
@@ -132,8 +146,7 @@ bool parser::parse(std::string input)
 				}
 			}
 		}
-	}
-	/* Whole input was processed */
+	} /* Whole input was processed */
 	
 	/* Check if pipe has follower */
 	if (!commandOK && pipe) {
@@ -147,7 +160,7 @@ bool parser::parse(std::string input)
 	/* Input isn't valid command */
 	else {
 		if(temp != "") {
-			std::cout << "This command is not allowed!" << std::endl;
+			std::cout << "Command " << temp << " is not allowed!" << std::endl;
 		}
 		return false;
 	}

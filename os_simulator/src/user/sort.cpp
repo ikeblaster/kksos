@@ -20,7 +20,7 @@ void call_from_thread(THandle handle) {
 size_t __stdcall sort(const CONTEXT &regs)
 {
 	PROCESSSTARTUPINFO psi = *(PROCESSSTARTUPINFO*) regs.Rcx;
-	THandle input = psi.p_stdin;
+	THandle input = Get_Std_Handle(IHANDLE_STDIN);
 	THandle textfile = nullptr;
 
 	if (psi.data.size() > 0) {

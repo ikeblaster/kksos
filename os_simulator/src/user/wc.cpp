@@ -10,7 +10,7 @@
 size_t __stdcall wc(const CONTEXT &regs)
 {
 	PROCESSSTARTUPINFO psi = *(PROCESSSTARTUPINFO*) regs.Rcx;
-	THandle input = psi.p_stdin;
+	THandle input = Get_Std_Handle(IHANDLE_STDIN);
 	THandle textfile = nullptr;
 
 	if (psi.data.size() > 0) {
@@ -33,19 +33,21 @@ size_t __stdcall wc(const CONTEXT &regs)
 		const char* chr = line.get();
 
 		// Skip over spaces at the beginning of the word
-		while (isspace(*chr))
+		while(isspace(*chr) && *chr != 0)
 			chr++;
 
-		for (; *chr != 0; chr++)
+		while(*chr != 0)
 		{
 			if (isspace(*chr))
 			{
 				wordcount++;
 
 				// Skip over unnecessary spaces
-				while (isspace(*chr)) 
+				while (isspace(*chr) && *chr != 0)
 					chr++;
 			}
+			else
+				chr++;
 		}
 		if(line.get()[0] != 0)
 			wordcount++;

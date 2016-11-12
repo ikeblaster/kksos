@@ -7,6 +7,7 @@ namespace FileSystem {
 
 	fpos_t ConsoleHandle::seek(const fpos_t pos, std::ios_base::seekdir way)
 	{
+		mStdInOpen = true;
 		return 0;
 	}
 

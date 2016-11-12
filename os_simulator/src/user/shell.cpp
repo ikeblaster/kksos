@@ -25,8 +25,8 @@ size_t __stdcall shell(const CONTEXT &regs)
 
 	/* Shell loop */
 	while (true) {
-<<<<<<< HEAD
-		vmprintf("%s>", Get_Cwd().c_str()); 
+
+		vmprintf("%s>", Get_Cwd().c_str());
 
 		std::unique_ptr<const char[]> line;
 		while(true) {
@@ -36,12 +36,7 @@ size_t __stdcall shell(const CONTEXT &regs)
 		}
 
 		if(line == nullptr) break;
-=======
-		vmprintf("%s>", Get_Cwd().c_str());		
 
-		auto line = vmgetline(input);		
-		if (line == nullptr) break;	
->>>>>>> origin/master
 
 		parser p;
 		/* If is parsing ok */
@@ -108,8 +103,7 @@ size_t __stdcall shell(const CONTEXT &regs)
 
 				}
 				else { /* Creating process for users programs */					
-					int process = Create_Process(p.commandList.front().name, p.commandList.front().params, p.commandList.front().data,
-						hstdin, hstdout, hstderr);
+					int process = Create_Process(p.commandList.front().name, p.commandList.front().params, p.commandList.front().data, hstdin, hstdout, hstderr);
 					processes.push_back(process); //add command into vector					
 				}
 
@@ -117,11 +111,20 @@ size_t __stdcall shell(const CONTEXT &regs)
 				commandOrder++;
 			}
 
+			// TODO: docasne, nez se najde lepsi reseni
+			while (!pipes.empty()) {
+				Close_File(pipes.back().first);
+				Close_File(pipes.back().second);
+				pipes.pop_back();
+			}
+
 			//join all processes
 			while (!processes.empty()) {
 				Join_Process(processes.back());
 				processes.pop_back();
 			}	
+
+			Seek_File(Get_Std_Handle(IHANDLE_STDIN), 0, std::ios_base::cur); // reset stdin po ctrl-z
 		}
 		else {
 			//vmprintf("Parsing failed\n");

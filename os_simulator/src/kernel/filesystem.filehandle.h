@@ -3,12 +3,12 @@
 #include "../common/api.h"
 #include "filesystem.h"
 #include "filesystem.path.h"
-#include "filesystem.ihandle.h"
+#include "filesystem.fshandle.h"
 
 
 namespace FileSystem {
 
-	class FileHandle : public IHandle {
+	class FileHandle : public FSHandle {
 		private:
 		File* file;
 		std::stringstream ss;

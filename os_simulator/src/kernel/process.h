@@ -1,39 +1,48 @@
 #pragma once
 #include <string>
+#include <map>
 #include <mutex>
 #include <thread>
 #include "..\common\api.h"
 #include "kernel.h"
 #include "filesystem.h"
-#include "filesystem.ihandle.h"
+#include "filesystem.fshandle.h"
+#include "openfiles.h"
 
 
 namespace Process {
 
-	typedef struct PCB
+	const size_t PROCESS_TABLE_SIZE = 1024;
+	const size_t FILE_DESCRIPTORS_TABLE_SIZE = 1024;
+
+	typedef struct PCB // TODO: vyzkouset jen struct PCB
 	{
 		pid_t ppid;
 		pid_t pid;
 		std::thread* thread;
 		PROCESSSTARTUPINFO psi;
 		FileSystem::Directory* current_dir;
-
-		// TODO: vector<> opened_files/handles
+		OpenFiles::OFHandle file_descriptors[FILE_DESCRIPTORS_TABLE_SIZE];
 
 	} PCB;
 
-	const size_t PROCESS_TABLE_SIZE = 1024;
 
 	extern std::mutex table_mtx;
 	extern PCB* table[];
+
 	extern thread_local PCB* current_thread_pcb;
 
 	pid_t create_process(PROCESSSTARTUPINFO psi);
 	bool join_process(pid_t pid);
-	void notify_handles_exit(PROCESSSTARTUPINFO &psi);
-	std::string get_cwd(pid_t pid = 0);
-	bool set_cwd(std::string path, pid_t pid = 0);
-	pid_t get_free_spot_in_TT();
+	std::string get_cwd();
+	bool set_cwd(std::string path);
+
+	FileSystem::FSHandle* get_handle(THandle fd);
+	bool set_handle(PCB* pcb, THandle fd, FileSystem::FSHandle* handle);
+	THandle add_handle(FileSystem::FSHandle* handle);
+	bool close_handle(THandle fd);
+
+	void free_handles();
 
 }
 

@@ -3,12 +3,16 @@
 #include <io.h> 
 #include <fcntl.h>
 #include <Windows.h> 
-#include "filesystem.ihandle.h" 
+#include "filesystem.fshandle.h" 
 
 
 namespace FileSystem {
 
-	class ConsoleHandle : public IHandle {
+	class ConsoleHandle;
+
+	extern FileSystem::ConsoleHandle* console;
+
+	class ConsoleHandle : public FSHandle {
 		private:
 		bool mStdInOpen = true;
 

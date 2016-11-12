@@ -1,6 +1,6 @@
 #pragma once
 #include <mutex>
-#include "filesystem.ihandle.h" 
+#include "filesystem.fshandle.h" 
 #include "filesystem.pipehandle.h" 
 
 
@@ -9,7 +9,7 @@ namespace FileSystem {
 	class PipeHandle;
 	enum class PIPETYPE { READABLE, WRITEABLE };
 
-	class Pipe : public IHandle {
+	class Pipe : public FSHandle {
 		private:		
 		std::mutex mtx;
 		std::condition_variable cv;

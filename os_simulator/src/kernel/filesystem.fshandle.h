@@ -1,14 +1,13 @@
 #pragma once
 #include <sstream> 
-#include "filesystem.h"
 
 
 namespace FileSystem {
 
-	class IHandle {
+	class FSHandle {
 		public:
 
-		virtual ~IHandle() {};
+		virtual ~FSHandle() {};
 		virtual void write(const void* buffer, const size_t buffer_size, size_t* written) = 0;
 		virtual fpos_t seek(const fpos_t pos, std::ios_base::seekdir way) = 0;
 		virtual fpos_t tell() = 0;

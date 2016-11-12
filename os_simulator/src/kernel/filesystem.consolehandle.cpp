@@ -3,6 +3,8 @@
 
 namespace FileSystem {
 
+	FileSystem::ConsoleHandle* console = nullptr;
+
 	fpos_t ConsoleHandle::seek(const fpos_t pos, std::ios_base::seekdir way)
 	{
 		return 0;

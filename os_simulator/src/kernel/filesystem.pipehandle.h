@@ -1,5 +1,5 @@
 #pragma once
-#include "filesystem.ihandle.h" 
+#include "filesystem.fshandle.h" 
 #include "filesystem.pipe.h" 
 
 
@@ -8,7 +8,7 @@ namespace FileSystem {
 	class Pipe;
 	enum class PIPETYPE;
 
-	class PipeHandle : public IHandle {
+	class PipeHandle : public FSHandle {
 		public:
 		
 		private:

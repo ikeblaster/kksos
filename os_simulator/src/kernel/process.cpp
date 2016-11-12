@@ -4,8 +4,9 @@
 
 namespace Process
 {
-	std::mutex table_mtx;
+	std::mutex table_mtx, handles_mtx;
 	PCB* table[PROCESS_TABLE_SIZE] = { nullptr };
+	OpenFiles::OFHandle file_descriptors[FILE_DESCRIPTORS_TABLE_SIZE] = { nullptr };
 	thread_local PCB* current_thread_pcb = nullptr;
 
 	void program_thread(TEntryPoint program, PCB* pcb) {
@@ -16,7 +17,7 @@ namespace Process
 		regs.Rcx = (decltype(regs.Rcx)) &pcb->psi;
 		program(regs); // TODO: nepredavat 
 
-		notify_handles_exit(pcb->psi);
+		free_handles();
 	}
 
 	pid_t create_process(PROCESSSTARTUPINFO psi) {
@@ -27,37 +28,56 @@ namespace Process
 
 		std::unique_lock<std::mutex> lck(table_mtx);
 
-		pid_t pid = get_free_spot_in_TT();
+		pid_t pid = -1;
+		for (int i = 0; i < PROCESS_TABLE_SIZE; i++) {
+			if (table[i] == nullptr) {
+				pid = i; // found free slot
+				break;
+			}
+		}
 
-		if (pid > 0) {
+		if (pid >= 0) {
 			PCB* pcb = new PCB();
-
 			table[pid] = pcb;
 
-			pcb->psi = psi;
 			pcb->pid = pid;
+			pcb->psi = psi;
 
 			if (current_thread_pcb != nullptr) {
-				pcb->current_dir = current_thread_pcb->current_dir;
 				pcb->ppid = current_thread_pcb->pid;
+				pcb->current_dir = current_thread_pcb->current_dir;
+
+				set_handle(pcb, (THandle) IHANDLE_STDIN, get_handle(psi.h_stdin));
+				set_handle(pcb, (THandle) IHANDLE_STDOUT, get_handle(psi.h_stdout));
+				set_handle(pcb, (THandle) IHANDLE_STDERR, get_handle(psi.h_stderr));
+ 
+				// => move file descriptors to new process except stdin/out/err (which will handle parent at it's end)
+	/*			if (psi.h_stdin != (THandle) IHANDLE_STDIN) close_handle(psi.h_stdin);
+				if (psi.h_stdout != (THandle) IHANDLE_STDOUT) close_handle(psi.h_stdout);
+				if (psi.h_stderr != (THandle) IHANDLE_STDERR) close_handle(psi.h_stderr);*/
 			}
 			else {
-				pcb->current_dir = FileSystem::fs_root;
 				pcb->ppid = -1;
+				pcb->current_dir = FileSystem::fs_root;
+
+				set_handle(pcb, (THandle) IHANDLE_STDIN, FileSystem::console);
+				set_handle(pcb, (THandle) IHANDLE_STDOUT, FileSystem::console);
+				set_handle(pcb, (THandle) IHANDLE_STDERR, FileSystem::console);
 			}
 
 			pcb->thread = new std::thread(program_thread, program, pcb);
-
 		}
-		else {
-			notify_handles_exit(psi);
+		else if(current_thread_pcb != nullptr) {
+			close_handle(psi.h_stdin);
+			close_handle(psi.h_stdout);
+			close_handle(psi.h_stderr);
 		}
 
 		return pid;
 	}
 
 	bool join_process(pid_t pid) {
-		if (pid <= 0 || pid >= PROCESS_TABLE_SIZE || table[pid] == nullptr)
+		if (pid < 0 || pid >= PROCESS_TABLE_SIZE || table[pid] == nullptr)
 			return false;
 
 		table[pid]->thread->join();
@@ -65,71 +85,97 @@ namespace Process
 		std::unique_lock<std::mutex> lck(table_mtx);
 
 		delete table[pid]->thread;
-		delete table[pid];
+		delete table[pid]; // delete pcb
 
 		table[pid] = nullptr;
 
 		return true;
 	}
 
-	THandle get_std_handle(DWORD nStdHandle) {
-		switch (nStdHandle) {
-			case IHANDLE_STDIN: return Process::current_thread_pcb->psi.p_stdin;
-			case IHANDLE_STDOUT: return Process::current_thread_pcb->psi.p_stdout;
-			case IHANDLE_STDERR: return Process::current_thread_pcb->psi.p_stderr;
-		}
-		return nullptr;
+	THandle get_std_handle(THandle nStdHandle) {
+		return nStdHandle;
 	}
 
 	void set_std_handle(DWORD nStdHandle, THandle handle) {
-		switch (nStdHandle) {
-			case IHANDLE_STDIN: Process::current_thread_pcb->psi.p_stdin = handle;
-			case IHANDLE_STDOUT: Process::current_thread_pcb->psi.p_stdout = handle;
-			case IHANDLE_STDERR: Process::current_thread_pcb->psi.p_stderr = handle;
-		}
+		// TODO: delete
 	}
 
-	std::string get_cwd(pid_t pid) {
-		PCB* pcb = nullptr;
-		if (pid == 0) pcb = current_thread_pcb;
-		if (pid > 0 && pid < PROCESS_TABLE_SIZE) pcb = table[pid];
-		if (pcb == nullptr) return nullptr;
-
-		return FileSystem::Path::generate(pcb->current_dir);
+	std::string get_cwd() {
+		return FileSystem::Path::generate(current_thread_pcb->current_dir); // TODO: vracet pres char** parameter
 	}
 
-	bool set_cwd(std::string path, pid_t pid) {
-		PCB* pcb = nullptr;
-		if (pid == 0) pcb = current_thread_pcb;
-		if (pid > 0 && pid < PROCESS_TABLE_SIZE) pcb = table[pid];
-		if (pcb == nullptr) return false;
-
+	bool set_cwd(std::string path) {
 		FileSystem::Directory* dir;
 		FileSystem::File* file;
 
-		auto res = FileSystem::Path::parse(pcb->current_dir, path, &dir, &file);
-		if (res != FileSystem::RESULT::OK) 
+		auto res = FileSystem::Path::parse(current_thread_pcb->current_dir, path, &dir, &file);
+		if (res != FileSystem::RESULT::OK)
 			return false;
-		
-		pcb->current_dir = dir;
 
+		current_thread_pcb->current_dir = dir;
 		return true;
 	}
 
-	void notify_handles_exit(PROCESSSTARTUPINFO &psi) {
-		((FileSystem::IHandle*) psi.p_stdout)->close();
-		((FileSystem::IHandle*) psi.p_stdin)->close();
-		((FileSystem::IHandle*) psi.p_stderr)->close();
+	FileSystem::FSHandle* get_handle(THandle fd) {
+		std::unique_lock<std::mutex> lck(handles_mtx);
+
+		if (fd < 0 || (intptr_t) fd > FILE_DESCRIPTORS_TABLE_SIZE) 
+			return nullptr;
+
+		OpenFiles::OFHandle of = current_thread_pcb->file_descriptors[(intptr_t) fd];
+		return OpenFiles::GetFSHandle(of);
 	}
 
-	pid_t get_free_spot_in_TT() {
-		for (int i = 1; i < PROCESS_TABLE_SIZE; i++) {
-			if (table[i] == nullptr) {
-				return i;
+
+	bool set_handle(PCB* pcb, THandle fd, FileSystem::FSHandle* handle) {
+		std::unique_lock<std::mutex> lck(handles_mtx);
+
+		auto of = OpenFiles::CreateHandle(handle);
+		if (of == nullptr) return false;
+		pcb->file_descriptors[(intptr_t) fd] = of;
+		return true;
+	}
+
+	THandle add_handle(FileSystem::FSHandle* handle) {
+		std::unique_lock<std::mutex> lck(handles_mtx);
+
+		for (intptr_t i = 0; i < FILE_DESCRIPTORS_TABLE_SIZE; i++) {
+			if (current_thread_pcb->file_descriptors[i] == nullptr) { // found free slot
+
+				auto of = OpenFiles::CreateHandle(handle);
+				if (of == nullptr)
+					break;
+
+				current_thread_pcb->file_descriptors[i] = of;
+
+				return (THandle) i;
 			}
 		}
-		return -1; // no free slot in task table
+		return (THandle) -1;
 	}
+
+	bool close_handle(THandle fd) {
+		std::unique_lock<std::mutex> lck(handles_mtx);
+
+		OpenFiles::OFHandle of = current_thread_pcb->file_descriptors[(intptr_t) fd];
+		current_thread_pcb->file_descriptors[(intptr_t) fd] = nullptr;
+
+		return OpenFiles::CloseHandle(of);
+	}
+
+	void free_handles() {
+		std::unique_lock<std::mutex> lck(handles_mtx);
+
+		for (intptr_t i = 0; i < FILE_DESCRIPTORS_TABLE_SIZE; i++) {
+			if (current_thread_pcb->file_descriptors[i] != nullptr) {
+
+				OpenFiles::CloseHandle(current_thread_pcb->file_descriptors[i]);
+				current_thread_pcb->file_descriptors[i] = nullptr;
+
+			}
+		}
+	}
+
 }
 
 
@@ -146,7 +192,7 @@ void HandleProcess(CONTEXT &regs) {
 			break;
 
 		case scGetStdHandle:
-			regs.Rax = (decltype(regs.Rax)) Process::get_std_handle((DWORD) regs.Rdx);
+			regs.Rax = (decltype(regs.Rax)) Process::get_std_handle((THandle) regs.Rdx);
 			break;
 
 		case scSetStdHandle:
@@ -154,11 +200,11 @@ void HandleProcess(CONTEXT &regs) {
 			break;
 
 		case scGetCwd:
-			regs.Rax = (decltype(regs.Rax)) new std::string(Process::get_cwd((int) regs.Rdx)); // must be on heap
+			regs.Rax = (decltype(regs.Rax)) new std::string(Process::get_cwd());
 			break;
 
 		case scSetCwd:
-			regs.Rax = (decltype(regs.Rax)) Process::set_cwd(*(std::string*) regs.Rcx, (int) regs.Rdx);
+			regs.Rax = (decltype(regs.Rax)) Process::set_cwd(*(std::string*) regs.Rcx);
 			break;
 
 	}

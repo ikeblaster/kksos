@@ -37,9 +37,9 @@ int Create_Process(std::string process_name, std::vector<char> params, std::vect
 	psi.process_name = process_name;
 	psi.params = params;
 	psi.data = data;
-	psi.p_stdin = hstdin;
-	psi.p_stdout = hstdout;
-	psi.p_stderr = hstderr;
+	psi.h_stdin = hstdin;
+	psi.h_stdout = hstdout;
+	psi.h_stderr = hstderr;
 
 	regs.Rcx = (decltype(regs.Rcx)) &psi;
 

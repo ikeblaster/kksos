@@ -5,9 +5,10 @@
 
 // Filesystem constants
 #define OPEN_EXISTING 3
-#define IHANDLE_STDIN 1000
-#define IHANDLE_STDOUT 1001
-#define IHANDLE_STDERR 1002
+
+#define IHANDLE_STDIN 0
+#define IHANDLE_STDOUT 1
+#define IHANDLE_STDERR 2
 
 typedef DWORD pid_t;
 typedef DWORD flags_t;
@@ -22,9 +23,9 @@ typedef struct PROCESSSTARTUPINFO
 	std::vector<char> params;
 	std::vector<std::string> data;
 
-	THandle p_stdin;
-	THandle p_stdout;
-	THandle p_stderr;
+	THandle h_stdin;
+	THandle h_stdout;
+	THandle h_stderr;
 
 } PROCESSSTARTUPINFO;
 

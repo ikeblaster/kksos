@@ -25,9 +25,9 @@ size_t __stdcall shell(const CONTEXT &regs)
 
 	/* Shell loop */
 	while (true) {
-		vmprintf("%s>", Get_Cwd().c_str());
+		vmprintf("%s>", Get_Cwd().c_str());		
 
-		auto line = vmgetline(input);
+		auto line = vmgetline(input);		
 		if (line == nullptr) break;	
 
 		parser p;
@@ -47,66 +47,58 @@ size_t __stdcall shell(const CONTEXT &regs)
 			}
 			
 			/* Processes whole input command */
-			while (p.commandList.size() > 0) {
+			while (p.commandList.size() > 0) {				
 				THandle hstdin = nullptr;
 				THandle hstdout = nullptr;
 				THandle hstderr = Get_Std_Handle(IHANDLE_STDERR);
 
-				// If is only one command
-				if (commandOrder == 0 && p.commandList.size() == 1) {
-					// Sets up THandle for stdin
-					if (p.commandList.front().redirectStdin.length() > 0) {
-						hstdin = Create_File(p.commandList.front().redirectStdin.c_str(), OPEN_EXISTING); //vstup ze souboru
-					}
-					else {
-						hstdin = Get_Std_Handle(IHANDLE_STDIN); //vstup z konzole
-					}
-
-					// Sets up THandle for stdout
-					if (p.commandList.front().redirectStdout.length() > 0) {
-						hstdout = Create_File(p.commandList.front().redirectStdout.c_str(), 0); //vystup do souboru
-					}
-					else if (p.commandList.front().redirectAStdout.length() > 0) { //pokud append do souboru
-						hstdout = Create_File(p.commandList.front().redirectStdout.c_str(), OPEN_EXISTING); //vystup do souboru
-					}
-					else {
-						hstdout = Get_Std_Handle(IHANDLE_STDOUT); //vystup do konzole
-					}
+				/* Sets up Handler for stdin */
+				if (p.commandList.front().redirectStdin.length() > 0) { //stdin from file
+					hstdin = Create_File(p.commandList.front().redirectStdin.c_str(), OPEN_EXISTING); 
+					if(commandOrder != 0)
+						Close_File(pipes.at(commandOrder - 1).first); //close read end of pipe
 				}
-				// For more than one command
-				else {
-					// Sets Handler for stdin
-					if (p.commandList.front().redirectStdin.length() > 0) { //pokud ze souboru
-						hstdin = Create_File(p.commandList.front().redirectStdin.c_str(), OPEN_EXISTING); //vstup ze souboru
-					}
-					else if (commandOrder == 0) { //prvni prikaz muze mit vstup z console
-						hstdin = Get_Std_Handle(IHANDLE_STDIN);
-					}
-					else { //jinak pipe
-						hstdin = pipes.at(commandOrder - 1).first;
-					}
-
-					// Sets Handler for stdout
-					if (p.commandList.front().redirectStdout.length() > 0) { //pokud do souboru
-						hstdout = Create_File(p.commandList.front().redirectStdout.c_str(), 0); //vystup do souboru
-					}
-					else if (p.commandList.front().redirectAStdout.length() > 0) { //pokud append do souboru
-						hstdout = Create_File(p.commandList.front().redirectStdout.c_str(), OPEN_EXISTING); //vystup do souboru
-						Seek_File(hstdout, std::ios_base::end, 0); // posunout se na konec souboru // TODO: predelat jako flag FILE_APPEND?
-					}
-					else if (p.commandList.size() == 1) { //posledni prikaz muze mit vystup do console
-						hstdout = Get_Std_Handle(IHANDLE_STDOUT);
-					}
-					else { //jinak pipe
-						hstdout = pipes.at(commandOrder).second;
-					}
+				else if (commandOrder == 0) { //stdin from console (only for first command)
+					hstdin = Get_Std_Handle(IHANDLE_STDIN);					
+				}
+				else { //stdin from pipe
+					hstdin = pipes.at(commandOrder - 1).first;
 				}
 
-				// Create process
-				int process = Create_Process(p.commandList.front().nazev, p.commandList.front().params, p.commandList.front().data,
-					hstdin, hstdout, hstderr);
+				/* Sets up Handler for stdout */
+				if (p.commandList.front().redirectStdout.length() > 0) { //stdout into file
+					hstdout = Create_File(p.commandList.front().redirectStdout.c_str(), 0);
+					if(p.commandList.size() > 1)
+						Close_File(pipes.at(commandOrder).second); //close write end of pipe
+				}
+				else if (p.commandList.front().redirectAStdout.length() > 0) { //append stdout into file
+					hstdout = Create_File(p.commandList.front().redirectAStdout.c_str(), OPEN_EXISTING);
+					Seek_File(hstdout, std::ios_base::end, 0); //move to end of file // TODO: predelat jako flag FILE_APPEND?
+					if (p.commandList.size() > 1)
+						Close_File(pipes.at(commandOrder).second); //close write end of pipe
+				}
+				else if (p.commandList.size() == 1) { //stdout to console (only for last command)
+					hstdout = Get_Std_Handle(IHANDLE_STDOUT);
+				}
+				else { //stdout to pipe
+					hstdout = pipes.at(commandOrder).second;
+				}
 
-				processes.push_back(process); //add command to vector
+				/* Prepare commands to launch */
+				if (p.commandList.front().name == "cd") { /* Launch cd command */
+					
+				}				
+				else if (p.commandList.front().name == "rd") { /* Launch rd command */
+
+				}				
+				else if (p.commandList.front().name == "md") { /* Launch md command */
+
+				}
+				else { /* Creating process for users programs */					
+					int process = Create_Process(p.commandList.front().name, p.commandList.front().params, p.commandList.front().data,
+						hstdin, hstdout, hstderr);
+					processes.push_back(process); //add command into vector					
+				}
 
 				p.commandList.pop();
 				commandOrder++;

@@ -8,7 +8,7 @@
 /// Structure for storing one command
 /// </summary>
 struct Command {
-	std::string nazev;
+	std::string name;
 	std::vector<char> params;
 	std::string redirectStdin;
 	std::string redirectStdout;
@@ -44,9 +44,9 @@ private:
 	static const char QUOTE = '"'; /* start of string */
 	static const char SPACE = ' '; /* space */
 
-								   /* Temp bools */
+	/* Temp bools */
 	bool commandOK = false; /* Command is allowed */
-	bool pipe = false; /*  */
+	bool pipe = false; /* If pipe hasn't followed command */
 	bool getParam = false; /* Next char is param */
 	bool out = false; /* Temp Astdout or stdout */
 	bool getStdin = false; /* Next is stdin */
@@ -54,4 +54,6 @@ private:
 	bool getStdout = false; /* Next is stdout */
 	bool openQuote = false; /* Is processing line in quote */
 	std::string temp = ""; /* Actual processing string */
+	int i; /* Actual position in input */
+	size_t last; /* Position of last char in input */
 };

@@ -37,7 +37,7 @@ namespace FileSystem {
 	{
 		this->file = file;
 		
-		if((flags & OPEN_EXISTING) == OPEN_EXISTING) 
+		if((flags & OPEN_EXISTING) == OPEN_EXISTING || (flags & OPEN_OR_CREATE) == OPEN_OR_CREATE)
 			this->ss.str(this->file->getData());
 
 		if((flags & FILE_APPEND) == FILE_APPEND) 

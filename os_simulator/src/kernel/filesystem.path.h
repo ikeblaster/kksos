@@ -2,7 +2,6 @@
 #include <sstream> 
 #include "filesystem.h"
 
-#define OPEN_EXISTING 3
 
 namespace FileSystem {
 

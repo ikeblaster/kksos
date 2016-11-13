@@ -25,18 +25,10 @@ size_t __stdcall shell(const CONTEXT &regs)
 
 	/* Shell loop */
 	while (true) {
-
 		vmprintf("%s>", Get_Cwd().c_str());
 
-		std::unique_ptr<const char[]> line;
-		while(true) {
-			line = vmgetline();
-			if (line == nullptr) break;
-			if (strlen(line.get()) != 0) break; // fix problemu: 1) spustit wc 2) napsat test, ctrl-z, enter
-		}
-
+		auto line = vmgetline();
 		if(line == nullptr) break;
-
 
 		parser p;
 		/* If is parsing ok */
@@ -58,7 +50,7 @@ size_t __stdcall shell(const CONTEXT &regs)
 			while (p.commandList.size() > 0) {				
 				THandle hstdin = nullptr;
 				THandle hstdout = nullptr;
-				THandle hstderr = Get_Std_Handle(IHANDLE_STDERR);
+				THandle hstderr = Get_Std_Handle(THANDLE_STDERR);
 
 				/* Sets up Handler for stdin */
 				if (p.commandList.front().redirectStdin.length() > 0) { //stdin from file
@@ -67,7 +59,7 @@ size_t __stdcall shell(const CONTEXT &regs)
 						Close_File(pipes.at(commandOrder - 1).first); //close read end of pipe
 				}
 				else if (commandOrder == 0) { //stdin from console (only for first command)
-					hstdin = Get_Std_Handle(IHANDLE_STDIN);					
+					hstdin = Get_Std_Handle(THANDLE_STDIN);					
 				}
 				else { //stdin from pipe
 					hstdin = pipes.at(commandOrder - 1).first;
@@ -86,7 +78,7 @@ size_t __stdcall shell(const CONTEXT &regs)
 						Close_File(pipes.at(commandOrder).second); //close write end of pipe
 				}
 				else if (p.commandList.size() == 1) { //stdout to console (only for last command)
-					hstdout = Get_Std_Handle(IHANDLE_STDOUT);
+					hstdout = Get_Std_Handle(THANDLE_STDOUT);
 				}
 				else { //stdout to pipe
 					hstdout = pipes.at(commandOrder).second;
@@ -124,12 +116,13 @@ size_t __stdcall shell(const CONTEXT &regs)
 				processes.pop_back();
 			}	
 
-			Seek_File(Get_Std_Handle(IHANDLE_STDIN), 0, std::ios_base::cur); // reset stdin po ctrl-z
+			Seek_File(Get_Std_Handle(THANDLE_STDIN), 0, std::ios_base::end); // reset stdin buffer
 		}
 		else {
 			//vmprintf("Parsing failed\n");
 		}
 	}
+	
 	
 	/*
 	THandle pRead1, pWrite1;
@@ -138,9 +131,14 @@ size_t __stdcall shell(const CONTEXT &regs)
 	Create_Pipe(pRead1, pWrite1);
 	Create_Pipe(pRead2, pWrite2);
 
-	int p1 = Create_Process("sort", {}, { "test.txt" }, Get_Std_Handle(IHANDLE_STDIN), pWrite1, Get_Std_Handle(IHANDLE_STDERR));
-	int p2 = Create_Process("wc", {}, {}, pRead1, pWrite2, Get_Std_Handle(IHANDLE_STDERR));
-	int p3 = Create_Process("sort", {}, {}, pRead2, Get_Std_Handle(IHANDLE_STDOUT), Get_Std_Handle(IHANDLE_STDERR));
+	int p1 = Create_Process("sort", {}, { "test.txt" }, Get_Std_Handle(ITHANDLE_STDIN), pWrite1, Get_Std_Handle(ITHANDLE_STDERR));
+	int p2 = Create_Process("wc", {}, {}, pRead1, pWrite2, Get_Std_Handle(ITHANDLE_STDERR));
+	int p3 = Create_Process("sort", {}, {}, pRead2, Get_Std_Handle(ITHANDLE_STDOUT), Get_Std_Handle(ITHANDLE_STDERR));
+
+	Close_File(pRead1);
+	Close_File(pRead2);
+	Close_File(pWrite1);
+	Close_File(pWrite2);
 
 	Join_Process(p1);
 	Join_Process(p2);
@@ -154,8 +152,8 @@ size_t __stdcall shell(const CONTEXT &regs)
 	Set_Cwd("podslozka");
 	vmprintf("%s>\n", Get_Cwd().c_str());
 	Set_Cwd("\\");
-	vmprintf("%s>\n", Get_Cwd().c_str());*/
-
+	vmprintf("%s>\n", Get_Cwd().c_str());
+	*/
 
 
 	//THandle conout = Create_File("STDOUT", FILE_SHARE_WRITE); // nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN

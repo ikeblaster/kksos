@@ -5,7 +5,7 @@ thread_local THandle hstdout = nullptr;
 
 std::unique_ptr<const char[]> vmgetline(size_t* pread)
 {
-	THandle console = Get_Std_Handle(IHANDLE_STDIN);
+	THandle console = Get_Std_Handle(THANDLE_STDIN);
 	auto ret = vmgetline(console, pread);
 	return std::move(ret);
 }

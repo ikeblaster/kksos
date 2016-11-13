@@ -13,6 +13,7 @@ namespace FileSystem {
 		virtual fpos_t tell() = 0;
 		virtual void read(char** buffer, const size_t buffer_size, size_t* read) = 0;
 		virtual void close() = 0;
+		virtual intptr_t getHash() = 0;
 	};
 		
 }

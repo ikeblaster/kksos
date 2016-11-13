@@ -45,5 +45,10 @@ namespace FileSystem {
 		delete this;
 	}
 
+	intptr_t PipeHandle::getHash()
+	{
+		return (intptr_t) this;
+	}
+
 
 }

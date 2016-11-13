@@ -5,9 +5,25 @@ namespace FileSystem {
 
 	FileSystem::ConsoleHandle* console = nullptr;
 
+	ConsoleHandle::ConsoleHandle()
+	{
+		_setmode(_fileno(stdin), _O_BINARY);
+		mStdIn = GetStdHandle(STD_INPUT_HANDLE);
+		mStdInOpen = true;
+	}
+
 	fpos_t ConsoleHandle::seek(const fpos_t pos, std::ios_base::seekdir way)
 	{
+		// TODO: je tohle ok? Nedela to nekde problemy? Jak funguje 'boot.exe < prikazy'?
+		// discard everything till newline; because FlushConsoleInputBuffer doesn't do its job
+		if (!mStdInOpen) {
+			char buffer[1];
+			while (buffer[0] != '\n')
+				ReadFile(mStdIn, buffer, 1, NULL, NULL); 
+		}
+		
 		mStdInOpen = true;
+
 		return 0;
 	}
 
@@ -27,8 +43,6 @@ namespace FileSystem {
 
 	void ConsoleHandle::read(char** buffer, const size_t buffer_size, size_t* pread)
 	{
-		_setmode(_fileno(stdin), _O_BINARY);
-		HANDLE mStdIn = GetStdHandle(STD_INPUT_HANDLE);
 		bool mRedirectedStdIn = mStdIn != (HANDLE) 3;
 
 
@@ -69,6 +83,11 @@ namespace FileSystem {
 	{
 		mStdInOpen = true;
 		// don't commit suicide
+	}
+
+	intptr_t ConsoleHandle::getHash() 
+	{
+		return (intptr_t) this;
 	}
 
 }

@@ -47,22 +47,17 @@ namespace Process
 				pcb->ppid = current_thread_pcb->pid;
 				pcb->current_dir = current_thread_pcb->current_dir;
 
-				set_handle(pcb, (THandle) IHANDLE_STDIN, get_handle(psi.h_stdin));
-				set_handle(pcb, (THandle) IHANDLE_STDOUT, get_handle(psi.h_stdout));
-				set_handle(pcb, (THandle) IHANDLE_STDERR, get_handle(psi.h_stderr));
- 
-				// => move file descriptors to new process except stdin/out/err (which will handle parent at it's end)
-	/*			if (psi.h_stdin != (THandle) IHANDLE_STDIN) close_handle(psi.h_stdin);
-				if (psi.h_stdout != (THandle) IHANDLE_STDOUT) close_handle(psi.h_stdout);
-				if (psi.h_stderr != (THandle) IHANDLE_STDERR) close_handle(psi.h_stderr);*/
+				set_handle(pcb, (THandle) THANDLE_STDIN, get_handle(psi.h_stdin));
+				set_handle(pcb, (THandle) THANDLE_STDOUT, get_handle(psi.h_stdout));
+				set_handle(pcb, (THandle) THANDLE_STDERR, get_handle(psi.h_stderr));
 			}
 			else {
 				pcb->ppid = -1;
 				pcb->current_dir = FileSystem::fs_root;
 
-				set_handle(pcb, (THandle) IHANDLE_STDIN, FileSystem::console);
-				set_handle(pcb, (THandle) IHANDLE_STDOUT, FileSystem::console);
-				set_handle(pcb, (THandle) IHANDLE_STDERR, FileSystem::console);
+				set_handle(pcb, (THandle) THANDLE_STDIN, FileSystem::console);
+				set_handle(pcb, (THandle) THANDLE_STDOUT, FileSystem::console);
+				set_handle(pcb, (THandle) THANDLE_STDERR, FileSystem::console);
 			}
 
 			pcb->thread = new std::thread(program_thread, program, pcb);
@@ -97,7 +92,7 @@ namespace Process
 	}
 
 	void set_std_handle(DWORD nStdHandle, THandle handle) {
-		// TODO: delete
+		// TODO: delete this?
 	}
 
 	std::string get_cwd() {

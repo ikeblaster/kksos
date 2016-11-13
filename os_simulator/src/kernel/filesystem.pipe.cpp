@@ -15,6 +15,11 @@ namespace FileSystem {
 		delete this->pipeWriteable;
 	}
 
+	void Pipe::close()
+	{
+		delete this;
+	}
+
 	void Pipe::closePipeHandle(PIPETYPE type)
 	{
 		pipeOpened = false;
@@ -33,16 +38,6 @@ namespace FileSystem {
 		if (type == PIPETYPE::READABLE) return this->pipeReadable;
 		if (type == PIPETYPE::WRITEABLE) return this->pipeWriteable;
 		return nullptr;
-	}
-
-	fpos_t Pipe::seek(const fpos_t pos, std::ios_base::seekdir way)
-	{
-		return 0;
-	}
-
-	fpos_t Pipe::tell()
-	{
-		return 0;
 	}
 
 	void Pipe::write(const void* buffer, const size_t buffer_size, size_t* pwritten)
@@ -103,9 +98,5 @@ namespace FileSystem {
 			*pread = i;
 	}
 
-	void Pipe::close()
-	{
-		delete this;
-	}
 
 }

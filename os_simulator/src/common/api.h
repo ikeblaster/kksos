@@ -6,12 +6,12 @@
 // Filesystem constants
 #define OPEN_EXISTING 3
 
-#define IHANDLE_STDIN 0
-#define IHANDLE_STDOUT 1
-#define IHANDLE_STDERR 2
+#define THANDLE_STDIN 0
+#define THANDLE_STDOUT 1
+#define THANDLE_STDERR 2
 
-typedef DWORD pid_t;
-typedef DWORD flags_t;
+typedef DWORD64 pid_t;
+typedef DWORD64 flags_t;
 typedef HANDLE THandle;
 
 typedef size_t (__stdcall *TEntryPoint)(const CONTEXT syscall); // vstupni bod uzivatelskeho programu

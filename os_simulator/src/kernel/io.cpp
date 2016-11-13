@@ -15,7 +15,7 @@ void HandleIO(CONTEXT &regs) {
 
 				THandle fd = Process::add_handle(fh);
 				if (fd == nullptr) {
-					fh->close();
+					delete fh; // destroy without notifying = without calling close
 					Set_Error(true, regs);
 					return;
 				}

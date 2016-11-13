@@ -9,7 +9,7 @@
 template <typename... Args>
 void vmprintf(const char* format, Args... args)
 {
-	THandle console = Get_Std_Handle(IHANDLE_STDOUT); 
+	THandle console = Get_Std_Handle(THANDLE_STDOUT); 
 	vmprintf(console, format, args...);
 }
 

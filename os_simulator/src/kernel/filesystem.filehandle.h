@@ -22,6 +22,7 @@ namespace FileSystem {
 		fpos_t tell();
 		void read(char** buffer, const size_t buffer_size, size_t* read);
 		void close();
+		intptr_t getHash();
 
 	};
 		

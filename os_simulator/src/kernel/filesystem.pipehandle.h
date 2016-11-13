@@ -9,8 +9,6 @@ namespace FileSystem {
 	enum class PIPETYPE;
 
 	class PipeHandle : public FSHandle {
-		public:
-		
 		private:
 		PIPETYPE type;
 		Pipe* pipe;
@@ -39,6 +37,8 @@ namespace FileSystem {
 		void read(char** buffer, const size_t buffer_size, size_t* pread);
 
 		void close();
+
+		intptr_t getHash();
 	};
 		
 }

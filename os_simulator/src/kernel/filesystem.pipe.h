@@ -9,7 +9,7 @@ namespace FileSystem {
 	class PipeHandle;
 	enum class PIPETYPE { READABLE, WRITEABLE };
 
-	class Pipe : public FSHandle {
+	class Pipe {
 		private:		
 		std::mutex mtx;
 		std::condition_variable cv;
@@ -41,10 +41,6 @@ namespace FileSystem {
 		/// <param name="buffer_size">Size of input</param>
 		/// <param name="pwritten">Number of writted chars</param>
 		void write(const void* buffer, const size_t buffer_size, size_t* pwritten);
-
-		fpos_t seek(const fpos_t pos, std::ios_base::seekdir way);
-
-		fpos_t tell();
 
 		/// <summary>
 		/// Reads from pipe buffer

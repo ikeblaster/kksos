@@ -11,8 +11,6 @@ namespace OpenFiles {
 
 	typedef HANDLE OFHandle;
 
-	const size_t OPEN_FILES_TABLE_SIZE = 32768;
-
 	typedef struct OpenFile
 	{
 		FileSystem::FSHandle* handle = nullptr;

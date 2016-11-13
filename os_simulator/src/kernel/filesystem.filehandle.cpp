@@ -76,5 +76,10 @@ namespace FileSystem {
 		delete this;
 	}
 
+	intptr_t FileHandle::getHash()
+	{
+		return (intptr_t) this->file;
+	}
+
 
 }

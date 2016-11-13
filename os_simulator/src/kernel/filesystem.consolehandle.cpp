@@ -18,8 +18,9 @@ namespace FileSystem {
 		// discard everything till newline; because FlushConsoleInputBuffer doesn't do its job
 		if (!mStdInOpen) {
 			char buffer[1];
+			DWORD written;
 			while (buffer[0] != '\n')
-				ReadFile(mStdIn, buffer, 1, NULL, NULL); 
+				ReadFile(mStdIn, buffer, 1, &written, NULL);
 		}
 		
 		mStdInOpen = true;

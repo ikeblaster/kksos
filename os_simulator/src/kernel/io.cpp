@@ -61,7 +61,6 @@ void HandleIO(CONTEXT &regs) {
 
 				if (fh != nullptr) {
 					size_t read = 0;
-					fh->read((char**) regs.Rdi, regs.Rcx, &read);
 					regs.Rax = (DWORD) fh->seek((const fpos_t) regs.Rdi, (std::ios_base::seekdir) regs.Rcx);
 				}
 				else {

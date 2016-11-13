@@ -8,12 +8,12 @@ size_t __stdcall shell(const CONTEXT &regs)
 	{
 		size_t written;
 
-		THandle testtxt = Create_File("test.txt", 0); // nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN
+		THandle testtxt = Create_File("test.txt", FH_OPEN_OR_CREATE); // nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN
 		const char* hello = "Hello world!\nAhoj svete!\n\nC test\nZ\nA";
 		Write_File(testtxt, hello, strlen(hello), written);
 		Close_File(testtxt);
 
-		testtxt = Create_File("test.txt", OPEN_EXISTING); // nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN
+		testtxt = Create_File("test.txt", FH_OPEN_EXISTING); // nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN
 		char buffer[255];
 		char *p_buffer = &buffer[0];
 		size_t read;
@@ -54,7 +54,7 @@ size_t __stdcall shell(const CONTEXT &regs)
 
 				/* Sets up Handler for stdin */
 				if (p.commandList.front().redirectStdin.length() > 0) { //stdin from file
-					hstdin = Create_File(p.commandList.front().redirectStdin.c_str(), OPEN_EXISTING); 
+					hstdin = Create_File(p.commandList.front().redirectStdin.c_str(), FH_OPEN_EXISTING);
 					if(commandOrder != 0)
 						Close_File(pipes.at(commandOrder - 1).first); //close read end of pipe
 				}
@@ -67,13 +67,12 @@ size_t __stdcall shell(const CONTEXT &regs)
 
 				/* Sets up Handler for stdout */
 				if (p.commandList.front().redirectStdout.length() > 0) { //stdout into file
-					hstdout = Create_File(p.commandList.front().redirectStdout.c_str(), 0);
+					hstdout = Create_File(p.commandList.front().redirectStdout.c_str(), FH_OPEN_OR_CREATE);
 					if(p.commandList.size() > 1)
 						Close_File(pipes.at(commandOrder).second); //close write end of pipe
 				}
 				else if (p.commandList.front().redirectAStdout.length() > 0) { //append stdout into file
-					hstdout = Create_File(p.commandList.front().redirectAStdout.c_str(), OPEN_EXISTING);
-					Seek_File(hstdout, std::ios_base::end, 0); //move to end of file // TODO: predelat jako flag FILE_APPEND?
+					hstdout = Create_File(p.commandList.front().redirectAStdout.c_str(), FH_OPEN_OR_CREATE | FH_FILE_APPEND);
 					if (p.commandList.size() > 1)
 						Close_File(pipes.at(commandOrder).second); //close write end of pipe
 				}

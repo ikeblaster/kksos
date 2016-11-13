@@ -14,8 +14,8 @@ namespace FileSystem {
 
 		if (res == RESULT::MISSING_LAST_PART) {
 			
-			bool create_missing = ((flags & OPEN_OR_CREATE) == OPEN_OR_CREATE) 
-				|| ((flags & CREATE_ALWAYS) == CREATE_ALWAYS);
+			bool create_missing = ((flags & FH_OPEN_OR_CREATE) == FH_OPEN_OR_CREATE)
+				|| ((flags & FH_CREATE_ALWAYS) == FH_CREATE_ALWAYS);
 			
 			if (!create_missing) {
 				return nullptr;
@@ -37,10 +37,10 @@ namespace FileSystem {
 	{
 		this->file = file;
 		
-		if((flags & OPEN_EXISTING) == OPEN_EXISTING || (flags & OPEN_OR_CREATE) == OPEN_OR_CREATE)
+		if((flags & FH_OPEN_EXISTING) == FH_OPEN_EXISTING || (flags & FH_OPEN_OR_CREATE) == FH_OPEN_OR_CREATE)
 			this->ss.str(this->file->getData());
 
-		if((flags & FILE_APPEND) == FILE_APPEND) 
+		if((flags & FH_FILE_APPEND) == FH_FILE_APPEND)
 			this->seek(0, std::ios_base::end);
 		else
 			this->seek(0, std::ios_base::beg);

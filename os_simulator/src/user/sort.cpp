@@ -24,7 +24,7 @@ size_t __stdcall sort(const CONTEXT &regs)
 	THandle textfile = nullptr;
 
 	if (psi.data.size() > 0) {
-		textfile = Create_File(psi.data.at(0).c_str(), OPEN_EXISTING); // TODO: nevytvaret soubor, pokud neexistuje
+		textfile = Create_File(psi.data.at(0).c_str(), FH_OPEN_EXISTING); // TODO: nevytvaret soubor, pokud neexistuje
 		if (textfile != nullptr) input = textfile;
 	}
 

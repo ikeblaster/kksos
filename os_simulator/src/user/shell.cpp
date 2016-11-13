@@ -51,6 +51,8 @@ size_t __stdcall shell(const CONTEXT &regs)
 				THandle hstdin = nullptr;
 				THandle hstdout = nullptr;
 				THandle hstderr = Get_Std_Handle(THANDLE_STDERR);
+				bool closeHstdin = true;
+				bool closeHstdout = true;
 
 				/* Sets up Handler for stdin */
 				if (p.commandList.front().redirectStdin.length() > 0) { //stdin from file
@@ -59,7 +61,8 @@ size_t __stdcall shell(const CONTEXT &regs)
 						Close_File(pipes.at(commandOrder - 1).first); //close read end of pipe
 				}
 				else if (commandOrder == 0) { //stdin from console (only for first command)
-					hstdin = Get_Std_Handle(THANDLE_STDIN);					
+					hstdin = Get_Std_Handle(THANDLE_STDIN);
+					closeHstdin = false;
 				}
 				else { //stdin from pipe
 					hstdin = pipes.at(commandOrder - 1).first;
@@ -78,6 +81,7 @@ size_t __stdcall shell(const CONTEXT &regs)
 				}
 				else if (p.commandList.size() == 1) { //stdout to console (only for last command)
 					hstdout = Get_Std_Handle(THANDLE_STDOUT);
+					closeHstdout = false;
 				}
 				else { //stdout to pipe
 					hstdout = pipes.at(commandOrder).second;
@@ -98,22 +102,20 @@ size_t __stdcall shell(const CONTEXT &regs)
 					processes.push_back(process); //add command into vector					
 				}
 
+
+				// close handles owned by shell (except its own stdin/out)
+				if (closeHstdin) Close_File(hstdin);
+				if (closeHstdout) Close_File(hstdout);
+
 				p.commandList.pop();
 				commandOrder++;
-			}
-
-			// TODO: docasne, nez se najde lepsi reseni
-			while (!pipes.empty()) {
-				Close_File(pipes.back().first);
-				Close_File(pipes.back().second);
-				pipes.pop_back();
 			}
 
 			//join all processes
 			while (!processes.empty()) {
 				Join_Process(processes.back());
 				processes.pop_back();
-			}	
+			}
 
 			Seek_File(Get_Std_Handle(THANDLE_STDIN), 0, std::ios_base::end); // reset stdin buffer
 		}

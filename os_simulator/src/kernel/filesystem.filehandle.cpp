@@ -12,8 +12,17 @@ namespace FileSystem {
 
 		RESULT res = Path::parse(cwd, path, &directory, &file);
 
-		if (res == RESULT::MISSING_LAST_PART)
+		if (res == RESULT::MISSING_LAST_PART) {
+			
+			bool create_missing = ((flags & OPEN_OR_CREATE) == OPEN_OR_CREATE) 
+				|| ((flags & CREATE_ALWAYS) == CREATE_ALWAYS);
+			
+			if (!create_missing) {
+				return nullptr;
+			}
+			
 			file = directory->createFile(Path::getBasename(path));
+		}
 
 		if (file == nullptr)
 			return nullptr;
@@ -27,8 +36,14 @@ namespace FileSystem {
 	FileHandle::FileHandle(File* file, flags_t flags)
 	{
 		this->file = file;
-		if((flags & OPEN_EXISTING) == OPEN_EXISTING) this->ss.str(this->file->getData());
-		this->seek(0, std::ios_base::beg);
+		
+		if((flags & OPEN_EXISTING) == OPEN_EXISTING) 
+			this->ss.str(this->file->getData());
+
+		if((flags & FILE_APPEND) == FILE_APPEND) 
+			this->seek(0, std::ios_base::end);
+		else
+			this->seek(0, std::ios_base::beg);
 	}
 
 	fpos_t FileHandle::seek(const fpos_t pos, std::ios_base::seekdir way)

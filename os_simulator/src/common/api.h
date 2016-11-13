@@ -4,7 +4,10 @@
 #include <vector>
 
 // Filesystem constants
-#define OPEN_EXISTING 3
+#define OPEN_EXISTING 1
+#define OPEN_OR_CREATE 2
+#define CREATE_ALWAYS 4
+#define FILE_APPEND 8
 
 #define THANDLE_STDIN 0
 #define THANDLE_STDOUT 1

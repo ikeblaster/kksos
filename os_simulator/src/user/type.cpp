@@ -8,7 +8,9 @@ size_t __stdcall type(const CONTEXT &regs)
 {
 	PROCESSSTARTUPINFO psi = *(PROCESSSTARTUPINFO*) regs.Rcx;
 	std::string filename = psi.data.at(0);
-	auto testtxt = Create_File(filename.c_str(), FH_OPEN_EXISTING); // nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN (Psal Vojtik tak to tak necham)
+	auto testtxt = Create_File(filename.c_str(), FH_OPEN_EXISTING);
+
+	if (testtxt == nullptr) return 0;
 
 	while (true) {
 		auto line = vmgetline(testtxt);

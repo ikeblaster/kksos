@@ -34,7 +34,7 @@ size_t __stdcall shell(const CONTEXT &regs)
 		/* If is parsing ok */
 		if (p.parse(line.get())) {			
 			int commandOrder = 0; 
-			std::vector<int> processes; //all processes from command line
+			std::vector<pid_t> processes; //all processes from command line
 			std::vector<std::pair<THandle, THandle>> pipes; //pipes for commands
 
 			/* Sets up pipes */

@@ -10,7 +10,8 @@
 #include "openfiles.h"
 
 
-namespace Process {
+namespace Process 
+{
 
 	const size_t PROCESS_TABLE_SIZE = 1024;
 	const size_t FILE_DESCRIPTORS_TABLE_SIZE = 1024;

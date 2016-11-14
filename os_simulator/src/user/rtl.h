@@ -61,7 +61,6 @@ std::string Get_Cwd();
 bool Set_Cwd(std::string path);
 
 
-void List_Directory(std::vector<std::string> items);
 
 
 // =================================== IO ===================================
@@ -119,7 +118,14 @@ bool Close_File(const THandle file_handle);
 void Create_Pipe(THandle &readable, THandle &writeable);
 
 /// <summary>
-/// Creates a Directory at specified location
+/// Creates a directory at specified location
 /// </summary>
 /// <returns></returns>
 bool Make_Directory(std::string path);
+
+
+/// <summary>
+/// Gets listing of directory
+/// </summary>
+/// <param name="items">Items</param>
+void List_Directory(std::vector<std::string> items);

@@ -2,6 +2,18 @@
 
 using namespace FileSystem;
 
+namespace IO
+{
+	void list_directory(std::vector<std::string> items) 
+	{
+		auto files = Process::current_thread_pcb->current_dir->getFiles();
+		for (auto file : files) {
+			items.push_back(file.first);
+		}
+	}
+}
+
+
 void HandleIO(CONTEXT &regs) {
 
 	switch (Get_AL((__int16) regs.Rax)) {
@@ -94,6 +106,15 @@ void HandleIO(CONTEXT &regs) {
 				regs.Rax = (decltype(regs.Rax)) (res == RESULT::OK);
 			}
 			break;
+
+
+
+		case scListDirectory:
+			{
+				IO::list_directory(*(std::vector<std::string>*) regs.Rdx);
+			}
+			break;
+
 	}
 
 }

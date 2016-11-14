@@ -74,6 +74,7 @@ const __int8 scSeekFile = 4;
 const __int8 scCloseFile = 5;
 const __int8 scCreatePipe = 6;
 const __int8 scMakeDirectory = 7;
+const __int8 scListDirectory = 8;
 
 // al hodnoty pro scProcess
 const __int8 scCreateProcess = 1;
@@ -82,7 +83,6 @@ const __int8 scGetStdHandle = 3;
 const __int8 scSetStdHandle = 4;
 const __int8 scGetCwd = 5;
 const __int8 scSetCwd = 6;
-const __int8 scListDirectory = 7;
 
 
 

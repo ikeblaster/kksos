@@ -4,11 +4,11 @@ using namespace FileSystem;
 
 namespace IO
 {
-	void list_directory(std::vector<std::string> items) 
+	void list_directory(std::vector<std::string>* items) 
 	{
 		auto files = Process::current_thread_pcb->current_dir->getFiles();
 		for (auto file : files) {
-			items.push_back(file.first);
+			items->push_back(file.first);
 		}
 	}
 }
@@ -111,7 +111,7 @@ void HandleIO(CONTEXT &regs) {
 
 		case scListDirectory:
 			{
-				IO::list_directory(*(std::vector<std::string>*) regs.Rdx);
+				IO::list_directory((std::vector<std::string>*) regs.Rdx);
 			}
 			break;
 

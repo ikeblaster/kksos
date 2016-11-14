@@ -161,7 +161,7 @@ bool Make_Directory(std::string path)
 	return regs.Rax != 0;
 }
 
-void List_Directory(std::vector<std::string> items)
+void List_Directory(std::vector<std::string> &items)
 {
 	CONTEXT regs = Prepare_SysCall_Context(scIO, scListDirectory);
 	regs.Rdx = (decltype(regs.Rdx)) &items;

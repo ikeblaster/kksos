@@ -128,4 +128,4 @@ bool Make_Directory(std::string path);
 /// Gets listing of directory
 /// </summary>
 /// <param name="items">Items</param>
-void List_Directory(std::vector<std::string> items);
+void List_Directory(std::vector<std::string> &items);

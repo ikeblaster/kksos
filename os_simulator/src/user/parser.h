@@ -3,6 +3,7 @@
 #include <string>
 #include <queue>
 #include <unordered_set>
+#include <regex>
 
 /// <summary>
 /// Structure for storing one command

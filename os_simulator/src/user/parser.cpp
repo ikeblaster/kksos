@@ -1,6 +1,6 @@
 #include "Parser.h"
 
-static std::unordered_set<std::string> Commands{ "echo", "cd", "dir", "md", "rd", "type", "wc", "sort", "ps", "rgen", "freq", "shell" }; /* Allowed commands */
+std::regex validCommand("^[A-z]+$"); /* regex for commands */
 static std::unordered_set<char> specialSymbols{ ' ', '<', '>', '|', '/', '.' }; /* Symbols with special meaning */
 char* errMsg = nullptr;
 
@@ -49,24 +49,24 @@ bool parser::parse(std::string input)
 					if(c != ' ')
 						temp += c;
 				}
-				/* If command is allowed */
-				if (Commands.count(temp)) {					
+				/* Checks if command is valid */
+				if (std::regex_match(temp, validCommand)) {					
 					commandOK = true;
 					pipe = false;
 					commandList.push(Command()); /* add to vector new command */
 					commandList.back().name = temp; /* add command name to struct */
 					temp = "";
 					if(c != ' ' && i != last)
-						i -= 1; //if char c is special symbol, we need use it in next step again					
+						i -= 1; //if actual char is special symbol, we need use it in next step again					
 				}
-				else {
-					if (temp.length() > 4) {												
+				else {	
+					if (!temp.empty()) {
 						std::cout << "Command " << temp << " is not allowed!" << std::endl;
-						return false;
+						return false;	
 					}
 				}				
 			}
-			else {
+			else {				
 				temp += c;
 			}
 		}
@@ -85,7 +85,10 @@ bool parser::parse(std::string input)
 			else if (out) {
 				if (c != '>') {
 					getStdout = true;
-					temp += c;
+					if(c != ' ')
+						temp += c;
+					if (c == '"')
+						i -= 1;
 				}
 				else {
 					getAStdout = true;
@@ -153,6 +156,11 @@ bool parser::parse(std::string input)
 		std::cout << "After pipe must follow a valid command!" << std::endl;
 		return false;
 	}
+	/* Check if quoted data are closed */
+	else if (openQuote) {
+		std::cout << "Quoted data are not closed!" << std::endl;
+		return false;
+	}	
 	/* Save data for command */
 	else if (!commandList.empty()) {
 		saveData(); /* Save data for command */

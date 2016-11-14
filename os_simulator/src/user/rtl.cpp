@@ -47,11 +47,20 @@ pid_t Create_Process(std::string process_name, std::vector<char> params, std::ve
 	return (pid_t) regs.Rax;
 }
 
-bool Join_Process(pid_t pid) {
+bool Join_Process(pid_t pid) 
+{
 	CONTEXT regs = Prepare_SysCall_Context(scProcess, scJoinProcess);
 	regs.Rdx = (decltype(regs.Rdx)) pid;
 	Do_SysCall(regs);
 	return regs.Rax != 0;
+}
+
+bool Make_Directory(std::string path) 
+{
+	CONTEXT regs = Prepare_SysCall_Context(scIO, scMakeDirectory);
+	regs.Rdx = (decltype(regs.Rdx)) &path;
+	Do_SysCall(regs);
+	return (bool) regs.Rax;
 }
 
 THandle Get_Std_Handle(DWORD64 n_handle)

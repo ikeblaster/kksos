@@ -24,7 +24,6 @@ void HandleIO(CONTEXT &regs) {
 			}
 			break;
 
-
 		case scWriteFile:
 			{
 				FSHandle* fh = Process::get_handle((THandle) regs.Rdx);
@@ -84,5 +83,17 @@ void HandleIO(CONTEXT &regs) {
 			}
 			break;
 
+
+		case scMakeDirectory:
+			{
+				Directory* directory;
+				File* file;
+
+				RESULT res = Path::parse(Process::current_thread_pcb->current_dir, *(std::string*) regs.Rdx, &directory, &file, FS_MAKE_MISSING_DIRS);
+
+				regs.Rax = (decltype(regs.Rax)) (res == RESULT::OK);
+			}
+			break;
 	}
+
 }

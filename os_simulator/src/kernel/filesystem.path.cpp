@@ -11,7 +11,7 @@ namespace FileSystem {
 	/// <param name="parsedDirectory"></param>
 	/// <param name="parsedFile"></param>
 	/// <returns></returns>
-	RESULT Path::parse(Directory* cwd, std::string path, Directory** parsedDirectory, File** parsedFile)
+	RESULT Path::parse(Directory* cwd, std::string path, Directory** parsedDirectory, File** parsedFile, flags_t flags)
 	{
 		size_t pos = 0, search;
 		Directory* directory = cwd;
@@ -71,18 +71,21 @@ namespace FileSystem {
 				if (file == nullptr) {
 					Directory* tmpdir = directory->findDirectory(part); // or try to find directory
 
-					if (tmpdir == nullptr && search == std::string::npos) {
+					if(tmpdir != nullptr) {
+						directory = tmpdir; // directory found
+					}
+					else if ((flags & FS_MAKE_MISSING_DIRS) == FS_MAKE_MISSING_DIRS) {
+						directory = directory->createDirectory(part); // directory in path not found then make one
+					}
+					else if (search == std::string::npos) {
 						errMsg = "Path found except last part, probably file?"; // directory not found, but it's last part of path
 						retVal = RESULT::MISSING_LAST_PART;
 						break;
 					}
-					else if (tmpdir == nullptr) {
+					else {
 						errMsg = "Directory not found";
 						retVal = RESULT::DIRECTORY_NOT_FOUND;
 						break; // file & dir not found
-					}
-					else {
-						directory = tmpdir;
 					}
 				}
 			}

@@ -15,6 +15,11 @@ size_t __stdcall dir(const CONTEXT &regs)
 	std::vector<std::string> items;
 	List_Directory(items);
 
+	for (auto item : items) {
+		vmprintf("%s\n", item);
+	}
+
+
 	vmprintf("Dir command execution.\n");
 
 	return 0;

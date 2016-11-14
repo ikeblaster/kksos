@@ -165,5 +165,5 @@ bool Make_Directory(std::string path)
 	CONTEXT regs = Prepare_SysCall_Context(scIO, scMakeDirectory);
 	regs.Rdx = (decltype(regs.Rdx)) &path;
 	Do_SysCall(regs);
-	return (bool) regs.Rax;
+	return regs.Rax != 0;
 }

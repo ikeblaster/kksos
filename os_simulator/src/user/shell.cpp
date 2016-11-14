@@ -98,7 +98,7 @@ size_t __stdcall shell(const CONTEXT &regs)
 
 				}
 				else { /* Creating process for users programs */					
-					int process = Create_Process(p.commandList.front().name, p.commandList.front().params, p.commandList.front().data, hstdin, hstdout, hstderr);
+					pid_t process = Create_Process(p.commandList.front().name, p.commandList.front().params, p.commandList.front().data, hstdin, hstdout, hstderr);
 					processes.push_back(process); //add command into vector					
 				}
 

@@ -18,7 +18,7 @@ size_t Get_Last_Error();
 /// <param name="hstdout">Handle to standard output stream.</param>
 /// <param name="hstderr">Handle to standard error stream.</param>
 /// <returns>PID of created process or error code.</returns>
-int Create_Process(
+pid_t Create_Process(
 	std::string process_name,
 	std::vector<char> params, std::vector<std::string> data,
 	const THandle hstdin, const THandle hstdout, const THandle hstderr
@@ -29,28 +29,28 @@ int Create_Process(
 /// </summary>
 /// <param name="PID">PID of process.</param>
 /// <returns>Success.</returns>
-bool Join_Process(int PID);
+bool Join_Process(pid_t PID);
 
 /// <summary>
 /// Gets handle to standard stream.
 /// </summary>
 /// <param name="nStdHandle">Stream type.</param>
 /// <returns>Handle.</returns>
-THandle Get_Std_Handle(DWORD nStdHandle);
+THandle Get_Std_Handle(DWORD64 nStdHandle);
 
 /// <summary>
 /// Sets standard stream to different handle.
 /// </summary>
 /// <param name="n_handle">Stream type.</param>
 /// <param name="handle">New handle.</param>
-void Set_Std_Handle(DWORD n_handle, THandle handle);
+void Set_Std_Handle(DWORD64 n_handle, THandle handle);
 
 /// <summary>
 /// Gets current working directory path.
 /// </summary>
 /// <param name="pid">PID of desired process; -1 for current process.</param>
 /// <returns>Path.</returns>
-std::string Get_Cwd(int pid = 0);
+std::string Get_Cwd();
 
 /// <summary>
 /// Sets current working directory.
@@ -58,7 +58,7 @@ std::string Get_Cwd(int pid = 0);
 /// <param name="path">Path.</param>
 /// <param name="pid">PID of desired process; -1 for current process.</param>
 /// <returns>Success.</returns>
-bool Set_Cwd(std::string path, int pid = 0);
+bool Set_Cwd(std::string path);
 
 
 void List_Directory(std::vector<std::string> items);

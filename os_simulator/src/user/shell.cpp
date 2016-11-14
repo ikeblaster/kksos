@@ -34,7 +34,7 @@ size_t __stdcall shell(const CONTEXT &regs)
 		/* If is parsing ok */
 		if (p.parse(line.get())) {			
 			int commandOrder = 0; 
-			std::vector<int> processes; //all processes from command line
+			std::vector<pid_t> processes; //all processes from command line
 			std::vector<std::pair<THandle, THandle>> pipes; //pipes for commands
 
 			/* Sets up pipes */
@@ -107,7 +107,7 @@ size_t __stdcall shell(const CONTEXT &regs)
 					
 				}
 				else { /* Creating process for users programs */					
-					int process = Create_Process(p.commandList.front().name, p.commandList.front().params, p.commandList.front().data, hstdin, hstdout, hstderr);
+					pid_t process = Create_Process(p.commandList.front().name, p.commandList.front().params, p.commandList.front().data, hstdin, hstdout, hstderr);
 					processes.push_back(process); //add command into vector					
 				}
 

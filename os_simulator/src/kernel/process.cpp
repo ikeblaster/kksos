@@ -87,12 +87,12 @@ namespace Process
 		return true;
 	}
 
-	THandle get_std_handle(THandle nStdHandle) {
-		return nStdHandle;
+	THandle get_std_handle(DWORD64 nStdHandle) {
+		return (THandle) nStdHandle;
 	}
 
-	void set_std_handle(DWORD nStdHandle, THandle handle) {
-		// TODO: delete this?
+	void set_std_handle(DWORD64 nStdHandle, THandle handle) {
+		current_thread_pcb->file_descriptors[nStdHandle] = get_handle(handle);
 	}
 
 	std::string get_cwd() {
@@ -122,6 +122,7 @@ namespace Process
 	}
 
 
+	// private functions
 	bool set_handle(PCB* pcb, THandle fd, FileSystem::FSHandle* handle) {
 		std::unique_lock<std::mutex> lck(handles_mtx);
 
@@ -187,11 +188,11 @@ void HandleProcess(CONTEXT &regs) {
 			break;
 
 		case scGetStdHandle:
-			regs.Rax = (decltype(regs.Rax)) Process::get_std_handle((THandle) regs.Rdx);
+			regs.Rax = (decltype(regs.Rax)) Process::get_std_handle(regs.Rdx);
 			break;
 
 		case scSetStdHandle:
-			Process::set_std_handle((DWORD) regs.Rdx, (THandle) regs.Rcx);
+			Process::set_std_handle(regs.Rdx, (THandle) regs.Rcx);
 			break;
 
 		case scGetCwd:

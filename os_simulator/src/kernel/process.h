@@ -34,6 +34,8 @@ namespace Process {
 
 	pid_t create_process(PROCESSSTARTUPINFO psi);
 	bool join_process(pid_t pid);
+	THandle get_std_handle(DWORD nStdHandle);
+	void set_std_handle(DWORD nStdHandle, THandle handle);
 	std::string get_cwd();
 	bool set_cwd(std::string path);
 

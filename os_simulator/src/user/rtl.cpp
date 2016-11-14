@@ -29,7 +29,7 @@ bool Do_SysCall(CONTEXT &regs)
 }
 
 
-int Create_Process(std::string process_name, std::vector<char> params, std::vector<std::string> data, const THandle hstdin, const THandle hstdout, const THandle hstderr)
+pid_t Create_Process(std::string process_name, std::vector<char> params, std::vector<std::string> data, const THandle hstdin, const THandle hstdout, const THandle hstderr)
 {
 	CONTEXT regs = Prepare_SysCall_Context(scProcess, scCreateProcess);
 
@@ -44,10 +44,10 @@ int Create_Process(std::string process_name, std::vector<char> params, std::vect
 	regs.Rcx = (decltype(regs.Rcx)) &psi;
 
 	Do_SysCall(regs);
-	return (int) regs.Rax;
+	return (pid_t) regs.Rax;
 }
 
-bool Join_Process(int pid) 
+bool Join_Process(pid_t pid) 
 {
 	CONTEXT regs = Prepare_SysCall_Context(scProcess, scJoinProcess);
 	regs.Rdx = (decltype(regs.Rdx)) pid;
@@ -55,7 +55,7 @@ bool Join_Process(int pid)
 	return regs.Rax != 0;
 }
 
-THandle Get_Std_Handle(DWORD n_handle)
+THandle Get_Std_Handle(DWORD64 n_handle)
 {
 	CONTEXT regs = Prepare_SysCall_Context(scProcess, scGetStdHandle);
 	regs.Rdx = (decltype(regs.Rdx)) n_handle;
@@ -63,7 +63,7 @@ THandle Get_Std_Handle(DWORD n_handle)
 	return (THandle) regs.Rax;
 }
 
-void Set_Std_Handle(DWORD n_handle, THandle handle)
+void Set_Std_Handle(DWORD64 n_handle, THandle handle)
 {
 	CONTEXT regs = Prepare_SysCall_Context(scProcess, scSetStdHandle);
 	regs.Rdx = (decltype(regs.Rdx)) n_handle;
@@ -71,10 +71,9 @@ void Set_Std_Handle(DWORD n_handle, THandle handle)
 	Do_SysCall(regs);
 }
 
-std::string Get_Cwd(int pid)
+std::string Get_Cwd()
 {
 	CONTEXT regs = Prepare_SysCall_Context(scProcess, scGetCwd);
-	regs.Rdx = (decltype(regs.Rdx)) pid;
 	Do_SysCall(regs);
 
 	std::string* ret = (std::string*) regs.Rax;
@@ -84,11 +83,10 @@ std::string Get_Cwd(int pid)
 	return path;
 }
 
-bool Set_Cwd(std::string path, int pid)
+bool Set_Cwd(std::string path)
 {
 	CONTEXT regs = Prepare_SysCall_Context(scProcess, scSetCwd);
 	regs.Rcx = (decltype(regs.Rcx)) &path;
-	regs.Rdx = (decltype(regs.Rdx)) pid;
 	Do_SysCall(regs);
 	return regs.Rax != 0;
 }
@@ -143,7 +141,7 @@ fpos_t Seek_File(const THandle file_handle, const fpos_t pos, std::ios_base::see
 	regs.Rdi = (decltype(regs.Rdi)) pos;
 	regs.Rcx = (decltype(regs.Rcx)) way;
 
-	const bool result = Do_SysCall(regs);
+	Do_SysCall(regs);
 	return regs.Rax;
 }
 

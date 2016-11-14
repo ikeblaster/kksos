@@ -90,12 +90,21 @@ size_t __stdcall shell(const CONTEXT &regs)
 				/* Prepare commands to launch */
 				if (p.commandList.front().name == "cd") { /* Launch cd command */
 					
+					if (p.commandList.front().data.size() > 0) {
+						Set_Cwd(p.commandList.front().data.at(0));
+					}
+					else {
+						vmprintf("%s\n", Get_Cwd().c_str());
+					}
 				}				
 				else if (p.commandList.front().name == "rd") { /* Launch rd command */
 
 				}				
 				else if (p.commandList.front().name == "md") { /* Launch md command */
-
+					if (p.commandList.front().data.size() > 0) {
+						Make_Directory(p.commandList.front().data.at(0));
+					}
+					
 				}
 				else { /* Creating process for users programs */					
 					int process = Create_Process(p.commandList.front().name, p.commandList.front().params, p.commandList.front().data, hstdin, hstdout, hstderr);

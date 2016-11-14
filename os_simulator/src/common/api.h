@@ -9,6 +9,8 @@
 #define FH_CREATE_ALWAYS 4
 #define FH_FILE_APPEND 8
 
+#define FS_MAKE_MISSING_DIRS 16
+
 #define THANDLE_STDIN 0
 #define THANDLE_STDOUT 1
 #define THANDLE_STDERR 2
@@ -71,6 +73,7 @@ const __int8 scReadFile = 3;
 const __int8 scSeekFile = 4;
 const __int8 scCloseFile = 5;
 const __int8 scCreatePipe = 6;
+const __int8 scMakeDirectory = 7;
 
 // al hodnoty pro scProcess
 const __int8 scCreateProcess = 1;

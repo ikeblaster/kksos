@@ -103,7 +103,7 @@ namespace Process
 		FileSystem::Directory* dir;
 		FileSystem::File* file;
 
-		auto res = FileSystem::Path::parse(current_thread_pcb->current_dir, path, &dir, &file);
+		auto res = FileSystem::Path::parse(current_thread_pcb->current_dir, path, &dir, &file, 0);
 		if (res != FileSystem::RESULT::OK)
 			return false;
 

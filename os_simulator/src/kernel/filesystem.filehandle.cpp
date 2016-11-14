@@ -10,7 +10,7 @@ namespace FileSystem {
 		Directory* directory;
 		File* file = nullptr;
 
-		RESULT res = Path::parse(cwd, path, &directory, &file);
+		RESULT res = Path::parse(cwd, path, &directory, &file, 0);
 
 		if (res == RESULT::MISSING_LAST_PART) {
 			

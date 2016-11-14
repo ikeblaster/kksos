@@ -32,6 +32,12 @@ int Create_Process(
 bool Join_Process(int PID);
 
 /// <summary>
+/// Creates a Directory at specified location
+/// </summary>
+/// <returns></returns>
+bool Make_Directory(std::string path);
+
+/// <summary>
 /// Gets handle to standard stream.
 /// </summary>
 /// <param name="nStdHandle">Stream type.</param>

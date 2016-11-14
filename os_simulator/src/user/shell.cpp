@@ -47,68 +47,68 @@ size_t __stdcall shell(const CONTEXT &regs)
 			}
 			
 			/* Processes whole input command */
-			while (p.commandList.size() > 0) {				
+			while (p.commandList.size() > 0) {
+				Command command = p.commandList.front();
 				THandle hstdin = nullptr;
 				THandle hstdout = nullptr;
 				THandle hstderr = Get_Std_Handle(THANDLE_STDERR);
 				bool closeHstdin = true;
 				bool closeHstdout = true;
 
+
 				/* Sets up Handler for stdin */
-				if (p.commandList.front().redirectStdin.length() > 0) { //stdin from file
-					hstdin = Create_File(p.commandList.front().redirectStdin.c_str(), FH_OPEN_EXISTING);
-					if(commandOrder != 0)
+				if (command.redirectStdin.length() > 0) { // stdin from file
+					hstdin = Create_File(command.redirectStdin.c_str(), FH_OPEN_EXISTING);
+					if (commandOrder != 0)
 						Close_File(pipes.at(commandOrder - 1).first); //close read end of pipe
 				}
-				else if (commandOrder == 0) { //stdin from console (only for first command)
+				else if (commandOrder == 0) { // stdin from console (only for first command)
 					hstdin = Get_Std_Handle(THANDLE_STDIN);
 					closeHstdin = false;
 				}
-				else { //stdin from pipe
+				else { // stdin from pipe
 					hstdin = pipes.at(commandOrder - 1).first;
 				}
 
 				/* Sets up Handler for stdout */
-				if (p.commandList.front().redirectStdout.length() > 0) { //stdout into file
-					hstdout = Create_File(p.commandList.front().redirectStdout.c_str(), FH_OPEN_OR_CREATE);
-					if(p.commandList.size() > 1)
-						Close_File(pipes.at(commandOrder).second); //close write end of pipe
-				}
-				else if (p.commandList.front().redirectAStdout.length() > 0) { //append stdout into file
-					hstdout = Create_File(p.commandList.front().redirectAStdout.c_str(), FH_OPEN_OR_CREATE | FH_FILE_APPEND);
+				if (command.redirectStdout.length() > 0) { // stdout into file
+					hstdout = Create_File(command.redirectStdout.c_str(), FH_OPEN_OR_CREATE);
 					if (p.commandList.size() > 1)
-						Close_File(pipes.at(commandOrder).second); //close write end of pipe
+						Close_File(pipes.at(commandOrder).second); // close write end of pipe
 				}
-				else if (p.commandList.size() == 1) { //stdout to console (only for last command)
+				else if (command.redirectAStdout.length() > 0) { // append stdout into file
+					hstdout = Create_File(command.redirectAStdout.c_str(), FH_OPEN_OR_CREATE | FH_FILE_APPEND);
+					if (p.commandList.size() > 1)
+						Close_File(pipes.at(commandOrder).second); // close write end of pipe
+				}
+				else if (p.commandList.size() == 1) { // stdout to console (only for last command)
 					hstdout = Get_Std_Handle(THANDLE_STDOUT);
 					closeHstdout = false;
 				}
-				else { //stdout to pipe
+				else { // stdout to pipe
 					hstdout = pipes.at(commandOrder).second;
 				}
 
 				/* Prepare commands to launch */
-				if (p.commandList.front().name == "cd") { /* Launch cd command */
-					
-					if (p.commandList.front().data.size() > 0) {
-						Set_Cwd(p.commandList.front().data.at(0));
+				if (command.name == "cd") { /* Launch cd command */
+					if (command.data.size() > 0) {
+						Set_Cwd(command.data.at(0));
 					}
 					else {
-						vmprintf("%s\n", Get_Cwd().c_str());
+						vmprintf(hstdout, "%s\n", Get_Cwd().c_str());
 					}
-				}				
-				else if (p.commandList.front().name == "rd") { /* Launch rd command */
-
-				}				
-				else if (p.commandList.front().name == "md") { /* Launch md command */
-					if (p.commandList.front().data.size() > 0) {
-						Make_Directory(p.commandList.front().data.at(0));
-					}
-					
 				}
-				else { /* Creating process for users programs */					
-					pid_t process = Create_Process(p.commandList.front().name, p.commandList.front().params, p.commandList.front().data, hstdin, hstdout, hstderr);
-					processes.push_back(process); //add command into vector					
+				else if (command.name == "rd") { /* Launch rd command */
+
+				}
+				else if (command.name == "md") { /* Launch md command */
+					if (command.data.size() > 0) {
+						Make_Directory(command.data.at(0));
+					}
+				}
+				else { /* Creating process for users programs */
+					pid_t process = Create_Process(command.name, command.params, command.data, hstdin, hstdout, hstderr);
+					processes.push_back(process); // add command into vector					
 				}
 
 

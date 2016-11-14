@@ -32,12 +32,6 @@ int Create_Process(
 bool Join_Process(int PID);
 
 /// <summary>
-/// Creates a Directory at specified location
-/// </summary>
-/// <returns></returns>
-bool Make_Directory(std::string path);
-
-/// <summary>
 /// Gets handle to standard stream.
 /// </summary>
 /// <param name="nStdHandle">Stream type.</param>
@@ -65,6 +59,9 @@ std::string Get_Cwd(int pid = 0);
 /// <param name="pid">PID of desired process; -1 for current process.</param>
 /// <returns>Success.</returns>
 bool Set_Cwd(std::string path, int pid = 0);
+
+
+void List_Directory(std::vector<std::string> items);
 
 
 // =================================== IO ===================================
@@ -120,3 +117,9 @@ bool Close_File(const THandle file_handle);
 /// <param name="readable">[out] Handle for readable end of pipe.</param>
 /// <param name="writeable">[out] Handle for writeable end of pipe.</param>
 void Create_Pipe(THandle &readable, THandle &writeable);
+
+/// <summary>
+/// Creates a Directory at specified location
+/// </summary>
+/// <returns></returns>
+bool Make_Directory(std::string path);

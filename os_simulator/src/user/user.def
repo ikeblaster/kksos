@@ -3,13 +3,11 @@ LIBRARY user.dll
 EXPORTS
 	shell
 	type
-	mk
-	rd
 	echo
 	wc
 	sort
 	rgen
 	freq
 	ps
-	
+	dir
 	

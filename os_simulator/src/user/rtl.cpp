@@ -55,14 +55,6 @@ bool Join_Process(int pid)
 	return regs.Rax != 0;
 }
 
-bool Make_Directory(std::string path) 
-{
-	CONTEXT regs = Prepare_SysCall_Context(scIO, scMakeDirectory);
-	regs.Rdx = (decltype(regs.Rdx)) &path;
-	Do_SysCall(regs);
-	return (bool) regs.Rax;
-}
-
 THandle Get_Std_Handle(DWORD n_handle)
 {
 	CONTEXT regs = Prepare_SysCall_Context(scProcess, scGetStdHandle);
@@ -101,14 +93,14 @@ bool Set_Cwd(std::string path, int pid)
 	return regs.Rax != 0;
 }
 
-
-void Create_Pipe(THandle &readable, THandle &writeable)
+void List_Directory(std::vector<std::string> items)
 {
-	CONTEXT regs = Prepare_SysCall_Context(scIO, scCreatePipe);
+	CONTEXT regs = Prepare_SysCall_Context(scProcess, scListDirectory);
+	regs.Rcx = (decltype(regs.Rcx)) &items;
 	Do_SysCall(regs);
-	readable = (THandle) regs.Rcx;
-	writeable = (THandle) regs.Rdx;
 }
+
+
 
 
 THandle Create_File(const char* file_name, flags_t flags)
@@ -155,7 +147,6 @@ fpos_t Seek_File(const THandle file_handle, const fpos_t pos, std::ios_base::see
 	return regs.Rax;
 }
 
-
 bool Close_File(const THandle file_handle)
 {
 	CONTEXT regs = Prepare_SysCall_Context(scIO, scCloseFile);
@@ -163,3 +154,18 @@ bool Close_File(const THandle file_handle)
 	return Do_SysCall(regs);
 }
 
+void Create_Pipe(THandle &readable, THandle &writeable)
+{
+	CONTEXT regs = Prepare_SysCall_Context(scIO, scCreatePipe);
+	Do_SysCall(regs);
+	readable = (THandle) regs.Rcx;
+	writeable = (THandle) regs.Rdx;
+}
+
+bool Make_Directory(std::string path)
+{
+	CONTEXT regs = Prepare_SysCall_Context(scIO, scMakeDirectory);
+	regs.Rdx = (decltype(regs.Rdx)) &path;
+	Do_SysCall(regs);
+	return (bool) regs.Rax;
+}

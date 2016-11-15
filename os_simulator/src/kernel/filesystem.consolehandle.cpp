@@ -7,10 +7,13 @@ namespace FileSystem {
 
 	ConsoleHandle::ConsoleHandle()
 	{
+		DWORD dw;
+
 		_setmode(_fileno(stdin), _O_BINARY);
 		mStdIn = GetStdHandle(STD_INPUT_HANDLE);
+		//mRedirectedStdIn = (mStdIn != (HANDLE) 3);
+		mRedirectedStdIn = !GetConsoleMode(mStdIn, &dw);
 		mStdInOpen = true;
-		mRedirectedStdIn = (mStdIn != (HANDLE) 3);
 	}
 
 	intptr_t ConsoleHandle::getHash()
@@ -33,8 +36,8 @@ namespace FileSystem {
 
 			mStdInOpen = true;
 		}
-		else if (flags == PROBE__HOST_STDIN_REDIRECTED) {
-			return mRedirectedStdIn;
+		else if (flags == PROBE__IS_INTERACTIVE) {
+			return !mRedirectedStdIn;
 		}
 
 		return 0;

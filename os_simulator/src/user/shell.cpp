@@ -28,17 +28,21 @@ size_t __stdcall shell(const CONTEXT &regs)
 		Close_File(testtxt);
 	}
 
-	bool stdinIsRedirected = (Probe_File(THANDLE_STDIN, PROBE__HOST_STDIN_REDIRECTED) == TRUE);
+	bool stdinIsRedirected = (Probe_File(THANDLE_STDIN, PROBE__IS_INTERACTIVE) == FALSE);
 	bool runShell = true;
 
 	/* Shell loop */
 	while (runShell) {
-		vmprintf("%s>", Get_Cwd().c_str());
+		if (!stdinIsRedirected) {
+			vmprintf("%s>", Get_Cwd().c_str());
+		}
 
 		auto line = vmgetline();
-		if(line == nullptr) break;
+		if (line == nullptr) break;
 
-		if (stdinIsRedirected) vmprintf("%s\n", line.get());
+		if (stdinIsRedirected) {
+			vmprintf("%s>%s\n", Get_Cwd().c_str(), line.get());
+		}
 
 		parser p;
 		/* If is parsing ok */

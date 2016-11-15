@@ -74,7 +74,12 @@ bool Set_Cwd(std::string path)
 	return regs.Rax != 0;
 }
 
-
+void List_Processes(std::vector<std::string> &items)
+{
+	CONTEXT regs = Prepare_SysCall_Context(scProcess, scListProcesses);
+	regs.Rdx = (decltype(regs.Rdx))&items;
+	Do_SysCall(regs);
+}
 
 
 THandle Create_File(const char* file_name, flags_t flags)

@@ -83,6 +83,7 @@ const __int8 scGetStdHandle = 3;
 const __int8 scSetStdHandle = 4;
 const __int8 scGetCwd = 5;
 const __int8 scSetCwd = 6;
+const __int8 scListProcesses = 7;
 
 
 

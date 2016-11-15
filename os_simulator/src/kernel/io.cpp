@@ -22,14 +22,14 @@ void HandleIO(CONTEXT &regs) {
 				FSHandle* fh = FileHandle::CreateHandle(Process::current_thread_pcb->current_dir, (char*) regs.Rdx, (flags_t) regs.Rcx);
 				if (fh == nullptr) {
 					Set_Error(true, regs);
-					return;
+					break;
 				}
 
 				THandle fd = Process::add_handle(fh);
 				if (fd == nullptr) {
 					delete fh; // destroy without notifying = without calling close
 					Set_Error(true, regs);
-					return;
+					break;
 				}
 
 				regs.Rax = (decltype(regs.Rax)) fd;
@@ -43,7 +43,7 @@ void HandleIO(CONTEXT &regs) {
 				if (fh != nullptr) {
 					size_t written = 0;
 					fh->write((void*) regs.Rdi, regs.Rcx, &written);
-					regs.Rax = (DWORD) written;
+					regs.Rax = (decltype(regs.Rax)) written;
 				}
 				else {
 					Set_Error(true, regs);
@@ -58,7 +58,7 @@ void HandleIO(CONTEXT &regs) {
 				if (fh != nullptr) {
 					size_t read = 0;
 					fh->read((char**) regs.Rdi, regs.Rcx, &read);
-					regs.Rax = (DWORD) read;
+					regs.Rax = (decltype(regs.Rax)) read;
 				}
 				else {
 					Set_Error(true, regs);
@@ -72,7 +72,7 @@ void HandleIO(CONTEXT &regs) {
 
 				if (fh != nullptr) {
 					size_t read = 0;
-					regs.Rax = (DWORD) fh->seek((const fpos_t) regs.Rdi, (std::ios_base::seekdir) regs.Rcx);
+					regs.Rax = (decltype(regs.Rax)) fh->seek((const fpos_t) regs.Rdi, (std::ios_base::seekdir) regs.Rcx);
 				}
 				else {
 					Set_Error(true, regs);
@@ -95,27 +95,21 @@ void HandleIO(CONTEXT &regs) {
 			}
 			break;
 
-
 		case scMakeDirectory:
 			{
 				Directory* directory;
 				File* file;
-
 				RESULT res = Path::parse(Process::current_thread_pcb->current_dir, *(std::string*) regs.Rdx, &directory, &file, FS_MAKE_MISSING_DIRS);
 
 				regs.Rax = (decltype(regs.Rax)) (res == RESULT::OK);
 			}
 			break;
 
-
-
 		case scListDirectory:
 			{
 				IO::list_directory((std::vector<std::string>*) regs.Rdx);
 			}
 			break;
-
-
 
 		case scRemoveDirectory:
 			{
@@ -124,10 +118,21 @@ void HandleIO(CONTEXT &regs) {
 
 				Path::parse(Process::current_thread_pcb->current_dir, *(std::string*) regs.Rdx, &directory, &file, 0);
 				delete directory;
-
 			}
 			break;
 
+		case scProbeFile:
+			{
+				FSHandle* fh = Process::get_handle((THandle) regs.Rdx);
+
+				if (fh != nullptr) {
+					regs.Rax = (decltype(regs.Rax)) fh->probe((const flags_t) regs.Rdx);
+				}
+				else {
+					Set_Error(true, regs);
+				}
+			}
+			break;
 	}
 
 }

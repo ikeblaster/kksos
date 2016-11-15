@@ -5,7 +5,7 @@ HMODULE User_Programs;
 void Set_Error(const bool failed, CONTEXT &regs) {
 	if (failed) {
 		stc(regs.EFlags);
-		regs.Rax = GetLastError();
+		// regs.Rax = GetLastError(); // only for winapi calls
 	}
 	else {
 		clc(regs.EFlags);

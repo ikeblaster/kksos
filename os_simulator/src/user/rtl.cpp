@@ -28,6 +28,7 @@ bool Do_SysCall(CONTEXT &regs)
 	return !failed;
 }
 
+// ================================= PROCESSES =================================
 
 pid_t Create_Process(std::string process_name, std::vector<char> params, std::vector<std::string> data, const THandle hstdin, const THandle hstdout, const THandle hstderr)
 {
@@ -52,7 +53,6 @@ bool Join_Process(pid_t pid)
 	Do_SysCall(regs);
 	return regs.Rax != 0;
 }
-
 
 
 std::string Get_Cwd()
@@ -89,6 +89,8 @@ void List_Processes(std::vector<std::string> &items)
 	Do_SysCall(regs);
 }
 
+
+// ================================= IO =================================
 
 THandle Create_File(const char* file_name, flags_t flags)
 {
@@ -170,4 +172,14 @@ void List_Directory(std::vector<std::string> &items)
 	CONTEXT regs = Prepare_SysCall_Context(scIO, scListDirectory);
 	regs.Rdx = (decltype(regs.Rdx)) &items;
 	Do_SysCall(regs);
+}
+
+flags_t Probe_File(const THandle file_handle, const flags_t flags)
+{
+	CONTEXT regs = Prepare_SysCall_Context(scIO, scProbeFile);
+	regs.Rdx = (decltype(regs.Rdx)) file_handle;
+	regs.Rcx = (decltype(regs.Rcx)) flags;
+
+	Do_SysCall(regs);
+	return regs.Rax;
 }

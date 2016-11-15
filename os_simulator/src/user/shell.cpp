@@ -156,7 +156,7 @@ size_t __stdcall shell(const CONTEXT &regs)
 				processes.pop_back();
 			}
 
-			//Seek_File(THANDLE_STDIN, 0, std::ios_base::end); // reset stdin buffer
+			Probe_File(THANDLE_STDIN, PROBE__CLEAR_BUFFER); // reset stdin buffer
 			vmprintf("\n");
 		}
 		else {

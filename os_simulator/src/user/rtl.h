@@ -115,22 +115,29 @@ bool Close_File(const THandle file_handle);
 void Create_Pipe(THandle &readable, THandle &writeable);
 
 /// <summary>
-/// Creates a directory at specified location
+/// Creates a directory at specified location.
 /// </summary>
-/// <param name="path">Path to the directory</param>
-/// <returns></returns>
+/// <param name="path">Path to the directory.</param>
+/// <returns>Success.</returns>
 bool Make_Directory(std::string path);
 
 /// <summary>
-/// Removes a directory at specified location
+/// Removes a directory at specified location.
 /// </summary>
-/// <param name="path">Path to the directory</param>
-/// <returns></returns>
+/// <param name="path">Path to the directory.</param>
+/// <returns>Success.</returns>
 bool Remove_Directory(std::string path);
 
+/// <summary>
+/// Gets listing of directory.
+/// </summary>
+/// <param name="items">Items.</param>
+void List_Directory(std::vector<std::string> &items);
 
 /// <summary>
-/// Gets listing of directory
+/// Probes file to set, get or do something.
 /// </summary>
-/// <param name="items">Items</param>
-void List_Directory(std::vector<std::string> &items);
+/// <param name="file_handle">File handle.</param>
+/// <param name="flags">Flags.</param>
+/// <returns>Result.</returns>
+flags_t Probe_File(const THandle file_handle, const flags_t flags);

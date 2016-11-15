@@ -1,5 +1,8 @@
 #pragma once
-#include "ps.h"
+#include <string>
+#include <vector>
+#include "..\common\api.h"
+#include "vmstdio.h"
 
 size_t __stdcall ps(const CONTEXT &regs)
 {

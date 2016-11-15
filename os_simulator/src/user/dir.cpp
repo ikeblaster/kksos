@@ -1,5 +1,11 @@
 #pragma once
-#include "dir.h"
+#include <string>
+#include <vector>
+#include "..\common\api.h"
+#include "vmstdio.h"
+
+extern "C" size_t __stdcall dir(const CONTEXT &regs);
+
 
 size_t __stdcall dir(const CONTEXT &regs)
 {

@@ -1,7 +1,8 @@
 #pragma once
 
-#include "wc.h"
-
+#include "..\common\api.h"
+#include "vmstdio.h"
+#include <string>
 #include <thread>
 #include <map>
 #include <stdio.h>

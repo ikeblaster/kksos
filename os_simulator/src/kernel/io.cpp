@@ -115,6 +115,19 @@ void HandleIO(CONTEXT &regs) {
 			}
 			break;
 
+
+
+		case scRemoveDirectory:
+			{
+				Directory* directory = nullptr;
+				File* file;
+
+				Path::parse(Process::current_thread_pcb->current_dir, *(std::string*) regs.Rdx, &directory, &file, 0);
+				delete directory;
+
+			}
+			break;
+
 	}
 
 }

@@ -110,8 +110,16 @@ void Create_Pipe(THandle &readable, THandle &writeable);
 /// <summary>
 /// Creates a directory at specified location
 /// </summary>
+/// <param name="path">Path to the directory</param>
 /// <returns></returns>
 bool Make_Directory(std::string path);
+
+/// <summary>
+/// Removes a directory at specified location
+/// </summary>
+/// <param name="path">Path to the directory</param>
+/// <returns></returns>
+bool Remove_Directory(std::string path);
 
 
 /// <summary>

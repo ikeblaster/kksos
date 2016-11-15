@@ -149,6 +149,14 @@ bool Make_Directory(std::string path)
 	return regs.Rax != 0;
 }
 
+bool Remove_Directory(std::string path)
+{
+	CONTEXT regs = Prepare_SysCall_Context(scIO, scRemoveDirectory);
+	regs.Rdx = (decltype(regs.Rdx)) &path;
+	Do_SysCall(regs);
+	return regs.Rax != 0;
+}
+
 void List_Directory(std::vector<std::string> &items)
 {
 	CONTEXT regs = Prepare_SysCall_Context(scIO, scListDirectory);

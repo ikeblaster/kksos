@@ -114,7 +114,9 @@ size_t __stdcall shell(const CONTEXT &regs)
 					}
 				}
 				else if (command.name == "rd") { /* Launch rd command */
-
+					if (command.data.size() > 0) {
+						Remove_Directory(command.data.at(0));
+					}
 				}
 				else if (command.name == "md") { /* Launch md command */
 					if (command.data.size() > 0) {

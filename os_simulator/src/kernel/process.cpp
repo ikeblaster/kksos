@@ -113,6 +113,15 @@ namespace Process
 		return OpenFiles::GetFSHandle(of);
 	}
 
+	void list_processes(std::vector<std::string>* items)
+	{
+		for (int i = 0; i < PROCESS_TABLE_SIZE; i++) {
+			if (table[i] != nullptr) {
+				items->push_back(table[i]->psi.process_name);
+			}
+		}
+	}
+
 
 	// private functions
 	bool set_handle(PCB* pcb, THandle fd, FileSystem::FSHandle* handle) {
@@ -189,6 +198,9 @@ void HandleProcess(CONTEXT &regs) {
 
 		case scSetCwd:
 			regs.Rax = (decltype(regs.Rax)) Process::set_cwd(*(std::string*) regs.Rcx);
+			break;
+		case scListProcesses:
+			Process::list_processes((std::vector<std::string>*) regs.Rdx);
 			break;
 
 	}

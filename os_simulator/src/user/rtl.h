@@ -46,7 +46,11 @@ std::string Get_Cwd();
 /// <returns>Success.</returns>
 bool Set_Cwd(std::string path);
 
-
+/// <summary>
+/// Gets listing of processes
+/// </summary>
+/// <param name="items">Processes</param>
+void List_Processes(std::vector<std::string> &items);
 
 
 // =================================== IO ===================================

@@ -46,6 +46,7 @@ namespace Process
 	bool close_handle(THandle fd);
 
 	void free_handles();
+	void list_processes(std::vector<std::string>* items);
 
 }
 

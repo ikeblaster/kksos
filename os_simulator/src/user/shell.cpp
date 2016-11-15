@@ -3,7 +3,6 @@
 
 size_t __stdcall shell(const CONTEXT &regs)
 {
-
 	{
 		size_t written;
 
@@ -42,8 +41,8 @@ size_t __stdcall shell(const CONTEXT &regs)
 
 		parser p;
 		/* If is parsing ok */
-		if (p.parse(line.get())) {			
-			int commandOrder = 0; 
+		if (p.parse(line.get())) {
+			int commandOrder = 0;
 			std::vector<pid_t> processes; //all processes from command line
 			std::vector<std::pair<THandle, THandle>> pipes; //pipes for commands
 
@@ -55,7 +54,7 @@ size_t __stdcall shell(const CONTEXT &regs)
 					pipes.push_back(std::make_pair(pRead, pWrite));
 				}
 			}
-			
+
 			/* Processes whole input command */
 			while (p.commandList.size() > 0) {
 				Command command = p.commandList.front();
@@ -73,7 +72,7 @@ size_t __stdcall shell(const CONTEXT &regs)
 						Close_File(pipes.at(commandOrder - 1).first); //close read end of pipe
 
 					if (hstdin == nullptr) {
-						vmprintf("Error: Unable to open file %s\n", command.redirectStdin.c_str());
+						vmprintf(THANDLE_STDERR, "Error: Unable to open file %s\n", command.redirectStdin.c_str());
 						break; // unable to open file
 					}
 				}
@@ -92,7 +91,7 @@ size_t __stdcall shell(const CONTEXT &regs)
 						Close_File(pipes.at(commandOrder).second); // close write end of pipe
 
 					if (hstdout == nullptr) {
-						vmprintf("Error: Unable to open file %s\n", command.redirectStdout.c_str());
+						vmprintf(THANDLE_STDERR, "Error: Unable to open file %s\n", command.redirectStdout.c_str());
 						break; // unable to open file
 					}
 				}
@@ -102,7 +101,7 @@ size_t __stdcall shell(const CONTEXT &regs)
 						Close_File(pipes.at(commandOrder).second); // close write end of pipe
 
 					if (hstdout == nullptr) {
-						vmprintf("Error: Unable to open file %s\n", command.redirectAStdout.c_str());
+						vmprintf(THANDLE_STDERR, "Error: Unable to open file %s\n", command.redirectAStdout.c_str());
 						break; // unable to open file
 					}
 				}
@@ -126,12 +125,16 @@ size_t __stdcall shell(const CONTEXT &regs)
 				}
 				else if (command.name == "rd") { /* Launch rd command */
 					if (command.data.size() > 0) {
-						Remove_Directory(command.data.at(0));
+						if (!Remove_Directory(command.data.at(0))) {
+							vmprintf(hstderr, "Failed.");
+						}
 					}
 				}
 				else if (command.name == "md") { /* Launch md command */
 					if (command.data.size() > 0) {
-						Make_Directory(command.data.at(0));
+						if (!Make_Directory(command.data.at(0))) {
+							vmprintf(hstderr, "Failed.");
+						}
 					}
 				}
 				else if (command.name == "chkdir") { /* Launch md command */
@@ -141,7 +144,12 @@ size_t __stdcall shell(const CONTEXT &regs)
 				}
 				else { /* Creating process for users programs */
 					pid_t process = Create_Process(command.name, command.params, command.data, hstdin, hstdout, hstderr);
-					processes.push_back(process); // add command into vector					
+					if (process == -1) {
+						vmprintf(THANDLE_STDERR, "'%s' is not recognized as an internal or external command\nor operable program.", command.name.c_str());
+					}
+					else {
+						processes.push_back(process); // add command into vector
+					}
 				}
 
 
@@ -159,52 +167,14 @@ size_t __stdcall shell(const CONTEXT &regs)
 				processes.pop_back();
 			}
 
-			Probe_File(THANDLE_STDIN, PROBE__CLEAR_BUFFER); // reset stdin buffer
 			vmprintf("\n");
 		}
 		else {
 			//vmprintf("Parsing failed\n");
 		}
+		Probe_File(THANDLE_STDIN, PROBE__CLEAR_BUFFER); // reset stdin buffer
 	}
-	
-	
-	/*
-	THandle pRead1, pWrite1;
-	THandle pRead2, pWrite2;
 
-	Create_Pipe(pRead1, pWrite1);
-	Create_Pipe(pRead2, pWrite2);
-
-	int p1 = Create_Process("sort", {}, { "test.txt" }, Get_Std_Handle(ITHANDLE_STDIN), pWrite1, Get_Std_Handle(ITHANDLE_STDERR));
-	int p2 = Create_Process("wc", {}, {}, pRead1, pWrite2, Get_Std_Handle(ITHANDLE_STDERR));
-	int p3 = Create_Process("sort", {}, {}, pRead2, Get_Std_Handle(ITHANDLE_STDOUT), Get_Std_Handle(ITHANDLE_STDERR));
-
-	Close_File(pRead1);
-	Close_File(pRead2);
-	Close_File(pWrite1);
-	Close_File(pWrite2);
-
-	Join_Process(p1);
-	Join_Process(p2);
-	Join_Process(p3);
-
-	vmprintf("\n");
-
-	vmprintf("%s>\n", Get_Cwd().c_str());
-	Set_Cwd("slozka");
-	vmprintf("%s>\n", Get_Cwd().c_str());
-	Set_Cwd("podslozka");
-	vmprintf("%s>\n", Get_Cwd().c_str());
-	Set_Cwd("\\");
-	vmprintf("%s>\n", Get_Cwd().c_str());
-	*/
-
-
-	//THandle conout = Create_File("STDOUT", FILE_SHARE_WRITE); // nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN
-	//const char* hello = "Hello world!\n";
-	//size_t written;
-	//Write_File(conout, hello, strlen(hello), written);
-	//Close_File(conout);
 
 	return 0;
 }

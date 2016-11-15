@@ -38,35 +38,35 @@ bool parser::parse(std::string input)
 {
 	last = input.length() - 1;
 
-	/* processes input string char by char */		
+	/* processes input string char by char */
 	for (i = 0; i < input.length(); i++) {
-		char& c = input.at(i); //current char				
+		char& c = input.at(i); //current char
 
 		/* Firstly must be placed allowed command */
-		if (!commandOK) {			
+		if (!commandOK) {
 			if (i == last || specialSymbols.count(c)) {
-				if (i == last) {	
+				if (i == last) {
 					if(c != ' ')
 						temp += c;
 				}
 				/* Checks if command is valid */
-				if (std::regex_match(temp, validCommand)) {					
+				if (std::regex_match(temp, validCommand)) {
 					commandOK = true;
 					pipe = false;
 					commandList.push(Command()); /* add to vector new command */
 					commandList.back().name = temp; /* add command name to struct */
 					temp = "";
 					if(c != ' ' && i != last)
-						i -= 1; //if actual char is special symbol, we need use it in next step again					
+						i -= 1; //if actual char is special symbol, we need use it in next step again
 				}
-				else {	
+				else {
 					if (!temp.empty()) {
 						std::cout << "Command " << temp << " is not allowed!" << std::endl;
-						return false;	
+						return false;
 					}
-				}				
+				}
 			}
-			else {				
+			else {
 				temp += c;
 			}
 		}
@@ -150,7 +150,7 @@ bool parser::parse(std::string input)
 			}
 		}
 	} /* Whole input was processed */
-	
+
 	/* Check if pipe has follower */
 	if (!commandOK && pipe) {
 		std::cout << "After pipe must follow a valid command!" << std::endl;
@@ -160,11 +160,11 @@ bool parser::parse(std::string input)
 	else if (openQuote) {
 		std::cout << "Quoted data are not closed!" << std::endl;
 		return false;
-	}	
+	}
 	/* Save data for command */
 	else if (!commandList.empty()) {
 		saveData(); /* Save data for command */
-	}	
+	}
 	/* Input isn't valid command */
 	else {
 		if(temp != "") {

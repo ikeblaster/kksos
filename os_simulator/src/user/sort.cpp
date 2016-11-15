@@ -28,7 +28,7 @@ size_t __stdcall sort(const CONTEXT &regs)
 		if (textfile != nullptr) input = textfile;
 	}
 
-	std::multimap<std::string, std::unique_ptr<const char[]>> lines; 
+	std::multimap<std::string, std::unique_ptr<const char[]>> lines;
 
 	while(true) {
 		auto line = vmgetline(input);

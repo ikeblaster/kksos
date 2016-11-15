@@ -36,7 +36,7 @@ pid_t Create_Process(std::string process_name, std::vector<char> params, std::ve
 	return (pid_t) regs.Rax;
 }
 
-bool Join_Process(pid_t pid) 
+bool Join_Process(pid_t pid)
 {
 	CONTEXT regs = Prepare_SysCall_Context(scProcess, scJoinProcess);
 	regs.Rcx = (decltype(regs.Rcx)) pid;

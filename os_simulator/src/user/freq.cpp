@@ -1,6 +1,6 @@
 #include "freq.h"
 
-	
+
 std::string freq(std::string input) {
 	int bytes[UCHAR_MAX] = { 0 };
 	char buff[65535] = {0};

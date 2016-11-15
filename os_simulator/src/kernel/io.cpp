@@ -4,12 +4,54 @@ using namespace FileSystem;
 
 namespace IO
 {
+	FileHandle* CreateHandle(Directory* cwd, char* path, flags_t flags)
+	{
+		Directory* directory;
+		File* file = nullptr;
+
+		RESULT res = Path::parse(cwd, path, &directory, &file, 0);
+
+		if (res == RESULT::MISSING_LAST_PART) {
+
+			bool create_missing = ((flags & FH_OPEN_OR_CREATE) == FH_OPEN_OR_CREATE)
+				|| ((flags & FH_CREATE_ALWAYS) == FH_CREATE_ALWAYS);
+
+			if (!create_missing) {
+				return nullptr;
+			}
+
+			file = directory->createFile(Path::getBasename(path));
+		}
+
+		if (file == nullptr)
+			return nullptr;
+
+		return new FileHandle(file, flags);
+	}
+
 	void list_directory(std::vector<std::string>* items) 
 	{
 		auto files = Process::current_thread_pcb->current_dir->getFiles();
 		for (auto file : files) {
-			items->push_back(file.first);
+			items->push_back(file.second->toString());
 		}
+	}
+
+	bool check_directory_open(FileSystem::Directory* dir)
+	{
+		for (int i = 0; i < Process::PROCESS_TABLE_SIZE; i++) {
+			if (Process::table[i] != nullptr && Process::table[i]->current_dir == dir)
+				return true;
+		}
+
+		return false;
+	}
+
+	bool check_file_open(FileSystem::File* file)
+	{
+		FileHandle fh(file, 0);
+		bool ret = OpenFiles::IsFSHandleOpen(&fh);
+		return ret;
 	}
 }
 
@@ -19,7 +61,7 @@ void HandleIO(CONTEXT &regs) {
 	switch (Get_AL((__int16) regs.Rax)) {
 		case scCreateFile:
 			{
-				FSHandle* fh = FileHandle::CreateHandle(Process::current_thread_pcb->current_dir, (char*) regs.Rdx, (flags_t) regs.Rcx);
+				FileHandle* fh = IO::CreateHandle(Process::current_thread_pcb->current_dir, (char*) regs.Rdx, (flags_t) regs.Rcx);
 				if (fh == nullptr) {
 					Set_Error(true, regs);
 					break;

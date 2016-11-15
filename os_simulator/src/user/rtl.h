@@ -51,13 +51,6 @@ bool Set_Cwd(std::string path);
 /// <param name="items">Processes</param>
 void List_Processes(std::vector<std::string> &items);
 
-/// <summary>
-/// Checks whether any of running processes are using specified working directory
-/// </summary>
-/// <param name="path">Working directory</param>
-/// <returns>There is a process using a specified directory</returns>
-bool Check_Cwd(std::string path);
-
 
 // =================================== IO ===================================
 

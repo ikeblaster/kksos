@@ -23,6 +23,11 @@ namespace FileSystem {
 		return this->name;
 	}
 
+	std::string Node::toString()
+	{
+		return this->getName();
+	}
+
 
 	// === File members
 
@@ -38,7 +43,10 @@ namespace FileSystem {
 
 	RESULT File::destroy()
 	{
-		delete this; // TODO: pokud neni otevreny
+		if (IO::check_file_open(this)) {
+			return RESULT::UNABLE_TO_DELETE;
+		}
+		delete this;
 		return RESULT::OK;
 	}
 
@@ -53,6 +61,11 @@ namespace FileSystem {
 			return search->second;
 		}
 		return nullptr;
+	}
+
+	std::string Directory::toString()
+	{
+		return this->name + FileSystem::PathSeparator;
 	}
 
 	File* Directory::createFile(std::string name)
@@ -118,7 +131,7 @@ namespace FileSystem {
 
 	RESULT Directory::destroy()
 	{
-		if (Process::check_cwd(this)) {
+		if (IO::check_directory_open(this)) {
 			return RESULT::UNABLE_TO_DELETE;
 		}
 

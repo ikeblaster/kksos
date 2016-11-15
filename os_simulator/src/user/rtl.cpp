@@ -62,14 +62,6 @@ bool Set_Cwd(std::string path)
 	return Do_SysCall(regs);
 }
 
-bool Check_Cwd(std::string path)
-{
-	CONTEXT regs = Prepare_SysCall_Context(scProcess, scCheckCwd);
-	regs.Rcx = (decltype(regs.Rcx)) &path;
-	Do_SysCall(regs);
-	return regs.Rax != 0;
-}
-
 void List_Processes(std::vector<std::string> &items)
 {
 	CONTEXT regs = Prepare_SysCall_Context(scProcess, scListProcesses);

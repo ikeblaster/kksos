@@ -29,9 +29,10 @@ size_t __stdcall shell(const CONTEXT &regs)
 	}
 
 	bool stdinIsRedirected = (Probe_File(THANDLE_STDIN, PROBE__HOST_STDIN_REDIRECTED) == TRUE);
+	bool runShell = true;
 
 	/* Shell loop */
-	while (true) {
+	while (runShell) {
 		vmprintf("%s>", Get_Cwd().c_str());
 
 		auto line = vmgetline();
@@ -69,10 +70,10 @@ size_t __stdcall shell(const CONTEXT &regs)
 				if (command.redirectStdin.length() > 0) { // stdin from file
 					hstdin = Create_File(command.redirectStdin.c_str(), FH_OPEN_EXISTING);
 					if (commandOrder != 0)
-						Close_File(pipes.at(commandOrder - 1).first); //close read end of pipe
+						Close_File(pipes.at(commandOrder - 1).first); // close read end of pipe
 
 					if (hstdin == nullptr) {
-						vmprintf(THANDLE_STDERR, "Error: Unable to open file %s\n", command.redirectStdin.c_str());
+						vmprintf(THANDLE_STDERR, "The system cannot find the file specified.\n");
 						break; // unable to open file
 					}
 				}
@@ -91,7 +92,8 @@ size_t __stdcall shell(const CONTEXT &regs)
 						Close_File(pipes.at(commandOrder).second); // close write end of pipe
 
 					if (hstdout == nullptr) {
-						vmprintf(THANDLE_STDERR, "Error: Unable to open file %s\n", command.redirectStdout.c_str());
+						vmprintf(THANDLE_STDERR, "The system cannot find the file specified.\n");
+						if (closeHstdin) Close_File(hstdin);
 						break; // unable to open file
 					}
 				}
@@ -101,7 +103,8 @@ size_t __stdcall shell(const CONTEXT &regs)
 						Close_File(pipes.at(commandOrder).second); // close write end of pipe
 
 					if (hstdout == nullptr) {
-						vmprintf(THANDLE_STDERR, "Error: Unable to open file %s\n", command.redirectAStdout.c_str());
+						vmprintf(THANDLE_STDERR, "The system cannot find the file specified.\n");
+						if (closeHstdin) Close_File(hstdin);
 						break; // unable to open file
 					}
 				}
@@ -115,7 +118,7 @@ size_t __stdcall shell(const CONTEXT &regs)
 
 
 				/* Prepare commands to launch */
-				if (command.name == "cd") { /* Launch cd command */
+				if (command.name == "cd") { /* cd command */
 					if (command.data.size() > 0) {
 						Set_Cwd(command.data.at(0));
 					}
@@ -123,29 +126,27 @@ size_t __stdcall shell(const CONTEXT &regs)
 						vmprintf(hstdout, "%s\n", Get_Cwd().c_str());
 					}
 				}
-				else if (command.name == "rd") { /* Launch rd command */
+				else if (command.name == "rd") { /* rd command */
 					if (command.data.size() > 0) {
 						if (!Remove_Directory(command.data.at(0))) {
-							vmprintf(hstderr, "Failed.");
+							vmprintf(hstderr, "Failed.\n");
 						}
 					}
 				}
-				else if (command.name == "md") { /* Launch md command */
+				else if (command.name == "md") { /* md command */
 					if (command.data.size() > 0) {
 						if (!Make_Directory(command.data.at(0))) {
-							vmprintf(hstderr, "Failed.");
+							vmprintf(hstderr, "Failed.\n");
 						}
 					}
 				}
-				else if (command.name == "chkdir") { /* Launch md command */
-					if (command.data.size() > 0) {
-						vmprintf(hstdout, Check_Cwd(command.data.at(0)) ? "Directory is cwd for 1 or more processes.\n" : "Directory is cwd for no process.\n");
-					}
+				else if (command.name == "exit") { /* exit command */
+					runShell = false;
 				}
 				else { /* Creating process for users programs */
 					pid_t process = Create_Process(command.name, command.params, command.data, hstdin, hstdout, hstderr);
 					if (process == -1) {
-						vmprintf(THANDLE_STDERR, "'%s' is not recognized as an internal or external command\nor operable program.", command.name.c_str());
+						vmprintf(THANDLE_STDERR, "'%s' is not recognized as an internal or external command\nor operable program.\n", command.name.c_str());
 					}
 					else {
 						processes.push_back(process); // add command into vector

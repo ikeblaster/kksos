@@ -24,6 +24,8 @@ namespace OpenFiles {
 
 	FileSystem::FSHandle* GetFSHandle(OFHandle handle);
 
+	bool IsFSHandleOpen(FileSystem::FSHandle * filehandle);
+
 	bool CloseHandle(OFHandle handle);
 
 }

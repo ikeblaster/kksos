@@ -3,34 +3,6 @@
 
 namespace FileSystem {
 
-	// === static members
-
-	FileHandle* FileHandle::CreateHandle(Directory* cwd, char* path, flags_t flags)
-	{
-		Directory* directory;
-		File* file = nullptr;
-
-		RESULT res = Path::parse(cwd, path, &directory, &file, 0);
-
-		if (res == RESULT::MISSING_LAST_PART) {
-			
-			bool create_missing = ((flags & FH_OPEN_OR_CREATE) == FH_OPEN_OR_CREATE)
-				|| ((flags & FH_CREATE_ALWAYS) == FH_CREATE_ALWAYS);
-			
-			if (!create_missing) {
-				return nullptr;
-			}
-			
-			file = directory->createFile(Path::getBasename(path));
-		}
-
-		if (file == nullptr)
-			return nullptr;
-
-		return new FileHandle(file, flags);
-	}
-
-
 	// === members
 
 	FileHandle::FileHandle(File* file, flags_t flags)

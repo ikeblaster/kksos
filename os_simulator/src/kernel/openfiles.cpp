@@ -15,23 +15,29 @@ namespace OpenFiles
 
 		if (of->handle == nullptr) {
 			of->handle = filehandle;
-			of->refcount = 0;
+			of->refcount = 1;
 		}
 		else {
-			// TODO: read only rezim
-		}
+			if(of->handle != filehandle)
+				delete filehandle; // use filehandle saved in openFiles instead
 
-		of->refcount++;
+			of->refcount++;
+		}
 
 		return ofh;
 	}
 
-	FileSystem::FSHandle* GetFSHandle(OFHandle handle) {
-		auto search = openFiles.find(handle);
+	FileSystem::FSHandle* GetFSHandle(OFHandle ofh) {
+		auto search = openFiles.find(ofh);
 		if (search != openFiles.end()) {
 			return search->second.handle;
 		}
 		return nullptr;
+	}
+
+	bool IsFSHandleOpen(FileSystem::FSHandle* filehandle) {
+		OFHandle ofh = (OFHandle) filehandle->getHash();
+		return openFiles.find(ofh) != openFiles.end();
 	}
 
 	bool CloseHandle(OFHandle handle) {

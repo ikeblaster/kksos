@@ -14,8 +14,6 @@ namespace FileSystem {
 		std::stringstream ss;
 
 		public:
-		static FileHandle* CreateHandle(FileSystem::Directory* cwd, char* path, flags_t flags);
-
 		FileHandle(File* file, flags_t flags=0);
 		intptr_t getHash();
 		flags_t probe(flags_t flags);

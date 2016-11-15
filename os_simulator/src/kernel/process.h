@@ -39,6 +39,8 @@ namespace Process
 	void set_std_handle(DWORD nStdHandle, THandle handle);
 	std::string get_cwd();
 	bool set_cwd(std::string path);
+	bool check_cwd(std::string path);
+	bool check_cwd(FileSystem::Directory* dir);
 
 	FileSystem::FSHandle* get_handle(THandle fd);
 	bool set_handle(PCB* pcb, THandle fd, FileSystem::FSHandle* handle);

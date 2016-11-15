@@ -103,6 +103,28 @@ namespace Process
 		return true;
 	}
 
+	bool check_cwd(std::string path) {
+
+		FileSystem::Directory* dir;
+		FileSystem::File* file;
+
+		auto res = FileSystem::Path::parse(current_thread_pcb->current_dir, path, &dir, &file, 0);
+
+		if (res != FileSystem::RESULT::OK)
+			return false;
+
+		return check_cwd(dir);
+	}
+
+	bool check_cwd(FileSystem::Directory* dir) {
+		for (int i = 0; i < PROCESS_TABLE_SIZE; i++) {
+			if (table[i]->current_dir == dir)
+				return true;
+		}
+
+		return false;
+	}
+
 	FileSystem::FSHandle* get_handle(THandle fd) {
 		std::unique_lock<std::mutex> lck(handles_mtx);
 
@@ -201,6 +223,10 @@ void HandleProcess(CONTEXT &regs) {
 			break;
 		case scListProcesses:
 			Process::list_processes((std::vector<std::string>*) regs.Rdx);
+			break;
+
+		case scCheckCwd:
+			regs.Rax = (decltype(regs.Rax)) Process::check_cwd(*(std::string*) regs.Rcx);
 			break;
 
 	}

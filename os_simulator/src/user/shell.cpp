@@ -123,6 +123,11 @@ size_t __stdcall shell(const CONTEXT &regs)
 						Make_Directory(command.data.at(0));
 					}
 				}
+				else if (command.name == "chkdir") { /* Launch md command */
+					if (command.data.size() > 0) {
+						Check_Cwd(command.data.at(0));
+					}
+				}
 				else { /* Creating process for users programs */
 					pid_t process = Create_Process(command.name, command.params, command.data, hstdin, hstdout, hstderr);
 					processes.push_back(process); // add command into vector					

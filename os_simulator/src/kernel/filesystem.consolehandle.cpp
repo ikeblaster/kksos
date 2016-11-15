@@ -33,7 +33,7 @@ namespace FileSystem {
 
 			mStdInOpen = true;
 		}
-		else if (flags == PROBE__IS_REDIRECTED) {
+		else if (flags == PROBE__HOST_STDIN_REDIRECTED) {
 			return mRedirectedStdIn;
 		}
 

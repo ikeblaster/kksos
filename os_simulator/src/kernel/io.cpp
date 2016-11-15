@@ -126,7 +126,7 @@ void HandleIO(CONTEXT &regs) {
 				FSHandle* fh = Process::get_handle((THandle) regs.Rdx);
 
 				if (fh != nullptr) {
-					regs.Rax = (decltype(regs.Rax)) fh->probe((const flags_t) regs.Rdx);
+					regs.Rax = (decltype(regs.Rax)) fh->probe((const flags_t) regs.Rcx);
 				}
 				else {
 					Set_Error(true, regs);

@@ -3,7 +3,6 @@
 
 size_t __stdcall shell(const CONTEXT &regs)
 {
-	PROCESSSTARTUPINFO psi = *(PROCESSSTARTUPINFO*)regs.Rcx;
 
 	{
 		size_t written;
@@ -30,6 +29,7 @@ size_t __stdcall shell(const CONTEXT &regs)
 		Close_File(testtxt);
 	}
 
+	bool stdinIsRedirected = (Probe_File(THANDLE_STDIN, PROBE__HOST_STDIN_REDIRECTED) == TRUE);
 
 	/* Shell loop */
 	while (true) {
@@ -37,6 +37,8 @@ size_t __stdcall shell(const CONTEXT &regs)
 
 		auto line = vmgetline();
 		if(line == nullptr) break;
+
+		if (stdinIsRedirected) vmprintf("%s\n", line.get());
 
 		parser p;
 		/* If is parsing ok */

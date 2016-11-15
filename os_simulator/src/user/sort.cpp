@@ -20,7 +20,7 @@ void call_from_thread(THandle handle) {
 size_t __stdcall sort(const CONTEXT &regs)
 {
 	PROCESSSTARTUPINFO psi = *(PROCESSSTARTUPINFO*) regs.Rcx;
-	THandle input = Get_Std_Handle(THANDLE_STDIN);
+	THandle input = THANDLE_STDIN;
 	THandle textfile = nullptr;
 
 	if (psi.data.size() > 0) {
@@ -36,7 +36,7 @@ size_t __stdcall sort(const CONTEXT &regs)
 		lines.insert(std::make_pair(line.get(), std::move(line))); // TODO: 1. parametr, razeni podle urciteho sloupce
 	}
 
-	if (textfile != nullptr) Close_File(input);
+	if (textfile != nullptr) Close_File(textfile);
 
 	for (const auto& kv : lines) {
 		vmprintf("%s\n", kv.second.get());

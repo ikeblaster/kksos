@@ -87,14 +87,6 @@ namespace Process
 		return true;
 	}
 
-	THandle get_std_handle(DWORD64 nStdHandle) {
-		return (THandle) nStdHandle;
-	}
-
-	void set_std_handle(DWORD64 nStdHandle, THandle handle) {
-		current_thread_pcb->file_descriptors[nStdHandle] = get_handle(handle);
-	}
-
 	std::string get_cwd() {
 		return FileSystem::Path::generate(current_thread_pcb->current_dir); // TODO: vracet pres char** parameter
 	}
@@ -128,6 +120,10 @@ namespace Process
 
 		auto of = OpenFiles::CreateHandle(handle);
 		if (of == nullptr) return false;
+
+		if (pcb->file_descriptors[(intptr_t) fd] != nullptr)
+			close_handle(fd); // close existing handle
+
 		pcb->file_descriptors[(intptr_t) fd] = of;
 		return true;
 	}
@@ -185,14 +181,6 @@ void HandleProcess(CONTEXT &regs) {
 
 		case scJoinProcess:
 			regs.Rax = (decltype(regs.Rax)) Process::join_process((int) regs.Rcx);
-			break;
-
-		case scGetStdHandle:
-			regs.Rax = (decltype(regs.Rax)) Process::get_std_handle(regs.Rcx);
-			break;
-
-		case scSetStdHandle:
-			Process::set_std_handle(regs.Rcx, (THandle) regs.Rdx);
 			break;
 
 		case scGetCwd:

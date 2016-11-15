@@ -32,20 +32,6 @@ pid_t Create_Process(
 bool Join_Process(pid_t PID);
 
 /// <summary>
-/// Gets handle to standard stream.
-/// </summary>
-/// <param name="nStdHandle">Stream type.</param>
-/// <returns>Handle.</returns>
-THandle Get_Std_Handle(DWORD64 nStdHandle);
-
-/// <summary>
-/// Sets standard stream to different handle.
-/// </summary>
-/// <param name="n_handle">Stream type.</param>
-/// <param name="handle">New handle.</param>
-void Set_Std_Handle(DWORD64 n_handle, THandle handle);
-
-/// <summary>
 /// Gets current working directory path.
 /// </summary>
 /// <param name="pid">PID of desired process; -1 for current process.</param>

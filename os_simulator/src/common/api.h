@@ -11,9 +11,9 @@
 
 #define FS_MAKE_MISSING_DIRS 16
 
-#define THANDLE_STDIN 0
-#define THANDLE_STDOUT 1
-#define THANDLE_STDERR 2
+#define THANDLE_STDIN (THandle) 0
+#define THANDLE_STDOUT (THandle) 1
+#define THANDLE_STDERR (THandle) 2
 
 typedef DWORD64 pid_t;
 typedef DWORD64 flags_t;

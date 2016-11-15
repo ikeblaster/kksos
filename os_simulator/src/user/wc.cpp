@@ -10,7 +10,7 @@
 size_t __stdcall wc(const CONTEXT &regs)
 {
 	PROCESSSTARTUPINFO psi = *(PROCESSSTARTUPINFO*) regs.Rcx;
-	THandle input = Get_Std_Handle(THANDLE_STDIN);
+	THandle input = THANDLE_STDIN;
 	THandle textfile = nullptr;
 
 	if (psi.data.size() > 0) {

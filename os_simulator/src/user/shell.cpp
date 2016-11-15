@@ -51,7 +51,7 @@ size_t __stdcall shell(const CONTEXT &regs)
 				Command command = p.commandList.front();
 				THandle hstdin = nullptr;
 				THandle hstdout = nullptr;
-				THandle hstderr = Get_Std_Handle(THANDLE_STDERR);
+				THandle hstderr = THANDLE_STDERR;
 				bool closeHstdin = true;
 				bool closeHstdout = true;
 
@@ -68,7 +68,7 @@ size_t __stdcall shell(const CONTEXT &regs)
 					}
 				}
 				else if (commandOrder == 0) { // stdin from console (only for first command)
-					hstdin = Get_Std_Handle(THANDLE_STDIN);
+					hstdin = THANDLE_STDIN;
 					closeHstdin = false;
 				}
 				else { // stdin from pipe
@@ -97,7 +97,7 @@ size_t __stdcall shell(const CONTEXT &regs)
 					}
 				}
 				else if (p.commandList.size() == 1) { // stdout to console (only for last command)
-					hstdout = Get_Std_Handle(THANDLE_STDOUT);
+					hstdout = THANDLE_STDOUT;
 					closeHstdout = false;
 				}
 				else { // stdout to pipe
@@ -141,7 +141,7 @@ size_t __stdcall shell(const CONTEXT &regs)
 				processes.pop_back();
 			}
 
-			Seek_File(Get_Std_Handle(THANDLE_STDIN), 0, std::ios_base::end); // reset stdin buffer
+			Seek_File(THANDLE_STDIN, 0, std::ios_base::end); // reset stdin buffer
 		}
 		else {
 			//vmprintf("Parsing failed\n");

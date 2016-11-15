@@ -53,21 +53,7 @@ bool Join_Process(pid_t pid)
 	return regs.Rax != 0;
 }
 
-THandle Get_Std_Handle(DWORD64 n_handle)
-{
-	CONTEXT regs = Prepare_SysCall_Context(scProcess, scGetStdHandle);
-	regs.Rcx = (decltype(regs.Rcx)) n_handle;
-	Do_SysCall(regs);
-	return (THandle) regs.Rax;
-}
 
-void Set_Std_Handle(DWORD64 n_handle, THandle handle)
-{
-	CONTEXT regs = Prepare_SysCall_Context(scProcess, scSetStdHandle);
-	regs.Rcx = (decltype(regs.Rcx)) n_handle;
-	regs.Rdx = (decltype(regs.Rdx)) handle;
-	Do_SysCall(regs);
-}
 
 std::string Get_Cwd()
 {

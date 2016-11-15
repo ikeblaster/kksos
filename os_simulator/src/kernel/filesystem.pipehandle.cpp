@@ -9,6 +9,16 @@ namespace FileSystem {
 		this->pipe = pipe;
 	}
 
+	intptr_t PipeHandle::getHash()
+	{
+		return (intptr_t) this;
+	}
+
+	flags_t PipeHandle::probe(flags_t flags)
+	{
+		return 0;
+	}
+
 	fpos_t PipeHandle::seek(const fpos_t pos, std::ios_base::seekdir way)
 	{
 		return 0;
@@ -43,11 +53,6 @@ namespace FileSystem {
 	{
 		this->pipe->closePipeHandle(this->type);
 		delete this;
-	}
-
-	intptr_t PipeHandle::getHash()
-	{
-		return (intptr_t) this;
 	}
 
 

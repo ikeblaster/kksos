@@ -16,6 +16,14 @@ namespace FileSystem {
 		public:		
 		PipeHandle(PIPETYPE type, Pipe* pipe);
 
+		intptr_t getHash();
+
+		flags_t probe(flags_t flags);
+
+		fpos_t seek(const fpos_t pos, std::ios_base::seekdir way);
+
+		fpos_t tell();
+
 		/// <summary>
 		/// Writes into pipe buffer
 		/// </summary>
@@ -23,10 +31,6 @@ namespace FileSystem {
 		/// <param name="buffer_size">Size of input</param>
 		/// <param name="pwritten">Number of writted chars</param>
 		void write(const void* buffer, const size_t buffer_size, size_t* pwritten);
-
-		fpos_t seek(const fpos_t pos, std::ios_base::seekdir way);
-
-		fpos_t tell();
 
 		/// <summary>
 		/// Reads from pipe buffer
@@ -38,7 +42,6 @@ namespace FileSystem {
 
 		void close();
 
-		intptr_t getHash();
 	};
 		
 }

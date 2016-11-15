@@ -32,7 +32,7 @@ namespace FileSystem {
 
 		void closePipeHandle(PIPETYPE type);
 
-		PipeHandle * getPipeHandle(PIPETYPE type);
+		PipeHandle* getPipeHandle(PIPETYPE type);
 
 		/// <summary>
 		/// Writes into pipe buffer

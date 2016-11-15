@@ -3,14 +3,20 @@
 #include <string>
 #include <vector>
 
-// Filesystem constants
+// Filehandle constants
 #define FH_OPEN_EXISTING 1
 #define FH_OPEN_OR_CREATE 2
 #define FH_CREATE_ALWAYS 4
 #define FH_FILE_APPEND 8
 
+// Filesystem constants
 #define FS_MAKE_MISSING_DIRS 16
 
+// FSHandle constants
+#define PROBE__CLEAR_BUFFER 0
+#define PROBE__IS_REDIRECTED 1
+
+// Standard stream handles
 #define THANDLE_STDIN (THandle) 0
 #define THANDLE_STDOUT (THandle) 1
 #define THANDLE_STDERR (THandle) 2

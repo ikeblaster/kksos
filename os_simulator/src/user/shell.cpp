@@ -13,6 +13,14 @@ size_t __stdcall shell(const CONTEXT &regs)
 		Write_File(testtxt, hello, strlen(hello), written);
 		Close_File(testtxt);
 
+		testtxt = Create_File("cmd.txt", FH_OPEN_EXISTING);
+		if (testtxt == nullptr) {
+			testtxt = Create_File("cmd.txt", FH_OPEN_OR_CREATE); // nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN
+			const char* hello2 = "sort test.txt";
+			Write_File(testtxt, hello2, strlen(hello2), written);
+		}
+		Close_File(testtxt);
+
 		testtxt = Create_File("test.txt", FH_OPEN_EXISTING); // nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN
 		char buffer[255];
 		char *p_buffer = &buffer[0];
@@ -148,7 +156,8 @@ size_t __stdcall shell(const CONTEXT &regs)
 				processes.pop_back();
 			}
 
-			Seek_File(THANDLE_STDIN, 0, std::ios_base::end); // reset stdin buffer
+			//Seek_File(THANDLE_STDIN, 0, std::ios_base::end); // reset stdin buffer
+			vmprintf("\n");
 		}
 		else {
 			//vmprintf("Parsing failed\n");

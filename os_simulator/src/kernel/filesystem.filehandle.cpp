@@ -46,6 +46,16 @@ namespace FileSystem {
 			this->seek(0, std::ios_base::beg);
 	}
 
+	intptr_t FileHandle::getHash()
+	{
+		return (intptr_t) this->file;
+	}
+
+	flags_t FileHandle::probe(flags_t flags)
+	{
+		return 0;
+	}
+
 	fpos_t FileHandle::seek(const fpos_t pos, std::ios_base::seekdir way)
 	{
 		this->ss.clear();
@@ -89,11 +99,6 @@ namespace FileSystem {
 		this->file->setData(this->ss.str());
 
 		delete this;
-	}
-
-	intptr_t FileHandle::getHash()
-	{
-		return (intptr_t) this->file;
 	}
 
 

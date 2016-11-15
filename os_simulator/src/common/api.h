@@ -14,7 +14,7 @@
 
 // FSHandle constants
 #define PROBE__CLEAR_BUFFER 0
-#define PROBE__IS_REDIRECTED 1
+#define PROBE__HOST_STDIN_REDIRECTED 1
 
 // Standard stream handles
 #define THANDLE_STDIN (THandle) 0

@@ -39,7 +39,7 @@ void Initialize_FS() {
 	FileSystem::console = new FileSystem::ConsoleHandle();
 }
 void Shutdown_FS() {
-	delete FileSystem::fs;
+	FileSystem::fs->destroy();
 	delete FileSystem::console;
 }
 

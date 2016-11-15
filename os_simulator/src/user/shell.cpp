@@ -114,6 +114,7 @@ size_t __stdcall shell(const CONTEXT &regs)
 					hstdout = pipes.at(commandOrder).second;
 				}
 
+
 				/* Prepare commands to launch */
 				if (command.name == "cd") { /* Launch cd command */
 					if (command.data.size() > 0) {
@@ -135,7 +136,7 @@ size_t __stdcall shell(const CONTEXT &regs)
 				}
 				else if (command.name == "chkdir") { /* Launch md command */
 					if (command.data.size() > 0) {
-						Check_Cwd(command.data.at(0));
+						vmprintf(hstdout, Check_Cwd(command.data.at(0)) ? "Directory is cwd for 1 or more processes.\n" : "Directory is cwd for no process.\n");
 					}
 				}
 				else { /* Creating process for users programs */

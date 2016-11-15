@@ -104,7 +104,6 @@ namespace Process
 	}
 
 	bool check_cwd(std::string path) {
-
 		FileSystem::Directory* dir;
 		FileSystem::File* file;
 
@@ -118,7 +117,7 @@ namespace Process
 
 	bool check_cwd(FileSystem::Directory* dir) {
 		for (int i = 0; i < PROCESS_TABLE_SIZE; i++) {
-			if (table[i]->current_dir == dir)
+			if (table[i] != nullptr && table[i]->current_dir == dir)
 				return true;
 		}
 
@@ -206,12 +205,13 @@ namespace Process
 void HandleProcess(CONTEXT &regs) {
 	switch (Get_AL((__int16) regs.Rax)) {
 
-		case scCreateProcess:
+		case scCreateProcess: 
 			regs.Rax = (decltype(regs.Rax)) Process::create_process(*(PROCESSSTARTUPINFO*) regs.Rcx);
+			Set_Error(regs.Rax == -1, regs);
 			break;
 
 		case scJoinProcess:
-			regs.Rax = (decltype(regs.Rax)) Process::join_process((int) regs.Rcx);
+			Set_Error(!Process::join_process((int) regs.Rcx), regs);
 			break;
 
 		case scGetCwd:
@@ -219,8 +219,9 @@ void HandleProcess(CONTEXT &regs) {
 			break;
 
 		case scSetCwd:
-			regs.Rax = (decltype(regs.Rax)) Process::set_cwd(*(std::string*) regs.Rcx);
+			Set_Error(!Process::set_cwd(*(std::string*) regs.Rcx), regs);
 			break;
+
 		case scListProcesses:
 			Process::list_processes((std::vector<std::string>*) regs.Rdx);
 			break;

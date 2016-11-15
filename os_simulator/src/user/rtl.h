@@ -1,5 +1,4 @@
 #pragma once
-#include <atomic>
 #include <memory>
 #include "..\common\api.h"
 

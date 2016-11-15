@@ -82,14 +82,14 @@ void HandleIO(CONTEXT &regs) {
 
 		case scCloseFile:
 			{
-				Set_Error(!Process::close_handle((THandle) regs.Rdx), regs);
+				bool res = Process::close_handle((THandle) regs.Rdx);
+				Set_Error(!res, regs);
 			}
 			break;
 
 		case scCreatePipe:
 			{
 				Pipe* pipe = new Pipe();
-
 				regs.Rcx = (decltype(regs.Rcx)) Process::add_handle(pipe->getPipeHandle(PIPETYPE::READABLE));
 				regs.Rdx = (decltype(regs.Rdx)) Process::add_handle(pipe->getPipeHandle(PIPETYPE::WRITEABLE));
 			}
@@ -97,27 +97,25 @@ void HandleIO(CONTEXT &regs) {
 
 		case scMakeDirectory:
 			{
-				Directory* directory;
-				File* file;
-				RESULT res = Path::parse(Process::current_thread_pcb->current_dir, *(std::string*) regs.Rdx, &directory, &file, FS_MAKE_MISSING_DIRS);
-
-				regs.Rax = (decltype(regs.Rax)) (res == RESULT::OK);
-			}
-			break;
-
-		case scListDirectory:
-			{
-				IO::list_directory((std::vector<std::string>*) regs.Rdx);
+				RESULT res = Path::parse(Process::current_thread_pcb->current_dir, *(std::string*) regs.Rdx, nullptr, nullptr, FS_MAKE_MISSING_DIRS);
+				Set_Error(res != RESULT::OK, regs);
 			}
 			break;
 
 		case scRemoveDirectory:
 			{
 				Directory* directory = nullptr;
-				File* file;
+				Path::parse(Process::current_thread_pcb->current_dir, *(std::string*) regs.Rdx, &directory, nullptr, 0);
 
-				Path::parse(Process::current_thread_pcb->current_dir, *(std::string*) regs.Rdx, &directory, &file, 0);
-				delete directory;
+				if (directory == nullptr || directory->destroy() != RESULT::OK) {
+					Set_Error(true, regs);
+				}
+			}
+			break;
+
+		case scListDirectory:
+			{
+				IO::list_directory((std::vector<std::string>*) regs.Rdx);
 			}
 			break;
 

@@ -26,10 +26,6 @@ namespace FileSystem {
 
 	// === File members
 
-	File::~File()
-	{
-	}
-
 	std::string File::getData()
 	{
 		return this->data;
@@ -40,23 +36,15 @@ namespace FileSystem {
 		this->data = data;
 	}
 
-	File* File::createSpecialFile(std::string name) // TODO: smazat? Nikde se nepouziva
+	RESULT File::destroy()
 	{
-		File* file = new File();
-		file->name = name;
-		return file;
+		delete this; // TODO: pokud neni otevreny
+		return RESULT::OK;
 	}
+
 
 
 	// === Directory members
-
-	Directory::~Directory() 
-	{
-		while(!this->children.empty()) {
-			auto item = *(this->children.begin());
-			delete item.second; // calls Directory or File dtor
-		}
-	}
 
 	Node* Directory::getChild(std::string name)
 	{
@@ -128,14 +116,32 @@ namespace FileSystem {
 		return this->children;
 	}
 
+	RESULT Directory::destroy()
+	{
+		if (Process::check_cwd(this)) {
+			return RESULT::UNABLE_TO_DELETE;
+		}
+
+		while (!this->children.empty()) {
+			auto item = *(this->children.begin());
+
+			if (item.second->destroy() != RESULT::OK) {
+				return RESULT::UNABLE_TO_DELETE;
+			}
+		}
+
+		delete this;
+
+		return RESULT::OK;
+	}
+
 	RESULT Directory::deleteFile(std::string name)
 	{
 		File* file = this->findFile(name);
 		if (file == nullptr)
 			return RESULT::FILE_NOT_FOUND;
 
-		delete file;
-		return RESULT::OK;
+		return file->destroy();
 	}
 
 	RESULT Directory::deleteDirectory(std::string name)

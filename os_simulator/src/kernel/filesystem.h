@@ -2,11 +2,15 @@
 #include <string>
 #include <map>
 
-
 namespace FileSystem {
-
 	class Directory;
 	class File;
+}
+namespace Process {
+	bool check_cwd(FileSystem::Directory* dir);
+}
+
+namespace FileSystem {
 
 	extern FileSystem::Directory* fs;
 	extern FileSystem::Directory* fs_root;
@@ -21,7 +25,8 @@ namespace FileSystem {
 		DIRECTORY_ALREADY_EXISTS,
 		DIRECTORY_NOT_FOUND,
 		INVALID_PATH,
-		MISSING_LAST_PART
+		MISSING_LAST_PART,
+		UNABLE_TO_DELETE
 	};
 
 	static const std::string PathSeparator = "\\";
@@ -31,13 +36,14 @@ namespace FileSystem {
 		friend class File;
 
 		private:
+		virtual ~Node();
 		Directory* parent;
 		std::string name;
 
 		public:
-		virtual ~Node();
 		Directory* getParent();
 		std::string getName();
+		virtual RESULT destroy() = 0;
 	};
 
 	class File : public Node {
@@ -45,11 +51,9 @@ namespace FileSystem {
 		std::string data;
 
 		public:
-		~File();
 		std::string getData();
 		void setData(std::string data);
-
-		static File* createSpecialFile(std::string);
+		RESULT destroy();
 	};
 
 	class Directory : public Node {
@@ -61,7 +65,6 @@ namespace FileSystem {
 		Node* getChild(std::string name);
 
 		public:
-		~Directory();
 		File* createFile(std::string name);
 		File* findFile(std::string name);
 		RESULT deleteFile(std::string name);
@@ -73,6 +76,8 @@ namespace FileSystem {
 		RESULT moveChild(std::string name, Directory* dstdir, std::string dstname);
 
 		std::map<std::string, Node*> getFiles();
+
+		RESULT destroy();
 	};
 
 }

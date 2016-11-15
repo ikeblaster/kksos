@@ -3,12 +3,6 @@
 extern "C" __declspec(dllimport) void __stdcall SysCall(CONTEXT &context);
 
 
-std::atomic<size_t> LastError;
-
-size_t Get_Last_Error()
-{
-	return LastError;
-}
 
 CONTEXT Prepare_SysCall_Context(__int8 major, __int8 minor)
 {
@@ -20,13 +14,9 @@ CONTEXT Prepare_SysCall_Context(__int8 major, __int8 minor)
 bool Do_SysCall(CONTEXT &regs)
 {
 	SysCall(regs);
-
-	const bool failed = test_cf(regs.EFlags);
-	if (failed) LastError = regs.Rax;
-	else LastError = 0;
-
-	return !failed;
+	return !test_cf(regs.EFlags);
 }
+
 
 // ================================= PROCESSES =================================
 
@@ -50,8 +40,7 @@ bool Join_Process(pid_t pid)
 {
 	CONTEXT regs = Prepare_SysCall_Context(scProcess, scJoinProcess);
 	regs.Rcx = (decltype(regs.Rcx)) pid;
-	Do_SysCall(regs);
-	return regs.Rax != 0;
+	return Do_SysCall(regs);
 }
 
 
@@ -70,8 +59,7 @@ bool Set_Cwd(std::string path)
 {
 	CONTEXT regs = Prepare_SysCall_Context(scProcess, scSetCwd);
 	regs.Rcx = (decltype(regs.Rcx)) &path;
-	Do_SysCall(regs);
-	return regs.Rax != 0;
+	return Do_SysCall(regs);
 }
 
 bool Check_Cwd(std::string path)
@@ -97,7 +85,10 @@ THandle Create_File(const char* file_name, flags_t flags)
 	CONTEXT regs = Prepare_SysCall_Context(scIO, scCreateFile);
 	regs.Rdx = (decltype(regs.Rdx)) file_name;
 	regs.Rcx = (decltype(regs.Rcx)) flags;
-	Do_SysCall(regs);
+
+	if (!Do_SysCall(regs))
+		return nullptr;
+
 	return (THandle) regs.Rax;
 }
 
@@ -108,9 +99,13 @@ bool Write_File(const THandle file_handle, const void *buffer, const size_t buff
 	regs.Rdi = (decltype(regs.Rdi)) buffer;
 	regs.Rcx = (decltype(regs.Rcx)) buffer_size;
 
-	const bool result = Do_SysCall(regs);
+	if (!Do_SysCall(regs)) {
+		written = 0;
+		return false;
+	}
+
 	written = regs.Rax;
-	return result;
+	return true;
 }
 
 bool Read_File(const THandle file_handle, const void **buffer, const size_t buffer_size, size_t &read)
@@ -120,9 +115,13 @@ bool Read_File(const THandle file_handle, const void **buffer, const size_t buff
 	regs.Rdi = (decltype(regs.Rdi)) buffer;
 	regs.Rcx = (decltype(regs.Rcx)) buffer_size;
 
-	const bool result = Do_SysCall(regs);
+	if (!Do_SysCall(regs)) {
+		read = 0;
+		return false;
+	}
+
 	read = regs.Rax;
-	return result;
+	return true;
 }
 
 fpos_t Seek_File(const THandle file_handle, const fpos_t pos, std::ios_base::seekdir way)
@@ -132,7 +131,10 @@ fpos_t Seek_File(const THandle file_handle, const fpos_t pos, std::ios_base::see
 	regs.Rdi = (decltype(regs.Rdi)) pos;
 	regs.Rcx = (decltype(regs.Rcx)) way;
 
-	Do_SysCall(regs);
+	if (!Do_SysCall(regs)) {
+		return -1;
+	}
+
 	return regs.Rax;
 }
 
@@ -155,16 +157,14 @@ bool Make_Directory(std::string path)
 {
 	CONTEXT regs = Prepare_SysCall_Context(scIO, scMakeDirectory);
 	regs.Rdx = (decltype(regs.Rdx)) &path;
-	Do_SysCall(regs);
-	return regs.Rax != 0;
+	return Do_SysCall(regs);
 }
 
 bool Remove_Directory(std::string path)
 {
 	CONTEXT regs = Prepare_SysCall_Context(scIO, scRemoveDirectory);
 	regs.Rdx = (decltype(regs.Rdx)) &path;
-	Do_SysCall(regs);
-	return regs.Rax != 0;
+	return Do_SysCall(regs);
 }
 
 void List_Directory(std::vector<std::string> &items)
@@ -180,6 +180,8 @@ flags_t Probe_File(const THandle file_handle, const flags_t flags)
 	regs.Rdx = (decltype(regs.Rdx)) file_handle;
 	regs.Rcx = (decltype(regs.Rcx)) flags;
 
-	Do_SysCall(regs);
+	if (!Do_SysCall(regs)) {
+		return -1;
+	}
 	return regs.Rax;
 }

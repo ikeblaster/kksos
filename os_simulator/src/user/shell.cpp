@@ -1,4 +1,5 @@
-#include "shell.h"
+#include "parser.h"
+#include "vmstdio.h"
 
 
 size_t __stdcall shell(const CONTEXT &regs)

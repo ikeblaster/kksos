@@ -1,4 +1,4 @@
-#include "Parser.h"
+#include "parser.h"
 
 std::regex validCommand("^[A-z]+$"); /* regex for commands */
 static std::unordered_set<char> specialSymbols{ ' ', '<', '>', '|', '/', '.' }; /* Symbols with special meaning */

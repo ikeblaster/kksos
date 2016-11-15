@@ -1,7 +1,5 @@
 #include "vmstdio.h"
 
-thread_local THandle hstdin = nullptr;
-thread_local THandle hstdout = nullptr;
 
 std::unique_ptr<const char[]> vmgetline(size_t* pread)
 {

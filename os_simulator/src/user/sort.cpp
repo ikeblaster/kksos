@@ -1,21 +1,5 @@
-#pragma once
-#include "..\common\api.h"
-#include "vmstdio.h"
-#include <thread>
 #include <map>
-#include <stdio.h>
-
-THandle pipe;
-
-void call_from_thread(THandle handle) {
-	char buffer[255] = { 0 };
-	char *p_buffer = &buffer[0];
-	size_t read;
-	Read_File(handle, (const void **) &p_buffer, 255, read);
-	buffer[read] = 0;
-
-	vmprintf("thread %d: %s|\n", std::this_thread::get_id(), buffer);
-}
+#include "vmstdio.h"
 
 
 size_t __stdcall sort(const CONTEXT &regs)

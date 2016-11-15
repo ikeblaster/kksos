@@ -1,11 +1,4 @@
-#pragma once
-
-#include "..\common\api.h"
 #include "vmstdio.h"
-#include <string>
-#include <thread>
-#include <map>
-#include <stdio.h>
 
 
 size_t __stdcall wc(const CONTEXT &regs)
@@ -25,7 +18,7 @@ size_t __stdcall wc(const CONTEXT &regs)
 	int linecount = 0;
 
 
-	while (true) {
+	while(true) {
 		auto line = vmgetline(input);
 		if (line == nullptr) break;
 

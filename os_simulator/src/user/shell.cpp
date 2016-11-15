@@ -61,6 +61,11 @@ size_t __stdcall shell(const CONTEXT &regs)
 					hstdin = Create_File(command.redirectStdin.c_str(), FH_OPEN_EXISTING);
 					if (commandOrder != 0)
 						Close_File(pipes.at(commandOrder - 1).first); //close read end of pipe
+
+					if (hstdin == nullptr) {
+						vmprintf("Error: Unable to open file %s\n", command.redirectStdin.c_str());
+						break; // unable to open file
+					}
 				}
 				else if (commandOrder == 0) { // stdin from console (only for first command)
 					hstdin = Get_Std_Handle(THANDLE_STDIN);
@@ -75,11 +80,21 @@ size_t __stdcall shell(const CONTEXT &regs)
 					hstdout = Create_File(command.redirectStdout.c_str(), FH_OPEN_OR_CREATE);
 					if (p.commandList.size() > 1)
 						Close_File(pipes.at(commandOrder).second); // close write end of pipe
+
+					if (hstdout == nullptr) {
+						vmprintf("Error: Unable to open file %s\n", command.redirectStdout.c_str());
+						break; // unable to open file
+					}
 				}
 				else if (command.redirectAStdout.length() > 0) { // append stdout into file
 					hstdout = Create_File(command.redirectAStdout.c_str(), FH_OPEN_OR_CREATE | FH_FILE_APPEND);
 					if (p.commandList.size() > 1)
 						Close_File(pipes.at(commandOrder).second); // close write end of pipe
+
+					if (hstdout == nullptr) {
+						vmprintf("Error: Unable to open file %s\n", command.redirectAStdout.c_str());
+						break; // unable to open file
+					}
 				}
 				else if (p.commandList.size() == 1) { // stdout to console (only for last command)
 					hstdout = Get_Std_Handle(THANDLE_STDOUT);

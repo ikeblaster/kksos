@@ -184,19 +184,19 @@ void HandleProcess(CONTEXT &regs) {
 			break;
 
 		case scJoinProcess:
-			regs.Rax = (decltype(regs.Rax)) Process::join_process((int) regs.Rdx);
+			regs.Rax = (decltype(regs.Rax)) Process::join_process((int) regs.Rcx);
 			break;
 
 		case scGetStdHandle:
-			regs.Rax = (decltype(regs.Rax)) Process::get_std_handle(regs.Rdx);
+			regs.Rax = (decltype(regs.Rax)) Process::get_std_handle(regs.Rcx);
 			break;
 
 		case scSetStdHandle:
-			Process::set_std_handle(regs.Rdx, (THandle) regs.Rcx);
+			Process::set_std_handle(regs.Rcx, (THandle) regs.Rdx);
 			break;
 
 		case scGetCwd:
-			regs.Rax = (decltype(regs.Rax)) new std::string(Process::get_cwd());
+			((std::string*) regs.Rcx)->assign(Process::get_cwd());
 			break;
 
 		case scSetCwd:

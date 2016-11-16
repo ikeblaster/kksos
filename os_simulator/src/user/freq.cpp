@@ -1,28 +1,38 @@
 #include "vmstdio.h"
 
-
-std::string freq(std::string input) {
+size_t __stdcall freq(const CONTEXT &regs) {	
+	PROCESSSTARTUPINFO psi = *(PROCESSSTARTUPINFO*)regs.Rcx;
+	THandle input = THANDLE_STDIN;
 	int bytes[UCHAR_MAX] = { 0 };
-	char buff[65535] = {0};
-	int curpos = 0;
+	char buff[65535] = { 0 };	
+	size_t read = 0;
 
-	// TODO: prosim udelat nacitani dat po vzoru type.cpp
-	for (unsigned char c : input) {
-		bytes[c]++; 
-	}
-
-	for (int i = 0; i < UCHAR_MAX; i++) {
-		int act_num = bytes[i];
-
-		if (act_num > 0) {
-			curpos += _snprintf_s(buff + curpos, 65535 - curpos, _TRUNCATE, "0x%hhx : %d\n", i, act_num); // TODO: vmprintf
+	if (psi.data.size() > 0) {
+		input = Create_File(psi.data.at(0).c_str(), FH_OPEN_EXISTING); // TODO: nevytvaret soubor, pokud neexistuje
+		if (input == nullptr) {
+			vmprintf(THANDLE_STDERR, "Unable to open file.\n");
+			return 0;
 		}
 	}
 
-	return std::string(buff);
-}
+	/* Stdin loading and process individual characters count */
+	while (true) {
+		if (!Read_File(input, (const void*)&buff, 100, read) || read == 0)
+			break;
+		
+		for (int i = 0; i < 100; i++) {
+			bytes[buff[i]]++;
+		}
+	}
 
+	/* prints freq table into stdout without null (0x0) */
+	for (int i = 1; i < UCHAR_MAX; i++) {
+		int act_num = bytes[i];
 
-extern "C" size_t __stdcall freq(const CONTEXT &regs) {
+		if (act_num > 0) {
+			vmprintf("0x%hhx : %d\n", i, act_num);			
+		}
+	}
+
 	return 0; 
 }

@@ -1,37 +1,62 @@
 #include "parser.h"
 
 std::regex validCommand("^[A-z]+$"); /* regex for commands */
+std::regex validFilename("^[a-zA-Z0-9\.\\\, ]+$"); /* regex for filename */
 static std::unordered_set<char> specialSymbols{ ' ', '<', '>', '|', '/', '.' }; /* Symbols with special meaning */
 char* errMsg = nullptr;
 
-void parser::saveData()
+bool parser::checkSpace()
 {
 	if (temp != "" && temp != " ") {
-		if (getStdin) {
-			commandList.back().redirectStdin = temp; /* add stdin for command to struct */
-			getStdin = false;
-			temp = "";
-		}
-		else if (getStdout) {
-			commandList.back().redirectStdout = temp; /* add stdout for command to struct */
-			getStdout = false;
-			temp = "";
-		}
-		else if (getAStdout) {
-			commandList.back().redirectAStdout = temp; /* add append stdout for command to struct */
-			getAStdout = false;
-			temp = "";
-		}
-		else {
-			if (temp != "") {
-				commandList.back().data.push_back(temp); /* add data for command to struct */
-				temp = "";
-			}
-		}
+		if (!saveData()) /* Save data for command */
+			return false;
 	}
 	else {
 		temp = "";
 	}
+	return true;
+}
+
+bool parser::saveData()
+{
+	if (getStdin) {		
+		if (!std::regex_match(temp, validFilename)) {
+			std::cout << "Stdin is not valid" << std::endl;
+			return false;
+		}
+
+		commandList.back().redirectStdin = temp; /* add stdin for command to struct */
+		getStdin = false;
+		temp = "";
+	}
+	else if (getStdout) {
+		if (!std::regex_match(temp, validFilename)) {
+			std::cout << "Stdout is not valid" << std::endl;
+			return false;
+		}
+
+		commandList.back().redirectStdout = temp; /* add stdout for command to struct */
+		getStdout = false;
+		temp = "";
+	}
+	else if (getAStdout) {
+		if (!std::regex_match(temp, validFilename)) {
+			std::cout << "Stdout is not valid" << std::endl;
+			return false;
+		}
+
+		commandList.back().redirectAStdout = temp; /* add append stdout for command to struct */
+		getAStdout = false;
+		temp = "";
+	}
+	else {
+		if (temp != "" && temp != " ") {
+			commandList.back().data.push_back(temp); /* add data for command to struct */
+			temp = "";
+		}
+	}
+
+	return true;
 }
 
 bool parser::parse(std::string input)
@@ -79,7 +104,8 @@ bool parser::parse(std::string input)
 				}
 				else {
 					openQuote = false;
-					saveData(); /* Save data for command */
+					if (!saveData()) /* Save data for command */
+						return false;
 				}
 			}
 			else if (out) {
@@ -100,7 +126,8 @@ bool parser::parse(std::string input)
 				switch (c) {
 				/* Saves data and prepares values for new command */
 				case PIPE:
-					saveData(); /* Save data for command */
+					if (!saveData()) /* Save data for command */
+						return false;
 					/* vaules for new command */
 					commandOK = false;
 					pipe = true;
@@ -108,17 +135,20 @@ bool parser::parse(std::string input)
 					break;
 				/* Start of param */
 				case PARAMPREFIX:
-					saveData(); /* Save data for command */
+					if (!saveData()) /* Save data for command */
+						return false;
 					getParam = true;
 					break;
 				/* Start of stdin */
 				case STDIN:
-					saveData(); /* Save data for command */
+					if (!saveData()) /* Save data for command */
+						return false;
 					getStdin = true;
 					break;
 				/* Start of stdout */
 				case STDOUT:
-					saveData(); /* Save data for command */
+					if (!saveData()) /* Save data for command */
+						return false;
 					out = true;
 					break;
 				/* Start of line in quotes */
@@ -128,7 +158,8 @@ bool parser::parse(std::string input)
 					break;
 				/* For space */
 				case SPACE:
-					saveData(); /* Save data for command */
+					if (!checkSpace()) /* Check if is something to save */
+						return false;					
 					break;
 				default:
 					/* Save parameter */
@@ -163,7 +194,8 @@ bool parser::parse(std::string input)
 	}
 	/* Save data for command */
 	else if (!commandList.empty()) {
-		saveData(); /* Save data for command */
+		if (!saveData()) /* Save data for command */
+			return false;
 	}
 	/* Input isn't valid command */
 	else {

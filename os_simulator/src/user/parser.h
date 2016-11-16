@@ -25,7 +25,12 @@ public:
 	/// <summary>
 	/// Saves data into command struct
 	/// </summary>
-	void saveData();
+	bool saveData();
+
+	/// <summary>
+	/// Saves data after space
+	/// </summary>
+	bool checkSpace();
 
 	/// <summary>
 	/// Parsing string input

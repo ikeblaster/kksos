@@ -6,11 +6,13 @@ size_t __stdcall sort(const CONTEXT &regs)
 {
 	PROCESSSTARTUPINFO psi = *(PROCESSSTARTUPINFO*) regs.Rcx;
 	THandle input = THANDLE_STDIN;
-	THandle textfile = nullptr;
 
 	if (psi.data.size() > 0) {
-		textfile = Create_File(psi.data.at(0).c_str(), FH_OPEN_EXISTING); // TODO: nevytvaret soubor, pokud neexistuje
-		if (textfile != nullptr) input = textfile;
+		input = Create_File(psi.data.at(0).c_str(), FH_OPEN_EXISTING); // TODO: nevytvaret soubor, pokud neexistuje
+		if (input == nullptr) {
+			vmprintf(THANDLE_STDERR, "Unable to open file.\n");
+			return 0;
+		}
 	}
 
 	std::multimap<std::string, std::unique_ptr<const char[]>> lines;
@@ -21,7 +23,7 @@ size_t __stdcall sort(const CONTEXT &regs)
 		lines.insert(std::make_pair(line.get(), std::move(line))); // TODO: 1. parametr, razeni podle urciteho sloupce
 	}
 
-	if (textfile != nullptr) Close_File(textfile);
+	Close_File(input);
 
 	for (const auto& kv : lines) {
 		vmprintf("%s\n", kv.second.get());

@@ -5,11 +5,13 @@ size_t __stdcall wc(const CONTEXT &regs)
 {
 	PROCESSSTARTUPINFO psi = *(PROCESSSTARTUPINFO*) regs.Rcx;
 	THandle input = THANDLE_STDIN;
-	THandle textfile = nullptr;
 
 	if (psi.data.size() > 0) {
-		textfile = Create_File(psi.data.at(0).c_str(), FH_OPEN_EXISTING); // TODO: nevytvaret soubor, pokud neexistuje
-		if (textfile != nullptr) input = textfile;
+		input = Create_File(psi.data.at(0).c_str(), FH_OPEN_EXISTING); // TODO: nevytvaret soubor, pokud neexistuje
+		if (input == nullptr) {
+			vmprintf(THANDLE_STDERR, "Unable to open file.\n");
+			return 0;
+		}
 	}
 
 	bool count_lines = true;
@@ -50,7 +52,7 @@ size_t __stdcall wc(const CONTEXT &regs)
 
 	vmprintf("Word count: %d\nLine count: %d\n", wordcount, linecount);
 
-	if (textfile != nullptr) Close_File(input);
+	Close_File(input);
 
 	return 0;
 }

@@ -14,8 +14,9 @@ size_t __stdcall wc(const CONTEXT &regs)
 		}
 	}
 
-	int wordcount = 0;
-	int linecount = 0;
+	size_t charcount = 0;
+	size_t wordcount = 0;
+	size_t linecount = 0;
 
 	size_t read = 0;
 	unsigned char buffer[1024];
@@ -25,6 +26,7 @@ size_t __stdcall wc(const CONTEXT &regs)
 		if (!Read_File(input, (const void*) &buffer, 1024, read) || read == 0)
 			break;
 
+		charcount += read;
 		if (linecount == 0) linecount++;
 
 		for (size_t i = 0; i < read; i++) {
@@ -40,7 +42,7 @@ size_t __stdcall wc(const CONTEXT &regs)
 		}
 	}
 
-	vmprintf("Word count: %d\nLine count: %d\n", wordcount, linecount);
+	vmprintf("Word count: %ld\nLine count: %ld\nCharacter count: %ld\n", wordcount, linecount, charcount);
 
 	Close_File(input);
 

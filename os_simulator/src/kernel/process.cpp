@@ -15,7 +15,7 @@ namespace Process
 
 		CONTEXT regs;
 		regs.Rcx = (decltype(regs.Rcx)) &pcb->psi;
-		program(regs); // TODO: nepredavat 
+		program(regs); // TODO: nepredavat v PSI?
 
 		free_handles();
 	}
@@ -30,7 +30,7 @@ namespace Process
 			program = (TEntryPoint) GetProcAddress(User_Programs, psi.process_name.c_str());
 
 		if (!program)
-			return -1; // TODO: errors enum + osetreni na vyssi urovni
+			return -1;
 
 		std::unique_lock<std::mutex> lck(table_mtx);
 

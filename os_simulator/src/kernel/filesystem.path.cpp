@@ -16,9 +16,7 @@ namespace FileSystem {
 		size_t pos = 0, search;
 		Directory* directory = cwd;
 		File* file = nullptr;
-
 		RESULT retVal = RESULT::OK;
-		char* errMsg = nullptr;
 
 		path = Path::trimTrailingSeparators(path);
 
@@ -33,18 +31,16 @@ namespace FileSystem {
 				directory = nullptr;
 
 				retVal = RESULT::INVALID_PATH;
-				errMsg = "file already found, but path continues";
 				break;
 			}
 
-			// search for semicolon (valid only for first part)
+			// search for semicolon
 			if (part.find(":") != std::string::npos) {
-				if (pos == 0) {
-					directory = Path::getDriveRoot(cwd)->getParent();
+				if (pos == 0 && (part.find(":") == part.length() - 1)) { 
+					directory = Path::getDriveRoot(cwd)->getParent(); // semicolon is valid only for first part and must be last char
 				}
 				else {
-					retVal = RESULT::INVALID_PATH;
-					errMsg = "invalid char, semicolon somewhere in the middle";
+					retVal = RESULT::INVALID_PATH; 
 					break;
 				}
 			}
@@ -59,8 +55,7 @@ namespace FileSystem {
 			// updir
 			else if (part == "..") {
 				if (directory->getParent() == nullptr || directory->getParent()->getParent() == nullptr) { // forbid FS root (parent of C:)
-					errMsg = "invalid updir";
-					retVal = RESULT::INVALID_PATH;
+					retVal = RESULT::INVALID_PATH; // invalid updir
 					break; 
 				}
 				directory = directory->getParent();
@@ -78,14 +73,12 @@ namespace FileSystem {
 						directory = directory->createDirectory(part); // directory in path not found then make one
 					}
 					else if (search == std::string::npos) {
-						errMsg = "Path found except last part, probably file?"; // directory not found, but it's last part of path
-						retVal = RESULT::MISSING_LAST_PART;
+						retVal = RESULT::MISSING_LAST_PART; // directory not found, but it's last part of path (probably file)
 						break;
 					}
 					else {
-						errMsg = "Directory not found";
-						retVal = RESULT::DIRECTORY_NOT_FOUND;
-						break; // file & dir not found
+						retVal = RESULT::DIRECTORY_NOT_FOUND; // file & dir not found
+						break; 
 					}
 				}
 			}
@@ -96,16 +89,6 @@ namespace FileSystem {
 		if (parsedDirectory != nullptr) *parsedDirectory = directory;
 		if (parsedFile != nullptr) *parsedFile = file;
 
-
-		if (errMsg != nullptr) {
-			//printf("PATH ERR: %s\n", errMsg); // TODO: predat chybovou hlasku?
-		}		
-		else {
-			Node* node = file;
-			if (node == nullptr) node = directory;
-
-			//printf("PARSED: %s\n", generate(node).c_str());
-		}
 
 		return retVal;
 	}
@@ -153,7 +136,7 @@ namespace FileSystem {
 		Node* current = node;
 
 		while (current != nullptr && current->getParent() != nullptr) {
-			path = current->getName() + (current == node ? "" : "\\" + path);
+			path = current->getName() + (current == node ? "" : FileSystem::PathSeparator + path);
 			current = current->getParent();
 		}
 

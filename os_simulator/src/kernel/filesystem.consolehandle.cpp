@@ -25,11 +25,9 @@ namespace FileSystem {
 			// TODO: je tohle ok? Nedela to nekde problemy? Jak funguje 'boot.exe < prikazy'?
 			// discard everything till newline; because FlushConsoleInputBuffer doesn't do its job
 			if (!mStdInOpen) {
-				char buffer[1];
-				DWORD written = 1;
-				BOOL res = true;
-				while (buffer[0] != '\n' && written != 0 && res)
-					res = ReadFile(mStdIn, buffer, 1, &written, NULL);
+				char buffer;
+				DWORD written;
+				while (ReadFile(mStdIn, &buffer, 1, &written, NULL) && buffer != '\n' && written != 0);
 			}
 
 			mStdInOpen = true;
@@ -37,10 +35,10 @@ namespace FileSystem {
 		else if (flags == PROBE__IS_INTERACTIVE) {
 			return !mRedirectedStdIn;
 		}
-		else if (flags == PROBE__SET_BLOCKING) {
+		else if (flags == PROBE__SET_LINEMODE) {
 			SetConsoleMode(mStdIn, mConsoleMode);
 		}
-		else if (flags == PROBE__SET_NONBLOCKING) {
+		else if (flags == PROBE__SET_CHARMODE) {
 			SetConsoleMode(mStdIn, 0);
 		}
 
@@ -68,8 +66,7 @@ namespace FileSystem {
 
 	void ConsoleHandle::read(char* buffer, const size_t buffer_size, size_t* pread)
 	{
-		int offset = 0;
-		DWORD read;
+		DWORD read = 0;
 
 		if (mStdInOpen) {
 
@@ -77,7 +74,7 @@ namespace FileSystem {
 			if (buffer_size < (size_t) ULONG_MAX) lengthtrim = (DWORD) buffer_size;
 			// size_t could be greater than DWORD, so we might have to trim
 
-			BOOL res = ReadFile(mStdIn, &buffer[offset], lengthtrim, &read, NULL);
+			BOOL res = ReadFile(mStdIn, buffer, lengthtrim, &read, NULL);
 
 			mStdInOpen = (res) & (read > 0);
 
@@ -92,9 +89,6 @@ namespace FileSystem {
 			//else {
 				read = mStdInOpen ? read : 0;
 			//}
-		}
-		else {
-			read = 0; // stdin is no longer open
 		}
 
 		if (pread != nullptr)

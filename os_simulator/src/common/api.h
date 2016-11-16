@@ -15,13 +15,15 @@
 // FSHandle constants
 #define PROBE__CLEAR_BUFFER 0
 #define PROBE__IS_INTERACTIVE 1
-#define PROBE__SET_BLOCKING 2
-#define PROBE__SET_NONBLOCKING 3
+#define PROBE__SET_LINEMODE 2
+#define PROBE__SET_CHARMODE 3
 
 // Standard stream handles
 #define THANDLE_STDIN (THandle) 0
 #define THANDLE_STDOUT (THandle) 1
 #define THANDLE_STDERR (THandle) 2
+
+#define CHAR_EOF 26
 
 typedef DWORD64 pid_t;
 typedef DWORD64 flags_t;

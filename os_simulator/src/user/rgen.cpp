@@ -7,13 +7,13 @@ bool generate;
 extern "C" size_t __stdcall rgen__controlz(const CONTEXT &regs) {
 	char chr;
 	size_t read;
-	Probe_File(THANDLE_STDIN, PROBE__SET_NONBLOCKING);
+	Probe_File(THANDLE_STDIN, PROBE__SET_CHARMODE);
 
-	while (!Read_File(THANDLE_STDIN, (const void *) &chr, 1, read) && read != 0 && chr != 26);
+	while (!Read_File(THANDLE_STDIN, (const void *) &chr, 1, read) && chr != CHAR_EOF);
 
 	generate = false;
 
-	Probe_File(THANDLE_STDIN, PROBE__SET_BLOCKING);
+	Probe_File(THANDLE_STDIN, PROBE__SET_LINEMODE);
 	return 0;
 }
 

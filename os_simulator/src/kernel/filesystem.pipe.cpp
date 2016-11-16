@@ -48,8 +48,8 @@ namespace FileSystem {
 		int i = 0;
 
 		while(i < buffer_size && pipeOpened) { // pipe closed = no reader -> skip writing
-			if (str[i] == 26) {
-				pipeOpened = false; // ctrl-z came -> EOF, close pipe
+			if (str[i] == CHAR_EOF) {
+				pipeOpened = false; // EOF came -> close pipe
 				break;
 			}
 

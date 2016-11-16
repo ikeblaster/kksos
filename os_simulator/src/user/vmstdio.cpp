@@ -23,7 +23,7 @@ std::unique_ptr<const char[]> vmgetline(const THandle file_handle, size_t* read)
 
 		if (chrread <= 0 && length == 0)
 			return nullptr;
-		if (chrread <= 0 || chr == '\n' || chr == 26) // 26 = ctrl-z as part of text; see `echo hello ^Z world` in `cmd`
+		if (chrread <= 0 || chr == '\n' || chr == CHAR_EOF)
 			break;
 		if (chr == '\r')
 			continue;

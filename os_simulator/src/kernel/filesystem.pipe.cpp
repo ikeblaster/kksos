@@ -45,7 +45,7 @@ namespace FileSystem {
 		std::unique_lock<std::mutex> lck(mtx);
 		const char* str = static_cast<const char*>(buffer);
 
-		int i = 0;
+		size_t i = 0;
 
 		while(i < buffer_size && pipeOpened) { // pipe closed = no reader -> skip writing
 			if (str[i] == CHAR_EOF) {
@@ -59,7 +59,7 @@ namespace FileSystem {
 				continue;
 			}
 
-			int ncopy = MAX_BUFFER_SIZE - size;
+			size_t ncopy = MAX_BUFFER_SIZE - size;
 			if (ncopy > (buffer_size - i)) ncopy = (buffer_size - i);
 			if (last + ncopy > MAX_BUFFER_SIZE) ncopy = MAX_BUFFER_SIZE - last;
 
@@ -80,7 +80,7 @@ namespace FileSystem {
 	{
 		std::unique_lock<std::mutex> lck(mtx);
 
-		int i = 0;
+		size_t i = 0;
 		while(i < buffer_size) {
 			if (size == 0) {
 				if (!pipeOpened) break; // no data in buffer + closed pipe -> don't wait for another data
@@ -90,7 +90,7 @@ namespace FileSystem {
 				continue; // recheck emptiness
 			}
 
-			int ncopy = buffer_size - i;
+			size_t ncopy = buffer_size - i;
 			if (ncopy > size) ncopy = size;
 			if (first + ncopy > MAX_BUFFER_SIZE) ncopy = MAX_BUFFER_SIZE - first;
 

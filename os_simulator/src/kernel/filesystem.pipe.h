@@ -18,11 +18,11 @@ namespace FileSystem {
 		PipeHandle* pipeWriteable;
 		bool pipeOpened = true;
 
-		static const int MAX_BUFFER_SIZE = 4096; // max velikost bufferu
+		static const size_t MAX_BUFFER_SIZE = 4096; // max velikost bufferu
 		char data_buffer[MAX_BUFFER_SIZE]; // buffer pro vymenu dat ze stdout do stdin
-		int size = 0; // pocet nactenych prvku
-		int first = 0; // index zacatku bufferu
-		int last = 0; // index pro dalsi vkladany prvek
+		size_t size = 0; // pocet nactenych prvku
+		size_t first = 0; // index zacatku bufferu
+		size_t last = 0; // index pro dalsi vkladany prvek
 
 		public:		
 

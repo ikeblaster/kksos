@@ -10,7 +10,7 @@ std::unique_ptr<const char[]> vmgetline(size_t* pread)
 std::unique_ptr<const char[]> vmgetline(const THandle file_handle, size_t* read)
 {
 	std::vector<char> chars;
-	char chr;
+	unsigned char chr;
 	size_t chrread = 0;
 	size_t length = 0;
 

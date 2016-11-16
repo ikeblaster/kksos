@@ -1,10 +1,10 @@
 #include "vmstdio.h"
 
 size_t __stdcall freq(const CONTEXT &regs) {	
-	PROCESSSTARTUPINFO psi = *(PROCESSSTARTUPINFO*)regs.Rcx;
+	PROCESSSTARTUPINFO psi = *(PROCESSSTARTUPINFO*) regs.Rcx;
 	THandle input = THANDLE_STDIN;
 	int bytes[UCHAR_MAX] = { 0 };
-	char buff[65535] = { 0 };	
+	unsigned char buff[1024];	
 	size_t read = 0;
 
 	if (psi.data.size() > 0) {
@@ -17,10 +17,10 @@ size_t __stdcall freq(const CONTEXT &regs) {
 
 	/* Stdin loading and process individual characters count */
 	while (true) {
-		if (!Read_File(input, (const void*)&buff, 100, read) || read == 0)
+		if (!Read_File(input, (const void*) &buff, 1024, read) || read == 0)
 			break;
 		
-		for (int i = 0; i < 100; i++) {
+		for (size_t i = 0; i < read; i++) {
 			bytes[buff[i]]++;
 		}
 	}
@@ -33,6 +33,8 @@ size_t __stdcall freq(const CONTEXT &regs) {
 			vmprintf("0x%hhx : %d\n", i, act_num);			
 		}
 	}
+
+	Close_File(input);
 
 	return 0; 
 }

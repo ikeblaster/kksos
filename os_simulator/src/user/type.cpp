@@ -16,10 +16,10 @@ size_t __stdcall type(const CONTEXT &regs)
 	}
 
 	size_t read = 0;
-	char buffer[100];
+	unsigned char buffer[1024];
 
 	while (true) {
-		if (!Read_File(input, (const void*) &buffer, 100, read) || read == 0)
+		if (!Read_File(input, (const void*) &buffer, 1024, read) || read == 0)
 			break;
 
 		Write_File(THANDLE_STDOUT, buffer, read, read);

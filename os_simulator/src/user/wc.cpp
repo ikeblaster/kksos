@@ -18,7 +18,7 @@ size_t __stdcall wc(const CONTEXT &regs)
 	int linecount = 0;
 
 	size_t read = 0;
-	char buffer[1024];
+	unsigned char buffer[1024];
 	bool onspace = true;
 
 	while (true) {
@@ -28,14 +28,12 @@ size_t __stdcall wc(const CONTEXT &regs)
 		if (linecount == 0) linecount++;
 
 		for (size_t i = 0; i < read; i++) {
-			unsigned char chr = buffer[i];
+			if (buffer[i] == '\n') linecount++;
 
-			if (chr == '\n') linecount++;
-
-			if (isspace(chr) && !onspace) {
+			if (isspace(buffer[i]) && !onspace) {
 				onspace = true;
 			}
-			else if (!isspace(chr) && onspace) {
+			else if (!isspace(buffer[i]) && onspace) {
 				wordcount++;
 				onspace = false;
 			}

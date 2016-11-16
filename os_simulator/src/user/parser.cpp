@@ -1,7 +1,7 @@
 #include "parser.h"
 
-std::regex validCommand("^[A-z]+$"); /* regex for commands */
-std::regex validFilename("^[a-zA-Z0-9\.\\\, ]+$"); /* regex for filename */
+std::regex validCommand("^[a-z]+$"); /* regex for commands */
+std::regex validFilename("^[a-zA-Z0-9áèïéìíòóøšùúıÁÈÏÉÌÍÒÓØŠÙÚİ.\\, _-]+$"); /* regex for filename */
 static std::unordered_set<char> specialSymbols{ ' ', '<', '>', '|', '/', '.' }; /* Symbols with special meaning */
 char* errMsg = nullptr;
 

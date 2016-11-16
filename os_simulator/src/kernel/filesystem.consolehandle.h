@@ -14,7 +14,7 @@ namespace FileSystem {
 
 	class ConsoleHandle : public FSHandle {
 		private:
-		bool mStdInOpen, mRedirectedStdIn;
+		bool mStdInOpen, mRedirectedStdIn, mStdInClosedByEOF;
 		HANDLE mStdIn;
 		DWORD mConsoleMode;
 

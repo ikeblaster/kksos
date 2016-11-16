@@ -12,11 +12,29 @@ size_t __stdcall dir(const CONTEXT &regs)
 		Set_Cwd(path);
 	}
 
+	char *out_format = "%s\n";
+
+
+	/* 
+	//Curently unused
+	for (int i = 0; i < psi.params.size(); i++) {
+		char param = psi.params.at(i);
+		
+		switch (param) {
+			case 'c':
+				out_format = "%s\n";
+				break;
+
+		}
+
+	}
+	*/
+
 	std::vector<std::string> items;
 	List_Directory(items);
 
 	for (auto item : items) {
-		vmprintf("%s\n", item.c_str());
+		vmprintf(out_format, item.c_str());
 	}
 
 	return 0;

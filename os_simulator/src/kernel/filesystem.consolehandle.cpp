@@ -7,12 +7,10 @@ namespace FileSystem {
 
 	ConsoleHandle::ConsoleHandle()
 	{
-		DWORD dw;
-
 		_setmode(_fileno(stdin), _O_BINARY);
 		mStdIn = GetStdHandle(STD_INPUT_HANDLE);
 		//mRedirectedStdIn = (mStdIn != (HANDLE) 3);
-		mRedirectedStdIn = !GetConsoleMode(mStdIn, &dw);
+		mRedirectedStdIn = !GetConsoleMode(mStdIn, &mConsoleMode);
 		mStdInOpen = true;
 	}
 
@@ -39,6 +37,12 @@ namespace FileSystem {
 		else if (flags == PROBE__IS_INTERACTIVE) {
 			return !mRedirectedStdIn;
 		}
+		else if (flags == PROBE__SET_BLOCKING) {
+			SetConsoleMode(mStdIn, mConsoleMode);
+		}
+		else if (flags == PROBE__SET_NONBLOCKING) {
+			SetConsoleMode(mStdIn, 0);
+		}
 
 		return 0;
 	}
@@ -62,7 +66,7 @@ namespace FileSystem {
 			*pwritten = written;
 	}
 
-	void ConsoleHandle::read(char** buffer, const size_t buffer_size, size_t* pread)
+	void ConsoleHandle::read(char* buffer, const size_t buffer_size, size_t* pread)
 	{
 		int offset = 0;
 		DWORD read;
@@ -73,21 +77,21 @@ namespace FileSystem {
 			if (buffer_size < (size_t) ULONG_MAX) lengthtrim = (DWORD) buffer_size;
 			// size_t could be greater than DWORD, so we might have to trim
 
-			BOOL res = ReadFile(mStdIn, buffer[offset], lengthtrim, &read, NULL);
+			BOOL res = ReadFile(mStdIn, &buffer[offset], lengthtrim, &read, NULL);
 
 			mStdInOpen = (res) & (read > 0);
 
-			if ((mStdInOpen) & (!mRedirectedStdIn)) {
-				mStdInOpen = !
-					((read > 2) &&			// there was something before Ctrl+Z
-					(*buffer[read - 3] == 0x1a) & (*buffer[read - 2] == 0x0d) & (*buffer[read - 1] == 0x0a));
-				if ((!mStdInOpen) & (read > 2)) read -= 3;
-				// delete the sequence, if it is necessary
-				read = read > 0 ? read : 0;
-			}
-			else {
+			//if ((mStdInOpen) & (!mRedirectedStdIn)) {
+			//	mStdInOpen = !
+			//		((read > 2) &&			// there was something before Ctrl+Z
+			//		(buffer[read - 3] == 0x1a) & (buffer[read - 2] == 0x0d) & (buffer[read - 1] == 0x0a));
+			//	if ((!mStdInOpen) & (read > 2)) read -= 3;
+			//	// delete the sequence, if it is necessary
+			//	read = read > 0 ? read : 0;
+			//}
+			//else {
 				read = mStdInOpen ? read : 0;
-			}
+			//}
 		}
 		else {
 			read = 0; // stdin is no longer open

@@ -4,18 +4,28 @@
 size_t __stdcall type(const CONTEXT &regs)
 {
 	PROCESSSTARTUPINFO psi = *(PROCESSSTARTUPINFO*) regs.Rcx;
-	std::string filename = psi.data.at(0);
-	auto testtxt = Create_File(filename.c_str(), FH_OPEN_EXISTING);
+	THandle input = nullptr;
 
-	if (testtxt == nullptr) return 0;
-
-	while (true) {
-		auto line = vmgetline(testtxt);
-		if (line == nullptr) break;
-		vmprintf("%s\n", line.get());
+	if (psi.data.size() > 0) {
+		input = Create_File(psi.data.at(0).c_str(), FH_OPEN_EXISTING);
 	}
 
-	Close_File(testtxt);
+	if (input == nullptr) {
+		vmprintf(THANDLE_STDERR, "Unable to open file.\n");
+		return 0;
+	}
+
+	size_t read = 0;
+	char buffer[100];
+
+	while (true) {
+		if (!Read_File(input, (const void*) &buffer, 100, read) || read == 0)
+			break;
+
+		Write_File(THANDLE_STDOUT, buffer, read, read);
+	}
+
+	Close_File(input);
 
 	return 0;
 }

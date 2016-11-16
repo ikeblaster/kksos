@@ -99,7 +99,7 @@ void HandleIO(CONTEXT &regs) {
 
 				if (fh != nullptr) {
 					size_t read = 0;
-					fh->read((char**) regs.Rdi, regs.Rcx, &read);
+					fh->read((char*) regs.Rdi, regs.Rcx, &read);
 					regs.Rax = (decltype(regs.Rax)) read;
 				}
 				else {

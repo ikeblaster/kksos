@@ -47,14 +47,13 @@ namespace FileSystem {
 
 		int i = 0;
 
-		while(i < buffer_size && pipeOpened) {
+		while(i < buffer_size && pipeOpened) { // pipe closed = no reader -> skip writing
 			if (str[i] == 26) {
-				pipeOpened = false; // nobody wants to read from pipe anymore -> skip writing
+				pipeOpened = false; // ctrl-z came -> EOF, close pipe
 				break;
 			}
 
 			if(size == MAX_BUFFER_SIZE) {
-				//printf("W");
 				cv.notify_all();
 				cv.wait(lck);
 				continue;
@@ -72,23 +71,22 @@ namespace FileSystem {
 			*pwritten = i;
 	}
 
-	void Pipe::read(char** buffer, const size_t buffer_size, size_t* pread)
+	void Pipe::read(char* buffer, const size_t buffer_size, size_t* pread)
 	{
 		std::unique_lock<std::mutex> lck(mtx);
 
 		int i = 0;
 		while(i < buffer_size) {
 			if (size == 0) {
-				if (!pipeOpened) break; // nobody wants to write to pipe anymore -> don't wait for another data
+				if (!pipeOpened) break; // no data in buffer + closed pipe -> don't wait for another data
 
-				//printf("R");
 				cv.notify_all();
 				cv.wait(lck);
 				continue; // recheck emptiness
 			}
 
-			(*buffer)[i++] = data_buffer[first];
-			//nastavit data_buffer[first] na null, nebo nechat byt a usetrit rezii?
+			buffer[i++] = data_buffer[first];
+			// TODO: nastavit data_buffer[first] na null, nebo nechat byt a usetrit rezii?
 			first = (first + 1) % MAX_BUFFER_SIZE;	
 			size--;
 		}
@@ -97,6 +95,5 @@ namespace FileSystem {
 		if (pread != nullptr)
 			*pread = i;
 	}
-
 
 }

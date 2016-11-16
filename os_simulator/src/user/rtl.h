@@ -23,6 +23,8 @@ pid_t Create_Process(
 	const THandle hstdin, const THandle hstdout, const THandle hstderr
 );
 
+pid_t Create_Subprocess(TEntryPoint entry);
+
 /// <summary>
 /// Waits for process to end.
 /// </summary>
@@ -80,7 +82,7 @@ bool Write_File(const THandle file_handle, const void *buffer, const size_t buff
 /// <param name="buffer_size">Buffer size.</param>
 /// <param name="read">[out] Amount of data successfully read.</param>
 /// <returns>Success.</returns>
-bool Read_File(const THandle file_handle, const void **buffer, const size_t buffer_size, size_t &read);
+bool Read_File(const THandle file_handle, const void *buffer, const size_t buffer_size, size_t &read);
 
 /// <summary>
 /// Changes position in file handle.

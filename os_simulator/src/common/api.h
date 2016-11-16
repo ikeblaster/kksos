@@ -15,6 +15,8 @@
 // FSHandle constants
 #define PROBE__CLEAR_BUFFER 0
 #define PROBE__IS_INTERACTIVE 1
+#define PROBE__SET_BLOCKING 2
+#define PROBE__SET_NONBLOCKING 3
 
 // Standard stream handles
 #define THANDLE_STDIN (THandle) 0
@@ -33,6 +35,8 @@ typedef struct PROCESSSTARTUPINFO
 	std::string process_name; 
 	std::vector<char> params;
 	std::vector<std::string> data;
+
+	TEntryPoint subprocess_entry = nullptr;
 
 	THandle h_stdin;
 	THandle h_stdout;

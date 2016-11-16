@@ -57,10 +57,10 @@ namespace FileSystem {
 			*written = buffer_size;
 	}
 
-	void FileHandle::read(char** buffer, const size_t buffer_size, size_t* read)
+	void FileHandle::read(char* buffer, const size_t buffer_size, size_t* read)
 	{
 		this->ss.clear();
-		this->ss.read(*buffer, buffer_size);		
+		this->ss.read(buffer, buffer_size);		
 		if (read != nullptr)
 			*read = this->ss.gcount();
 	}

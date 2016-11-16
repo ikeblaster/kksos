@@ -6,7 +6,7 @@ std::string freq(std::string input) {
 	char buff[65535] = {0};
 	int curpos = 0;
 
-	// TODO: nacitat pres vmgetline() (nebo jeste lepe pres Read_File) a teprve to zpracovavat
+	// TODO: prosim udelat nacitani dat po vzoru type.cpp
 	for (unsigned char c : input) {
 		bytes[c]++; 
 	}

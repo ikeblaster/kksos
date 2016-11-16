@@ -39,7 +39,7 @@ namespace FileSystem {
 			this->pipe->write(buffer, buffer_size, pwritten);
 	}
 
-	void PipeHandle::read(char** buffer, const size_t buffer_size, size_t* pread)
+	void PipeHandle::read(char* buffer, const size_t buffer_size, size_t* pread)
 	{
 		if (this->type == PIPETYPE::WRITEABLE) {
 			if (pread != nullptr)

@@ -22,9 +22,8 @@ size_t __stdcall shell(const CONTEXT &regs)
 
 		testtxt = Create_File("test.txt", FH_OPEN_EXISTING); // nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN
 		char buffer[255];
-		char *p_buffer = &buffer[0];
 		size_t read;
-		Read_File(testtxt, (const void **)&p_buffer, 255, read);
+		Read_File(testtxt, (const void*) &buffer, 255, read);
 		buffer[read] = 0;
 		Close_File(testtxt);
 	}

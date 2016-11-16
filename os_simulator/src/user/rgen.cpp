@@ -2,28 +2,41 @@
 #include "vmstdio.h"
 
 
-void call_from_thread(THandle handle) {
-	char buffer[255] = { 0 };
-	char *p_buffer = &buffer[0];
+bool generate;
+
+extern "C" size_t __stdcall rgen__controlz(const CONTEXT &regs) {
+	char chr;
 	size_t read;
-	Read_File(handle, (const void **) &p_buffer, 255, read);
-	buffer[read] = 0;
+	Probe_File(THANDLE_STDIN, PROBE__SET_NONBLOCKING);
 
-	vmprintf("thread %d: %s|\n", std::this_thread::get_id(), buffer);
+	while (!Read_File(THANDLE_STDIN, (const void *) &chr, 1, read) && read != 0 && chr != 26);
+
+	generate = false;
+
+	Probe_File(THANDLE_STDIN, PROBE__SET_BLOCKING);
+	return 0;
 }
 
 
-float rgen() {
-	float r = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-	return r;
+float rgen() 
+{
+	return static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
 }
 
-float rgen(float from, float to) {
-	float r = from + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (to - from));
-	return r;
+float rgen(float from, float to) 
+{
+	return from + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (to - from));
 }
 
-extern "C" size_t __stdcall rgen(const CONTEXT &regs) {
-	vmprintf("%f", rgen());
+extern "C" size_t __stdcall rgen(const CONTEXT &regs)
+{
+	generate = true;
+	pid_t process = Create_Subprocess((TEntryPoint) &rgen__controlz);
+
+	while (generate)
+		vmprintf("%f\n", rgen());
+
+	Join_Process(process);
+
 	return 0;
 }

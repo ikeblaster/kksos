@@ -48,7 +48,7 @@ namespace FileSystem {
 		/// <param name="buffer">Output to stdin</param>
 		/// <param name="buffer_size">Size of buffer to read</param>
 		/// <param name="pread">Number of readed chars</param>
-		void read(char** buffer, const size_t buffer_size, size_t* pread);
+		void read(char* buffer, const size_t buffer_size, size_t* pread);
 
 		void close();
 	};

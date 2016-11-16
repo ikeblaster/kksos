@@ -9,9 +9,8 @@ namespace Process
 	OpenFiles::OFHandle file_descriptors[FILE_DESCRIPTORS_TABLE_SIZE] = { nullptr };
 	thread_local PCB* current_thread_pcb = nullptr;
 
-	void program_thread(TEntryPoint program, PCB* pcb) 
+	void program_thread(TEntryPoint program, PCB* pcb)
 	{
-
 		current_thread_pcb = pcb;
 
 		CONTEXT regs;
@@ -23,7 +22,12 @@ namespace Process
 
 	pid_t create_process(PROCESSSTARTUPINFO psi) 
 	{
-		TEntryPoint program = (TEntryPoint) GetProcAddress(User_Programs, psi.process_name.c_str());
+		TEntryPoint program;
+
+		if (psi.subprocess_entry != nullptr)
+			program = psi.subprocess_entry;
+		else
+			program = (TEntryPoint) GetProcAddress(User_Programs, psi.process_name.c_str());
 
 		if (!program)
 			return -1; // TODO: errors enum + osetreni na vyssi urovni

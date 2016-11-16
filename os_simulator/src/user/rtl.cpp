@@ -36,6 +36,20 @@ pid_t Create_Process(std::string process_name, std::vector<char> params, std::ve
 	return (pid_t) regs.Rax;
 }
 
+pid_t Create_Subprocess(TEntryPoint entry)
+{
+	PROCESSSTARTUPINFO psi;
+	psi.subprocess_entry = entry;
+	psi.h_stdin = THANDLE_STDIN;
+	psi.h_stdout = THANDLE_STDOUT;
+	psi.h_stderr = THANDLE_STDERR;
+
+	CONTEXT regs = Prepare_SysCall_Context(scProcess, scCreateProcess);
+	regs.Rcx = (decltype(regs.Rcx)) &psi;
+	Do_SysCall(regs);
+	return (pid_t) regs.Rax;
+}
+
 bool Join_Process(pid_t pid)
 {
 	CONTEXT regs = Prepare_SysCall_Context(scProcess, scJoinProcess);
@@ -100,7 +114,7 @@ bool Write_File(const THandle file_handle, const void *buffer, const size_t buff
 	return true;
 }
 
-bool Read_File(const THandle file_handle, const void **buffer, const size_t buffer_size, size_t &read)
+bool Read_File(const THandle file_handle, const void *buffer, const size_t buffer_size, size_t &read)
 {
 	CONTEXT regs = Prepare_SysCall_Context(scIO, scReadFile);
 	regs.Rdx = (decltype(regs.Rdx)) file_handle;

@@ -59,10 +59,15 @@ namespace FileSystem {
 				continue;
 			}
 
-			data_buffer[last] = str[i];
-			last = (last + 1) % MAX_BUFFER_SIZE;
-			size++;
-			i++;
+			int ncopy = MAX_BUFFER_SIZE - size;
+			if (ncopy > (buffer_size - i)) ncopy = (buffer_size - i);
+			if (last + ncopy > MAX_BUFFER_SIZE) ncopy = MAX_BUFFER_SIZE - last;
+
+			memcpy(&data_buffer[last], &str[i], ncopy);
+
+			i += ncopy;
+			size += ncopy;
+			last = (last + ncopy) % MAX_BUFFER_SIZE;
 		}
 
 		cv.notify_all();
@@ -85,10 +90,15 @@ namespace FileSystem {
 				continue; // recheck emptiness
 			}
 
-			buffer[i++] = data_buffer[first];
-			// TODO: nastavit data_buffer[first] na null, nebo nechat byt a usetrit rezii?
-			first = (first + 1) % MAX_BUFFER_SIZE;	
-			size--;
+			int ncopy = buffer_size - i;
+			if (ncopy > size) ncopy = size;
+			if (first + ncopy > MAX_BUFFER_SIZE) ncopy = MAX_BUFFER_SIZE - first;
+
+			memcpy(&buffer[i], &data_buffer[first], ncopy);
+
+			i += ncopy;
+			size -= ncopy;
+			first = (first + ncopy) % MAX_BUFFER_SIZE;
 		}
 		cv.notify_all();
 

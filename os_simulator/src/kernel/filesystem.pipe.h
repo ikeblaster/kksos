@@ -18,7 +18,7 @@ namespace FileSystem {
 		PipeHandle* pipeWriteable;
 		bool pipeOpened = true;
 
-		static const int MAX_BUFFER_SIZE = 5; // max velikost bufferu
+		static const int MAX_BUFFER_SIZE = 4096; // max velikost bufferu
 		char data_buffer[MAX_BUFFER_SIZE]; // buffer pro vymenu dat ze stdout do stdin
 		int size = 0; // pocet nactenych prvku
 		int first = 0; // index zacatku bufferu

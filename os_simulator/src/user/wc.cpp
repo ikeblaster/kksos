@@ -14,41 +14,31 @@ size_t __stdcall wc(const CONTEXT &regs)
 		}
 	}
 
-	bool count_lines = true;
-
 	int wordcount = 0;
 	int linecount = 0;
 
+	size_t read = 0;
+	char buffer[1024];
+	bool onspace = true;
 
-	while(true) {
-		auto line = vmgetline(input);
-		if (line == nullptr) break;
+	while (true) {
+		if (!Read_File(input, (const void*) &buffer, 1024, read) || read == 0)
+			break;
 
-		linecount++;
+		if (linecount == 0) linecount++;
 
-		const char* chr = line.get();
+		for (int i = 0; i < read; i++) {
+			if (buffer[i] == '\n') linecount++;
 
-		// Skip over spaces at the beginning of the word
-		while(isspace(*chr) && *chr != 0)
-			chr++;
-
-		while(*chr != 0)
-		{
-			if (isspace(*chr))
-			{
-				wordcount++;
-
-				// Skip over unnecessary spaces
-				while (isspace(*chr) && *chr != 0)
-					chr++;
+			if (isspace(buffer[i]) && !onspace) {
+				onspace = true;
 			}
-			else
-				chr++;
+			else if (!isspace(buffer[i]) && onspace) {
+				wordcount++;
+				onspace = false;
+			}
 		}
-		if(line.get()[0] != 0)
-			wordcount++;
 	}
-
 
 	vmprintf("Word count: %d\nLine count: %d\n", wordcount, linecount);
 

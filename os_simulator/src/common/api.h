@@ -23,7 +23,7 @@
 #define THANDLE_STDOUT (THandle) 1
 #define THANDLE_STDERR (THandle) 2
 
-#define CHAR_EOF 26
+#define CHAR_EOF 0x1A
 
 typedef DWORD64 pid_t;
 typedef DWORD64 flags_t;

@@ -40,10 +40,11 @@ namespace FileSystem {
 			return !mRedirectedStdIn;
 		}
 		else if (flags == PROBE__SET_LINEMODE) {
-			SetConsoleMode(mStdIn, mConsoleMode);
+			SetConsoleMode(mStdIn, mConsoleMode | ENABLE_LINE_INPUT);
+			mStdInClosedByEOF = false;
 		}
 		else if (flags == PROBE__SET_CHARMODE) {
-			SetConsoleMode(mStdIn, 0);
+			SetConsoleMode(mStdIn, mConsoleMode & ~ENABLE_LINE_INPUT);
 		}
 
 		return 0;

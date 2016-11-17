@@ -9,7 +9,6 @@ namespace FileSystem {
 	{
 		_setmode(_fileno(stdin), _O_BINARY);
 		mStdIn = GetStdHandle(STD_INPUT_HANDLE);
-		//mRedirectedStdIn = (mStdIn != (HANDLE) 3);
 		mRedirectedStdIn = !GetConsoleMode(mStdIn, &mConsoleMode);
 
 		mStdInOpen = true;
@@ -77,18 +76,23 @@ namespace FileSystem {
 			DWORD sizetrim = (buffer_size > (size_t) ULONG_MAX) ? ULONG_MAX : (DWORD) buffer_size; // size_t could be greater than DWORD, so we might have to trim
 			BOOL res;
 
-			if(mRedirectedStdIn)
-				res = ReadFile(mStdIn, buffer, sizetrim, &read, NULL);
+
+			// ReadConsoleA works better when input buffer contains ^Z, but it doesn't work for redirected stdin.
+			// We force reading char by char for redirected stdin to catch ^Z in the middle of data.
+			// Otherwise everything after ^Z is also in buffer => it's lost.
+			if (mRedirectedStdIn)
+				res = ReadFile(mStdIn, buffer, 1, &read, NULL);
 			else
-				res = ReadConsoleA(mStdIn, buffer, sizetrim, &read, NULL); // because ReadFile returns 0 when buffer begins with ^Z
+				res = ReadConsoleA(mStdIn, buffer, sizetrim, &read, NULL);
 
 			mStdInOpen = (res) & (read > 0);
+			read = mStdInOpen ? read : 0;
 
 			char* eofpos = (char*) memchr((void*) buffer, CHAR_EOF, read);
 			if (eofpos != nullptr) {
 				mStdInOpen = false;
 
-				mStdInClosedByEOF = (memchr((void*) buffer, '\n', read) == nullptr);
+				mStdInClosedByEOF = (buffer[read - 1] != '\n'); // If last character wasn't newline, then there is something in the buffer waiting => clear it on demand
 
 				*eofpos = 0;
 				read = (DWORD) (eofpos - buffer);

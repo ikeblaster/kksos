@@ -30,7 +30,7 @@ namespace FileSystem {
 				char buffer;
 				DWORD written;
 
-				while (ReadConsoleA(mStdIn, &buffer, 1, &written, NULL) && buffer != '\n' && written != 0);
+				while (ReadFile(mStdIn, &buffer, 1, &written, NULL) && buffer != '\n' && written != 0);
 			}
 
 			mStdInOpen = true;
@@ -73,11 +73,13 @@ namespace FileSystem {
 		DWORD read = 0;
 
 		if (mStdInOpen) {
-			DWORD lengthtrim = ULONG_MAX;
-			if (buffer_size < (size_t) ULONG_MAX) lengthtrim = (DWORD) buffer_size;
-			// size_t could be greater than DWORD, so we might have to trim
+			DWORD sizetrim = (buffer_size > (size_t) ULONG_MAX) ? ULONG_MAX : (DWORD) buffer_size; // size_t could be greater than DWORD, so we might have to trim
+			BOOL res;
 
-			BOOL res = ReadConsoleA(mStdIn, buffer, lengthtrim, &read, NULL);
+			if(mRedirectedStdIn)
+				res = ReadFile(mStdIn, buffer, sizetrim, &read, NULL);
+			else
+				res = ReadConsoleA(mStdIn, buffer, sizetrim, &read, NULL); // because ReadFile returns 0 when buffer begins with ^Z
 
 			mStdInOpen = (res) & (read > 0);
 

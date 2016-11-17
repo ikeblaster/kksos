@@ -25,13 +25,22 @@ extern "C" size_t __stdcall rgen(const CONTEXT &regs)
 	std::mt19937 gen(rd());
 	std::uniform_real_distribution<> dis(0, 1);
 
-	generate = true;
-	pid_t process = Create_Subprocess((TEntryPoint) &rgen__controlz);
+	bool stdinIsRedirected = (Probe_File(THANDLE_STDIN, PROBE__IS_INTERACTIVE) == FALSE);
 
-	while (generate)
+	if (stdinIsRedirected) 
+	{
 		vmprintf("%f\n", dis(gen));
+	}
+	else 
+	{
+		generate = true;
+		pid_t process = Create_Subprocess((TEntryPoint) &rgen__controlz);
 
-	Join_Process(process);
+		while (generate)
+			vmprintf("%f\n", dis(gen));
+
+		Join_Process(process);
+	}
 
 	return 0;
 }

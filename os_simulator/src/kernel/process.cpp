@@ -96,7 +96,7 @@ namespace Process
 
 	std::string get_cwd() 
 	{
-		return FileSystem::Path::generate(current_thread_pcb->current_dir); // TODO: vracet pres char** parameter
+		return FileSystem::Path::generate(current_thread_pcb->current_dir);
 	}
 
 	bool set_cwd(std::string path) 

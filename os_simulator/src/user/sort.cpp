@@ -8,7 +8,7 @@ size_t __stdcall sort(const CONTEXT &regs)
 	THandle input = THANDLE_STDIN;
 
 	if (psi.data.size() > 0) {
-		input = Create_File(psi.data.at(0).c_str(), FH_OPEN_EXISTING); // TODO: nevytvaret soubor, pokud neexistuje
+		input = Create_File(psi.data.at(0).c_str(), FH_OPEN_EXISTING);
 		if (input == nullptr) {
 			vmprintf(THANDLE_STDERR, "Unable to open file.\n");
 			return 0;

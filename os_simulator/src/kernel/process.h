@@ -16,7 +16,7 @@ namespace Process
 	const size_t PROCESS_TABLE_SIZE = 1024;
 	const size_t FILE_DESCRIPTORS_TABLE_SIZE = 1024;
 
-	typedef struct PCB // TODO: vyzkouset jen struct PCB
+	struct PCB
 	{
 		pid_t ppid;
 		pid_t pid;
@@ -24,8 +24,7 @@ namespace Process
 		PROCESSSTARTUPINFO psi;
 		FileSystem::Directory* current_dir;
 		OpenFiles::OFHandle file_descriptors[FILE_DESCRIPTORS_TABLE_SIZE];
-
-	} PCB;
+	};
 
 
 	extern std::mutex table_mtx;

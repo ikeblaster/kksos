@@ -6,7 +6,14 @@
 
 typedef void(__stdcall *TRun_VM)();
 
+
+BOOL WINAPI HandlerRoutine(_In_ DWORD dwCtrlType) {
+	return dwCtrlType == CTRL_C_EVENT || dwCtrlType == CTRL_CLOSE_EVENT;
+}
+
 int main() {
+
+	SetConsoleCtrlHandler(HandlerRoutine, TRUE); // ctrl-c/close event gracefully kills threads and let cleanup run
 
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF); // TODO: delete memleak detector
 

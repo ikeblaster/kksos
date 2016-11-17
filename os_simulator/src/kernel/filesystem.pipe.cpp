@@ -48,11 +48,6 @@ namespace FileSystem {
 		size_t i = 0;
 
 		while(i < buffer_size && pipeOpened) { // pipe closed = no reader -> skip writing
-			if (str[i] == CHAR_EOF) {
-				pipeOpened = false; // EOF came -> close pipe
-				break;
-			}
-
 			if(size == MAX_BUFFER_SIZE) {
 				cv.notify_all();
 				cv.wait(lck);

@@ -24,12 +24,13 @@ namespace FileSystem {
 	flags_t ConsoleHandle::probe(flags_t flags)
 	{
 		if (flags == PROBE__CLEAR_BUFFER) {
-			// discard everything till newline; because FlushConsoleInputBuffer doesn't do its job
+
+			// discard everything till newline
 			if (mStdInClosedByEOF) {
 				char buffer;
 				DWORD written;
 
-				while (ReadFile(mStdIn, &buffer, 1, &written, NULL) && buffer != '\n' && written != 0);
+				while (ReadConsoleA(mStdIn, &buffer, 1, &written, NULL) && buffer != '\n' && written != 0);
 			}
 
 			mStdInOpen = true;
@@ -71,30 +72,20 @@ namespace FileSystem {
 	{
 		DWORD read = 0;
 
-		if (mStdInOpen && !mStdInClosedByEOF) {
+		if (mStdInOpen) {
 			DWORD lengthtrim = ULONG_MAX;
 			if (buffer_size < (size_t) ULONG_MAX) lengthtrim = (DWORD) buffer_size;
 			// size_t could be greater than DWORD, so we might have to trim
 
-			BOOL res = ReadFile(mStdIn, buffer, lengthtrim, &read, NULL);
+			BOOL res = ReadConsoleA(mStdIn, buffer, lengthtrim, &read, NULL);
 
 			mStdInOpen = (res) & (read > 0);
 
-			if ((mStdInOpen) & (!mRedirectedStdIn)) {
-				mStdInOpen = !
-					((read > 2) &&			// there was something before Ctrl+Z
-					(buffer[read - 3] == 0x1a) & (buffer[read - 2] == 0x0d) & (buffer[read - 1] == 0x0a));
-				if ((!mStdInOpen) & (read > 2)) read -= 3;
-				// delete the sequence, if it is necessary
-				read = read > 0 ? read : 0;
-			}
-			else {
-				read = mStdInOpen ? read : 0;
-			}
-
 			char* eofpos = (char*) memchr((void*) buffer, CHAR_EOF, read);
 			if (eofpos != nullptr) {
-				mStdInClosedByEOF = true;
+				mStdInOpen = false;
+
+				mStdInClosedByEOF = (memchr((void*) buffer, '\n', read) == nullptr);
 
 				*eofpos = 0;
 				read = (DWORD) (eofpos - buffer);

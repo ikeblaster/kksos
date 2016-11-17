@@ -1,10 +1,11 @@
-#include <thread>
+#include <random>
 #include "vmstdio.h"
 
 
 bool generate;
 
-extern "C" size_t __stdcall rgen__controlz(const CONTEXT &regs) {
+size_t rgen__controlz(const CONTEXT &regs) 
+{
 	char chr;
 	size_t read;
 	Probe_File(THANDLE_STDIN, PROBE__SET_CHARMODE);
@@ -18,23 +19,17 @@ extern "C" size_t __stdcall rgen__controlz(const CONTEXT &regs) {
 }
 
 
-float rgen() 
-{
-	return static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-}
-
-float rgen(float from, float to) 
-{
-	return from + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (to - from));
-}
-
 extern "C" size_t __stdcall rgen(const CONTEXT &regs)
 {
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_real_distribution<> dis(0, 1);
+
 	generate = true;
 	pid_t process = Create_Subprocess((TEntryPoint) &rgen__controlz);
 
 	while (generate)
-		vmprintf("%f\n", rgen());
+		vmprintf("%f\n", dis(gen));
 
 	Join_Process(process);
 

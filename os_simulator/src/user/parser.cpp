@@ -1,9 +1,8 @@
 #include "parser.h"
 
-std::regex validCommand("^[a-z]+$"); /* regex for commands */
+std::regex validCommand("^[a-zA-Z]+$"); /* regex for commands */
 std::regex validFilename("^[a-zA-Z0-9áèïéìíòóøšùúıÁÈÏÉÌÍÒÓØŠÙÚİ.\\, _-]+$"); /* regex for filename */
 static std::unordered_set<char> specialSymbols{ ' ', '<', '>', '|', '/', '.' }; /* Symbols with special meaning */
-char* errMsg = nullptr;
 
 bool parser::checkSpace()
 {
@@ -78,6 +77,7 @@ bool parser::parse(std::string input)
 				if (std::regex_match(temp, validCommand)) {
 					commandOK = true;
 					pipe = false;
+					std::transform(temp.begin(), temp.end(), temp.begin(), ::tolower); /* transform command to lowercase */
 					commandList.push(Command()); /* add to vector new command */
 					commandList.back().name = temp; /* add command name to struct */
 					temp = "";

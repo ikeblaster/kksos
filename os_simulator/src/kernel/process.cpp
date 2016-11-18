@@ -141,7 +141,8 @@ namespace Process
 		std::unique_lock<std::mutex> lck(handles_mtx);
 
 		auto of = OpenFiles::CreateHandle(handle);
-		if (of == nullptr) return false;
+		if (of == nullptr) 
+			return false;
 
 		if (pcb->file_descriptors[(intptr_t) fd] != nullptr)
 			close_handle(fd); // close existing handle
@@ -166,11 +167,14 @@ namespace Process
 				return (THandle) i;
 			}
 		}
-		return (THandle) -1;
+		return INVALID_THANDLE;
 	}
 
 	bool close_handle(THandle fd) 
 	{
+		if (fd < 0 || (size_t) fd > Process::FILE_DESCRIPTORS_TABLE_SIZE)
+			return false;
+
 		std::unique_lock<std::mutex> lck(handles_mtx);
 
 		OpenFiles::OFHandle of = current_thread_pcb->file_descriptors[(intptr_t) fd];

@@ -12,10 +12,11 @@ namespace FileSystem {
 		private:
 		File* file;
 		std::stringstream ss;
+		bool sharedRead;
 
 		public:
 		FileHandle(File* file, flags_t flags=0);
-		intptr_t getHash();
+		intptr_t getExclusivityHash();
 		flags_t probe(flags_t flags);
 		fpos_t seek(const fpos_t pos, std::ios_base::seekdir way);
 		fpos_t tell();

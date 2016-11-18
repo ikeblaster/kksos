@@ -15,7 +15,7 @@ namespace FileSystem {
 		mStdInClosedByEOF = false;
 	}
 
-	intptr_t ConsoleHandle::getHash()
+	intptr_t ConsoleHandle::getExclusivityHash()
 	{
 		return (intptr_t) this;
 	}

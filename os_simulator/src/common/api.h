@@ -8,20 +8,23 @@
 #define FH_OPEN_OR_CREATE 2
 #define FH_CREATE_ALWAYS 4
 #define FH_FILE_APPEND 8
+#define FH_SHARED_READ 16 // default file access is "exclusive open"
 
 // Filesystem constants
-#define FS_MAKE_MISSING_DIRS 16
+#define FS_MAKE_MISSING_DIRS 1
 
 // FSHandle constants
-#define PROBE__CLEAR_BUFFER 0
-#define PROBE__IS_INTERACTIVE 1
-#define PROBE__SET_LINEMODE 2
-#define PROBE__SET_CHARMODE 3
+#define PROBE__CLEAR_BUFFER 1
+#define PROBE__IS_INTERACTIVE 2
+#define PROBE__SET_LINEMODE 3
+#define PROBE__SET_CHARMODE 4
+#define PROBE__FILE_ACCESS 5
 
 // Standard stream handles
 #define THANDLE_STDIN (THandle) 0
 #define THANDLE_STDOUT (THandle) 1
 #define THANDLE_STDERR (THandle) 2
+#define INVALID_THANDLE (THandle) -1
 
 #define CHAR_EOF 0x1A
 

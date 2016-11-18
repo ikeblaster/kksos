@@ -3,11 +3,10 @@
 
 namespace FileSystem {
 
-	// === members
-
 	FileHandle::FileHandle(File* file, flags_t flags)
 	{
 		this->file = file;
+		this->sharedRead = ((flags & FH_SHARED_READ) == FH_SHARED_READ); // shared read => read only access
 		
 		if((flags & FH_OPEN_EXISTING) == FH_OPEN_EXISTING || (flags & FH_OPEN_OR_CREATE) == FH_OPEN_OR_CREATE)
 			this->ss.str(this->file->getData());
@@ -18,13 +17,16 @@ namespace FileSystem {
 			this->seek(0, std::ios_base::beg);
 	}
 
-	intptr_t FileHandle::getHash()
+	intptr_t FileHandle::getExclusivityHash()
 	{
 		return (intptr_t) this->file;
 	}
 
 	flags_t FileHandle::probe(flags_t flags)
 	{
+		if (flags == PROBE__FILE_ACCESS)
+			return this->sharedRead ? FH_SHARED_READ : 0;
+
 		return 0;
 	}
 
@@ -47,6 +49,12 @@ namespace FileSystem {
 		
 	void FileHandle::write(const void* buffer, const size_t buffer_size, size_t* written)
 	{
+		if (this->sharedRead) { // shared read => read only access
+			if (written != nullptr)
+				*written = 0;
+			return;
+		}
+
 		this->ss.clear();
 		this->ss.write((const char*)buffer, buffer_size);
 
@@ -67,8 +75,11 @@ namespace FileSystem {
 
 	void FileHandle::close()
 	{
-		this->ss.clear();
-		this->file->setData(this->ss.str());
+		if (!this->sharedRead) 
+		{
+			this->ss.clear();
+			this->file->setData(this->ss.str());
+		}
 
 		delete this;
 	}

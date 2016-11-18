@@ -9,7 +9,7 @@ namespace FileSystem {
 		this->pipe = pipe;
 	}
 
-	intptr_t PipeHandle::getHash()
+	intptr_t PipeHandle::getExclusivityHash()
 	{
 		return (intptr_t) this;
 	}

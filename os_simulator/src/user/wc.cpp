@@ -7,8 +7,8 @@ size_t __stdcall wc(const CONTEXT &regs)
 	THandle input = THANDLE_STDIN;
 
 	if (psi.data.size() > 0) {
-		input = Create_File(psi.data.at(0).c_str(), FH_OPEN_EXISTING);
-		if (input == nullptr) {
+		input = Create_File(psi.data.at(0).c_str(), FH_OPEN_EXISTING | FH_SHARED_READ);
+		if (input == INVALID_THANDLE) {
 			vmprintf(THANDLE_STDERR, "Unable to open file.\n");
 			return 0;
 		}

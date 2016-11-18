@@ -43,7 +43,6 @@ namespace IO
 			if (Process::table[i] != nullptr && Process::table[i]->current_dir == dir)
 				return true;
 		}
-
 		return false;
 	}
 
@@ -68,7 +67,7 @@ void HandleIO(CONTEXT &regs) {
 				}
 
 				THandle fd = Process::add_handle(fh);
-				if (fd == nullptr) {
+				if (fd == INVALID_THANDLE) {
 					delete fh; // destroy without notifying = without calling close
 					Set_Error(true, regs);
 					break;

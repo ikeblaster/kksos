@@ -10,15 +10,18 @@ size_t __stdcall shell(const CONTEXT &regs)
 		THandle testtxt = Create_File("test.txt", FH_OPEN_OR_CREATE); // nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN
 		const char* hello = "Hello world!\nAhoj svete!\n\nC test\nZ\nA";
 		Write_File(testtxt, hello, strlen(hello), written);
+
+		THandle testtxt2 = Create_File("test.txt", FH_OPEN_OR_CREATE); // nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN
+
 		Close_File(testtxt);
 
 		testtxt = Create_File("cmd.txt", FH_OPEN_EXISTING);
-		if (testtxt == nullptr) {
+		if (testtxt == INVALID_THANDLE) {
 			testtxt = Create_File("cmd.txt", FH_OPEN_OR_CREATE); // nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN
 			const char* hello2 = "sort test.txt";
 			Write_File(testtxt, hello2, strlen(hello2), written);
+			Close_File(testtxt);
 		}
-		Close_File(testtxt);
 
 		testtxt = Create_File("test.txt", FH_OPEN_EXISTING); // nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN
 		char buffer[255];
@@ -63,21 +66,20 @@ size_t __stdcall shell(const CONTEXT &regs)
 			/* Processes whole input command */
 			while (p.commandList.size() > 0) {
 				Command command = p.commandList.front();
-				THandle hstdin = nullptr;
-				THandle hstdout = nullptr;
+				THandle hstdin;
+				THandle hstdout;
 				THandle hstderr = THANDLE_STDERR;
 				bool closeHstdin = true;
 				bool closeHstdout = true;
 
-
 				/* Sets up Handler for stdin */
 				if (command.redirectStdin.length() > 0) { // stdin from file
-					hstdin = Create_File(command.redirectStdin.c_str(), FH_OPEN_EXISTING);
+					hstdin = Create_File(command.redirectStdin.c_str(), FH_OPEN_EXISTING | FH_SHARED_READ);
 					if (commandOrder != 0)
 						Close_File(pipes.at(commandOrder - 1).first); // close read end of pipe
 
-					if (hstdin == nullptr) {
-						vmprintf(THANDLE_STDERR, "The system cannot find the file specified.\n");
+					if (hstdin == INVALID_THANDLE) {
+						vmprintf(THANDLE_STDERR, "The system cannot open the file specified.\n");
 						break; // unable to open file
 					}
 				}
@@ -95,8 +97,8 @@ size_t __stdcall shell(const CONTEXT &regs)
 					if (p.commandList.size() > 1)
 						Close_File(pipes.at(commandOrder).second); // close write end of pipe
 
-					if (hstdout == nullptr) {
-						vmprintf(THANDLE_STDERR, "The system cannot find the file specified.\n");
+					if (hstdout == INVALID_THANDLE) {
+						vmprintf(THANDLE_STDERR, "The system cannot open the file specified.\n");
 						if (closeHstdin) Close_File(hstdin);
 						break; // unable to open file
 					}
@@ -106,8 +108,8 @@ size_t __stdcall shell(const CONTEXT &regs)
 					if (p.commandList.size() > 1)
 						Close_File(pipes.at(commandOrder).second); // close write end of pipe
 
-					if (hstdout == nullptr) {
-						vmprintf(THANDLE_STDERR, "The system cannot find the file specified.\n");
+					if (hstdout == INVALID_THANDLE) {
+						vmprintf(THANDLE_STDERR, "The system cannot open the file specified.\n");
 						if (closeHstdin) Close_File(hstdin);
 						break; // unable to open file
 					}

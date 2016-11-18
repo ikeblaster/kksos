@@ -11,11 +11,18 @@ namespace OpenFiles {
 
 	typedef HANDLE OFHandle;
 
-	typedef struct OpenFile
+	struct OpenFile
 	{
 		FileSystem::FSHandle* handle = nullptr;
 		size_t refcount = 0;
-	} PCB;
+	};
+
+	struct OpenFileExclusivity
+	{
+		bool exclusive_access = false;
+		bool shared_read = false;
+		size_t ofhcount = 0;
+	};
 
 
 	extern std::map<OFHandle, OpenFile> OpenFiles;

@@ -93,7 +93,7 @@ THandle Create_File(const char* file_name, flags_t flags)
 	regs.Rcx = (decltype(regs.Rcx)) flags;
 
 	if (!Do_SysCall(regs))
-		return nullptr;
+		return INVALID_THANDLE;
 
 	return (THandle) regs.Rax;
 }

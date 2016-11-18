@@ -16,7 +16,7 @@ namespace FileSystem {
 		public:		
 		PipeHandle(PIPETYPE type, Pipe* pipe);
 
-		intptr_t getHash();
+		intptr_t getExclusivityHash();
 
 		flags_t probe(flags_t flags);
 

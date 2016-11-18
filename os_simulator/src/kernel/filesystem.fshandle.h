@@ -9,7 +9,7 @@ namespace FileSystem {
 		public:
 
 		virtual ~FSHandle() {};
-		virtual intptr_t getHash() = 0;
+		virtual intptr_t getExclusivityHash() = 0;
 		virtual flags_t probe(flags_t flags) = 0;
 		virtual fpos_t seek(const fpos_t pos, std::ios_base::seekdir way) = 0;
 		virtual fpos_t tell() = 0;

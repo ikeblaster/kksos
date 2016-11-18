@@ -20,7 +20,7 @@ namespace FileSystem {
 
 		public:
 		ConsoleHandle();
-		intptr_t getHash();
+		intptr_t getExclusivityHash();
 		flags_t probe(flags_t flags);
 		fpos_t seek(const fpos_t pos, std::ios_base::seekdir way);
 		fpos_t tell();

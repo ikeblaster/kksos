@@ -4,13 +4,13 @@
 size_t __stdcall type(const CONTEXT &regs)
 {
 	PROCESSSTARTUPINFO psi = *(PROCESSSTARTUPINFO*) regs.Rcx;
-	THandle input = nullptr;
+	THandle input = INVALID_THANDLE;
 
 	if (psi.data.size() > 0) {
-		input = Create_File(psi.data.at(0).c_str(), FH_OPEN_EXISTING);
+		input = Create_File(psi.data.at(0).c_str(), FH_OPEN_EXISTING | FH_SHARED_READ);
 	}
 
-	if (input == nullptr) {
+	if (input == INVALID_THANDLE) {
 		vmprintf(THANDLE_STDERR, "Unable to open file.\n");
 		return 0;
 	}

@@ -1,7 +1,7 @@
 #include "parser.h"
 
 std::regex validCommand("^[a-zA-Z]+$"); /* regex for commands */
-std::regex validFilename("^[a-zA-Z0-9áèïéìíòóøšùúıÁÈÏÉÌÍÒÓØŠÙÚİ.\\, _-]+$"); /* regex for filename */
+std::regex validFilename("[<>:\"/|?*\x01-\x1F]"); /* regex for filename */
 static std::unordered_set<char> specialSymbols{ ' ', '<', '>', '|', '/', '.' }; /* Symbols with special meaning */
 
 bool parser::checkSpace()
@@ -18,8 +18,8 @@ bool parser::checkSpace()
 
 bool parser::saveData()
 {
-	if (getStdin) {		
-		if (!std::regex_match(temp, validFilename)) {
+	if (getStdin) {			
+		if (std::regex_search(temp, validFilename)) {
 			vmprintf(THANDLE_STDERR, "Stdin is not valid.\n");
 			return false;
 		}
@@ -29,7 +29,7 @@ bool parser::saveData()
 		temp = "";
 	}
 	else if (getStdout) {
-		if (!std::regex_match(temp, validFilename)) {
+		if (std::regex_search(temp, validFilename)) {
 			vmprintf(THANDLE_STDERR, "Stdout is not valid.\n");
 			return false;
 		}
@@ -39,7 +39,7 @@ bool parser::saveData()
 		temp = "";
 	}
 	else if (getAStdout) {
-		if (!std::regex_match(temp, validFilename)) {
+		if (std::regex_search(temp, validFilename)) {
 			vmprintf(THANDLE_STDERR, "Stdout is not valid.\n");
 			return false;
 		}

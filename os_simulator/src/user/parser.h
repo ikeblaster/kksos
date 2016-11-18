@@ -1,10 +1,10 @@
 #pragma once
 #include <algorithm>
-#include <iostream>
 #include <string>
 #include <queue>
 #include <unordered_set>
 #include <regex>
+#include "vmstdio.h"
 
 /// <summary>
 /// Structure for storing one command

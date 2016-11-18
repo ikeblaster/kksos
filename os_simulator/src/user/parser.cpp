@@ -20,7 +20,7 @@ bool parser::saveData()
 {
 	if (getStdin) {		
 		if (!std::regex_match(temp, validFilename)) {
-			std::cout << "Stdin is not valid" << std::endl;
+			vmprintf(THANDLE_STDERR, "Stdin is not valid.\n");
 			return false;
 		}
 
@@ -30,7 +30,7 @@ bool parser::saveData()
 	}
 	else if (getStdout) {
 		if (!std::regex_match(temp, validFilename)) {
-			std::cout << "Stdout is not valid" << std::endl;
+			vmprintf(THANDLE_STDERR, "Stdout is not valid.\n");
 			return false;
 		}
 
@@ -40,7 +40,7 @@ bool parser::saveData()
 	}
 	else if (getAStdout) {
 		if (!std::regex_match(temp, validFilename)) {
-			std::cout << "Stdout is not valid" << std::endl;
+			vmprintf(THANDLE_STDERR, "Stdout is not valid.\n");
 			return false;
 		}
 
@@ -86,7 +86,7 @@ bool parser::parse(std::string input)
 				}
 				else {
 					if (!temp.empty()) {
-						std::cout << "Command " << temp << " is not allowed!" << std::endl;
+						vmprintf(THANDLE_STDERR, "Command %s is not allowed!\n", temp.c_str());
 						return false;
 					}
 				}
@@ -169,7 +169,7 @@ bool parser::parse(std::string input)
 							getParam = false;
 						}
 						else {
-							std::cout << "Parammeter: " << c << " is not supported" << std::endl;
+							vmprintf(THANDLE_STDERR, "Parameter %c is not supported.\n", c);
 							return false;
 						}
 					}
@@ -184,12 +184,12 @@ bool parser::parse(std::string input)
 
 	/* Check if pipe has follower */
 	if (!commandOK && pipe) {
-		std::cout << "After pipe must follow a valid command!" << std::endl;
+		vmprintf(THANDLE_STDERR, "After pipe must follow a valid command!\n");
 		return false;
 	}
 	/* Check if quoted data are closed */
 	else if (openQuote) {
-		std::cout << "Quoted data are not closed!" << std::endl;
+		vmprintf(THANDLE_STDERR, "Quoted data are not closed!\n");
 		return false;
 	}
 	/* Save data for command */
@@ -200,7 +200,7 @@ bool parser::parse(std::string input)
 	/* Input isn't valid command */
 	else {
 		if(temp != "") {
-			std::cout << "Command " << temp << " is not allowed!" << std::endl;
+			vmprintf(THANDLE_STDERR, "Command %s is not allowed!\n", temp.c_str());
 		}
 		return false;
 	}

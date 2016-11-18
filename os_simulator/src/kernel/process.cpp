@@ -12,12 +12,14 @@ namespace Process
 	void program_thread(TEntryPoint program, PCB* pcb)
 	{
 		current_thread_pcb = pcb;
+		pcb->state = State::Running;
 
 		CONTEXT regs;
 		regs.Rcx = (decltype(regs.Rcx)) &pcb->psi;
 		program(regs); // TODO: nepredavat v PSI?
 
 		free_handles();
+		pcb->state = State::Terminated;
 	}
 
 	pid_t create_process(PROCESSSTARTUPINFO psi) 
@@ -48,6 +50,7 @@ namespace Process
 
 			pcb->pid = pid;
 			pcb->psi = psi;
+			pcb->state = State::New;
 
 			if (current_thread_pcb != nullptr) {
 				pcb->ppid = current_thread_pcb->pid;

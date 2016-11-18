@@ -132,7 +132,13 @@ namespace Process
 
 		for (int i = 0; i < PROCESS_TABLE_SIZE; i++) {
 			if (table[i] != nullptr) {
-				items->push_back(table[i]->psi.process_name);
+				State state = table[i]->state;
+				items->push_back(
+					table[i]->psi.process_name +
+					"\tPID: " + std::to_string(table[i]->pid) +
+					"\tPPID: " + (table[i]->ppid == -1 ? "-" : std::to_string(table[i]->ppid)) +
+					"\tState: " + (state == State::Terminated ? "Terminated" : state == State::Running ? "Running" : "New")
+				);
 			}
 		}
 	}

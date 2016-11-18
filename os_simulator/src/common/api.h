@@ -35,7 +35,7 @@ typedef HANDLE THandle;
 typedef size_t (__stdcall *TEntryPoint)(const CONTEXT syscall); // vstupni bod uzivatelskeho programu
 typedef void (__stdcall *TSysCall)(CONTEXT &context); // prototyp funkce, ktera realizuje syscall
 
-typedef struct PROCESSSTARTUPINFO
+struct PROCESSSTARTUPINFO
 {
 	std::string process_name;
 	std::vector<char> params;
@@ -47,7 +47,7 @@ typedef struct PROCESSSTARTUPINFO
 	THandle h_stdout;
 	THandle h_stderr;
 
-} PROCESSSTARTUPINFO;
+};
 
 /*
 

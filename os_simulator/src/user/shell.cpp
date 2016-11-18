@@ -174,7 +174,7 @@ size_t __stdcall shell(const CONTEXT &regs)
 				processes.pop_back();
 			}
 
-			vmprintf("\n");
+			if(runShell) vmprintf("\n");
 		}
 		else {
 			//vmprintf("Parsing failed\n");

@@ -12,6 +12,7 @@
 
 namespace Process 
 {
+	enum class State { New, Running, Terminated };
 
 	const size_t PROCESS_TABLE_SIZE = 1024;
 	const size_t FILE_DESCRIPTORS_TABLE_SIZE = 1024;
@@ -24,6 +25,7 @@ namespace Process
 		PROCESSSTARTUPINFO psi;
 		FileSystem::Directory* current_dir;
 		OpenFiles::OFHandle file_descriptors[FILE_DESCRIPTORS_TABLE_SIZE];
+		State state;
 	};
 
 

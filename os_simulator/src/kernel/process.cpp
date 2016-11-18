@@ -44,7 +44,7 @@ namespace Process
 			}
 		}
 
-		if (pid >= 0) {
+		if (pid != -1) {
 			PCB* pcb = new PCB();
 			table[pid] = pcb;
 

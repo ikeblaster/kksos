@@ -12,7 +12,7 @@ void Set_Error(const bool failed, CONTEXT &regs) {
 	}
 }
 
-void SysCall(CONTEXT &regs) {
+void __stdcall SysCall(CONTEXT &regs) {
 
 	switch (Get_AH((__int16) regs.Rax)) {
 		case scIO:
@@ -44,7 +44,7 @@ void Shutdown_FS() {
 }
 
 
-void Run_VM() {
+void __stdcall Run_VM() {
 
 	Initialize_Kernel();
 	Initialize_FS();

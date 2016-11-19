@@ -4,7 +4,7 @@ using namespace FileSystem;
 
 namespace IO
 {
-	FileHandle* CreateHandle(Directory* cwd, char* path, flags_t flags)
+	FileHandle* CreateHandle(Directory* cwd, std::string path, flags_t flags)
 	{
 		Directory* directory;
 		File* file = nullptr;
@@ -60,7 +60,7 @@ void HandleIO(CONTEXT &regs) {
 	switch (Get_AL((__int16) regs.Rax)) {
 		case scCreateFile:
 			{
-				FileHandle* fh = IO::CreateHandle(Process::current_thread_pcb->current_dir, (char*) regs.Rdx, (flags_t) regs.Rcx);
+				FileHandle* fh = IO::CreateHandle(Process::current_thread_pcb->current_dir, *(std::string*) regs.Rdx, (flags_t) regs.Rcx);
 				if (fh == nullptr) {
 					Set_Error(true, regs);
 					break;

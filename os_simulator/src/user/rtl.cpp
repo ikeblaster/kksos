@@ -24,8 +24,8 @@ pid_t Create_Process(std::string process_name, std::vector<char> params, std::ve
 {
 	PROCESSSTARTUPINFO psi;
 	psi.process_name = process_name;
-	psi.params = std::move(params);
-	psi.data = std::move(data);
+	psi.params = params;
+	psi.data = data;
 	psi.h_stdin = hstdin;
 	psi.h_stdout = hstdout;
 	psi.h_stderr = hstderr;
@@ -86,10 +86,10 @@ void List_Processes(std::vector<std::string> &items)
 
 // ================================= IO =================================
 
-THandle Create_File(const char* file_name, flags_t flags)
+THandle Create_File(std::string file_name, flags_t flags)
 {
 	CONTEXT regs = Prepare_SysCall_Context(scIO, scCreateFile);
-	regs.Rdx = (decltype(regs.Rdx)) file_name;
+	regs.Rdx = (decltype(regs.Rdx)) &file_name;
 	regs.Rcx = (decltype(regs.Rcx)) flags;
 
 	if (!Do_SysCall(regs))

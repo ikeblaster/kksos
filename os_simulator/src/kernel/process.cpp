@@ -16,7 +16,7 @@ namespace Process
 
 		CONTEXT regs;
 		regs.Rcx = (decltype(regs.Rcx)) &pcb->psi;
-		program(regs); // TODO: nepredavat v PSI?
+		program(regs);
 
 		free_handles();
 		pcb->state = State::Terminated;

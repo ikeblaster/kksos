@@ -62,7 +62,7 @@ void List_Processes(std::vector<std::string> &items);
 /// <param name="file_name">Path to file.</param>
 /// <param name="flags">Flags.</param>
 /// <returns>Non-<c>nullptr</c> file handle on success.</returns>
-THandle Create_File(const char* file_name, flags_t flags);
+THandle Create_File(std::string file_name, flags_t flags);
 
 /// <summary>
 /// Writes data to file handle.

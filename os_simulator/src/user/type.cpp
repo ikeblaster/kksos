@@ -7,7 +7,7 @@ size_t __stdcall type(const CONTEXT &regs)
 	THandle input = INVALID_THANDLE;
 
 	if (psi.data.size() > 0) {
-		input = Create_File(psi.data.at(0).c_str(), FH_OPEN_EXISTING | FH_SHARED_READ);
+		input = Create_File(psi.data.at(0), FH_OPEN_EXISTING | FH_SHARED_READ);
 	}
 
 	if (input == INVALID_THANDLE) {

@@ -64,7 +64,7 @@ bool parser::parse(std::string input)
 
 	/* processes input string char by char */
 	for (i = 0; i < input.length(); i++) {
-		char& c = input.at(i); //current char
+		unsigned char c = input.at(i); // current char
 
 		/* Firstly must be placed allowed command */
 		if (!commandOK) {

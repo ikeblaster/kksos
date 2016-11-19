@@ -24,8 +24,8 @@ pid_t Create_Process(std::string process_name, std::vector<char> params, std::ve
 {
 	PROCESSSTARTUPINFO psi;
 	psi.process_name = process_name;
-	psi.params = params;
-	psi.data = data;
+	psi.params = std::move(params);
+	psi.data = std::move(data);
 	psi.h_stdin = hstdin;
 	psi.h_stdout = hstdout;
 	psi.h_stderr = hstderr;

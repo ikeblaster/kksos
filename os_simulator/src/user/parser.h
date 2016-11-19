@@ -51,7 +51,7 @@ class parser {
 	static const char QUOTE = '"'; // start of string
 	static const char SPACE = ' '; // space
 
-								   // Temp bools
+	// Temp bools
 	bool commandOK = false; // Command is allowed
 	bool pipe = false; // If pipe hasn't followed command
 	bool getParam = false; // Next char is param

@@ -150,7 +150,7 @@ size_t __stdcall shell(const CONTEXT &regs)
 					runShell = false;
 				}
 				else { /* Creating process for users programs */
-					pid_t process = Create_Process(command.name, command.params, command.data, hstdin, hstdout, hstderr);
+					pid_t process = Create_Process(command.name, std::move(command.params), std::move(command.data), hstdin, hstdout, hstderr);
 					if (process == -1) {
 						vmprintf(THANDLE_STDERR, "'%s' is not recognized as an internal or external command\nor operable program.\n", command.name.c_str());
 					}

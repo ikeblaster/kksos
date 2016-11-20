@@ -1,5 +1,10 @@
 #include "filesystem.h"
 
+std::string stringtolower(std::string string) {
+	std::transform(string.begin(), string.end(), string.begin(), ::tolower);
+	return string;
+}
+
 namespace FileSystem {
 
 	FileSystem::Directory* fs = nullptr;
@@ -10,7 +15,7 @@ namespace FileSystem {
 	Node::~Node()
 	{
 		if (this->parent != nullptr)
-			this->parent->children.erase(this->name);
+			this->parent->children.erase(stringtolower(this->name));
 	}
 
 	Directory* Node::getParent()
@@ -56,7 +61,7 @@ namespace FileSystem {
 
 	Node* Directory::getChild(std::string name)
 	{
-		auto search = this->children.find(name);
+		auto search = this->children.find(stringtolower(name));
 		if (search != this->children.end()) {
 			return search->second;
 		}
@@ -82,7 +87,7 @@ namespace FileSystem {
 		File* file = new File();
 		file->parent = this;
 		file->name = name;
-		this->children.insert(std::make_pair(name, file));
+		this->children.insert(std::make_pair(stringtolower(name), file));
 		return file;
 	}
 
@@ -113,7 +118,7 @@ namespace FileSystem {
 		Directory* dir = new Directory();
 		dir->parent = this;
 		dir->name = name;
-		this->children.insert(std::make_pair(name, dir));
+		this->children.insert(std::make_pair(stringtolower(name), dir));
 		return dir;
 	}
 
@@ -172,7 +177,7 @@ namespace FileSystem {
 		if (dstname.empty()) 
 			return RESULT::GENERAL_ERROR; // dstname is empty
 
-		if (dstdir == this && dstname == name) 
+		if (dstdir == this && stringtolower(dstname) == stringtolower(name))
 			return RESULT::OK; // src = dst
 
 		if (dstdir->getChild(dstname) != nullptr) 
@@ -182,11 +187,11 @@ namespace FileSystem {
 		if (node == nullptr)
 			return RESULT::NOT_FOUND; // node not found
 
-		this->children.erase(name); // delete from src directory
+		this->children.erase(stringtolower(name)); // delete from src directory
 
 		node->parent = dstdir; // set new parent
 		node->name = dstname; // set new name
-		dstdir->children.insert(std::make_pair(dstname, node)); // insert into dst directory
+		dstdir->children.insert(std::make_pair(stringtolower(dstname), node)); // insert into dst directory
 
 		return RESULT::OK;
 	}

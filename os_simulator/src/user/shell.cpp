@@ -93,7 +93,7 @@ size_t __stdcall shell(const CONTEXT &regs)
 
 				/* Sets up Handler for stdout */
 				if (command.redirectStdout.length() > 0) { // stdout into file
-					hstdout = Create_File(command.redirectStdout, FH_OPEN_OR_CREATE);
+					hstdout = Create_File(command.redirectStdout, FH_CREATE_ALWAYS);
 					if (p.commandList.size() > 1)
 						Close_File(pipes.at(commandOrder).second); // close write end of pipe
 

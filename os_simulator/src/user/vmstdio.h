@@ -27,3 +27,5 @@ void vmprintf(const THandle handle, const char* format, Args... args)
 
 std::unique_ptr<const char[]> vmgetline(size_t* read = nullptr);
 std::unique_ptr<const char[]> vmgetline(const THandle file_handle, size_t* read = nullptr);
+
+const std::vector<std::string>* getArguments(CONTEXT context);

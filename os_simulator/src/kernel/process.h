@@ -34,7 +34,7 @@ namespace Process
 
 	extern thread_local PCB* current_thread_pcb;
 
-	pid_t create_process(PROCESSSTARTUPINFO psi);
+	pid_t create_process(PROCESSSTARTUPINFO* psi);
 	bool join_process(pid_t pid);
 	std::string get_cwd();
 	bool set_cwd(std::string path);

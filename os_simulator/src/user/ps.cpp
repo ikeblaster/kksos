@@ -1,10 +1,8 @@
 #include "vmstdio.h"
 
 
-size_t __stdcall ps(const CONTEXT &regs)
+extern "C" size_t __stdcall ps(const CONTEXT &regs)
 {
-	PROCESSSTARTUPINFO psi = *(PROCESSSTARTUPINFO*)regs.Rcx;
-
 	std::vector<std::string> items;
 	List_Processes(items);
 

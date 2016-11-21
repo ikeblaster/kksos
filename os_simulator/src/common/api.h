@@ -37,7 +37,7 @@ typedef void (__stdcall *TSysCall)(CONTEXT &context); // prototyp funkce, ktera 
 
 struct PROCESSSTARTUPINFO
 {
-	std::string process_name;	
+	std::string process_name;
 	std::vector<std::string> params;
 
 	TEntryPoint subprocess_entry = nullptr;
@@ -45,7 +45,6 @@ struct PROCESSSTARTUPINFO
 	THandle h_stdin;
 	THandle h_stdout;
 	THandle h_stderr;
-
 };
 
 /*
@@ -95,12 +94,9 @@ const __int8 scProbeFile = 10;
 // al hodnoty pro scProcess
 const __int8 scCreateProcess = 1;
 const __int8 scJoinProcess = 2;
-const __int8 scGetStdHandle = 3;
-const __int8 scSetStdHandle = 4;
-const __int8 scGetCwd = 5;
-const __int8 scSetCwd = 6;
-const __int8 scListProcesses = 7;
-const __int8 scCheckCwd = 8;
+const __int8 scGetCwd = 3;
+const __int8 scSetCwd = 4;
+const __int8 scListProcesses = 5;
 
 
 

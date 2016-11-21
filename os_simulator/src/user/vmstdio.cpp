@@ -40,3 +40,8 @@ std::unique_ptr<const char[]> vmgetline(const THandle file_handle, size_t* read)
 	std::unique_ptr<const char[]> ret(_strdup(chars.data()));
 	return ret;
 }
+
+const std::vector<std::string>* getArguments(CONTEXT regs)
+{
+	return (const std::vector<std::string>*) regs.Rcx;
+}

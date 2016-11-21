@@ -1,12 +1,12 @@
 #include "vmstdio.h"
 
 
-size_t __stdcall echo(const CONTEXT &regs)
+extern "C" size_t __stdcall echo(const CONTEXT &regs)
 {
-	PROCESSSTARTUPINFO psi = *(PROCESSSTARTUPINFO*) regs.Rcx;
+	auto args = getArguments(regs);
 
-	for (int i = 0; i < psi.params.size(); i++) {
-		vmprintf("%s ", psi.params[i].c_str());
+	for (int i = 0; i < args->size(); i++) {
+		vmprintf("%s ", args->at(i).c_str());
 	}
 
 	vmprintf("\n");

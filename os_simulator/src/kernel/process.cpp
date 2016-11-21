@@ -15,21 +15,21 @@ namespace Process
 		pcb->state = State::Running;
 
 		CONTEXT regs;
-		regs.Rcx = (decltype(regs.Rcx)) &pcb->psi;
+		regs.Rcx = (decltype(regs.Rcx)) const_cast<const std::vector<std::string>*>(&pcb->psi.params);
 		program(regs);
 
 		free_handles();
 		pcb->state = State::Terminated;
 	}
 
-	pid_t create_process(PROCESSSTARTUPINFO psi) 
+	pid_t create_process(PROCESSSTARTUPINFO* psi)
 	{
 		TEntryPoint program;
 
-		if (psi.subprocess_entry != nullptr)
-			program = psi.subprocess_entry;
+		if (psi->subprocess_entry != nullptr)
+			program = psi->subprocess_entry;
 		else
-			program = (TEntryPoint) GetProcAddress(User_Programs, psi.process_name.c_str());
+			program = (TEntryPoint) GetProcAddress(User_Programs, psi->process_name.c_str());
 
 		if (!program)
 			return -1;
@@ -49,16 +49,16 @@ namespace Process
 			table[pid] = pcb;
 
 			pcb->pid = pid;
-			pcb->psi = psi;
+			pcb->psi = std::move(*psi); // move into PCB
 			pcb->state = State::New;
 
 			if (current_thread_pcb != nullptr) {
 				pcb->ppid = current_thread_pcb->pid;
 				pcb->current_dir = current_thread_pcb->current_dir;
 
-				set_handle(pcb, THANDLE_STDIN, get_handle(psi.h_stdin));
-				set_handle(pcb, THANDLE_STDOUT, get_handle(psi.h_stdout));
-				set_handle(pcb, THANDLE_STDERR, get_handle(psi.h_stderr));
+				set_handle(pcb, THANDLE_STDIN, get_handle(psi->h_stdin));
+				set_handle(pcb, THANDLE_STDOUT, get_handle(psi->h_stdout));
+				set_handle(pcb, THANDLE_STDERR, get_handle(psi->h_stderr));
 			}
 			else {
 				pcb->ppid = -1;
@@ -72,9 +72,9 @@ namespace Process
 			pcb->thread = new std::thread(program_thread, program, pcb);
 		}
 		else if(current_thread_pcb != nullptr) {
-			close_handle(psi.h_stdin);
-			close_handle(psi.h_stdout);
-			close_handle(psi.h_stderr);
+			close_handle(psi->h_stdin);
+			close_handle(psi->h_stdout);
+			close_handle(psi->h_stderr);
 		}
 
 		return pid;
@@ -214,7 +214,7 @@ void HandleProcess(CONTEXT &regs) {
 	switch (Get_AL((__int16) regs.Rax)) {
 
 		case scCreateProcess: 
-			regs.Rax = (decltype(regs.Rax)) Process::create_process(*(PROCESSSTARTUPINFO*) regs.Rcx);
+			regs.Rax = (decltype(regs.Rax)) Process::create_process((PROCESSSTARTUPINFO*) regs.Rcx);
 			Set_Error(regs.Rax == -1, regs);
 			break;
 

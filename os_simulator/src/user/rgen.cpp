@@ -2,9 +2,9 @@
 #include "vmstdio.h"
 
 
-bool generate;
+volatile bool generate;
 
-size_t rgen__controlz(const CONTEXT &regs) 
+extern "C" size_t __stdcall rgen__controlz(const CONTEXT &regs)
 {
 	char chr;
 	size_t read;

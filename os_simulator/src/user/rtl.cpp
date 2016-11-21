@@ -20,7 +20,7 @@ bool Do_SysCall(CONTEXT &regs)
 
 // ================================= PROCESSES =================================
 
-pid_t Create_Process(std::string process_name, std::vector<std::string> params, const THandle hstdin, const THandle hstdout, const THandle hstderr)
+pid_t Create_Process(std::string &process_name, std::vector<std::string> &params, const THandle hstdin, const THandle hstdout, const THandle hstderr)
 {
 	PROCESSSTARTUPINFO psi;
 	psi.process_name = process_name;
@@ -136,11 +136,7 @@ fpos_t Seek_File(const THandle file_handle, const fpos_t pos, std::ios_base::see
 	regs.Rdi = (decltype(regs.Rdi)) pos;
 	regs.Rcx = (decltype(regs.Rcx)) way;
 
-	if (!Do_SysCall(regs)) {
-		return -1;
-	}
-
-	return regs.Rax;
+	return Do_SysCall(regs) ? regs.Rax : -1;
 }
 
 bool Close_File(const THandle file_handle)
@@ -184,9 +180,5 @@ flags_t Probe_File(const THandle file_handle, const flags_t flags)
 	CONTEXT regs = Prepare_SysCall_Context(scIO, scProbeFile);
 	regs.Rdx = (decltype(regs.Rdx)) file_handle;
 	regs.Rcx = (decltype(regs.Rcx)) flags;
-
-	if (!Do_SysCall(regs)) {
-		return -1;
-	}
-	return regs.Rax;
+	return Do_SysCall(regs) ? regs.Rax : 0;
 }

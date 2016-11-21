@@ -53,7 +53,7 @@ void __stdcall Run_VM() {
 	PROCESSSTARTUPINFO psi;
 	psi.process_name = "shell";
 
-	pid_t pid = Process::create_process(psi);
+	pid_t pid = Process::create_process(&psi);
 	Process::join_process(pid);
 
 

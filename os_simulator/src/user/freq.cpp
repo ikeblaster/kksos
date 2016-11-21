@@ -7,8 +7,8 @@ size_t __stdcall freq(const CONTEXT &regs) {
 	unsigned char buff[1024];	
 	size_t read = 0;
 
-	if (psi.data.size() > 0) {
-		input = Create_File(psi.data.at(0).c_str(), FH_OPEN_EXISTING);
+	if (psi.params.size() > 0) {
+		input = Create_File(psi.params.at(0).c_str(), FH_OPEN_EXISTING);
 		if (input == nullptr) {
 			vmprintf(THANDLE_STDERR, "Unable to open file.\n");
 			return 0;

@@ -10,9 +10,8 @@
 /// Structure for storing one command
 /// </summary>
 struct Command {
-	std::string name;
-	std::vector<char> params;
-	std::vector<std::string> data;
+	std::string name;	
+	std::vector<std::string> params;
 	std::string redirectStdin;
 	std::string redirectStdout;
 	std::string redirectAStdout;
@@ -47,14 +46,12 @@ class parser {
 	static const char PIPE = '|'; // pipe
 	static const char STDIN = '<'; // stdin redirect
 	static const char STDOUT = '>'; // stdout redirect
-	static const char PARAMPREFIX = '/'; // param prefix
 	static const char QUOTE = '"'; // start of string
 	static const char SPACE = ' '; // space
 
 	// Temp bools
 	bool commandOK = false; // Command is allowed
 	bool pipe = false; // If pipe hasn't followed command
-	bool getParam = false; // Next char is param
 	bool out = false; // Temp Astdout or stdout
 	bool getStdin = false; // Next is stdin
 	bool getAStdout = false; // Next is append stdout

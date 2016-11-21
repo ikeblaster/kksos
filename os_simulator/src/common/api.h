@@ -37,9 +37,8 @@ typedef void (__stdcall *TSysCall)(CONTEXT &context); // prototyp funkce, ktera 
 
 struct PROCESSSTARTUPINFO
 {
-	std::string process_name;
-	std::vector<char> params;
-	std::vector<std::string> data;
+	std::string process_name;	
+	std::vector<std::string> params;
 
 	TEntryPoint subprocess_entry = nullptr;
 

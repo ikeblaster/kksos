@@ -3,7 +3,7 @@
 
 std::regex validCommand("^[a-zA-Z]+$"); // regex for commands
 std::regex validFilename("[<>:\"/|?*\x01-\x1F]"); // regex for filename
-static std::unordered_set<char> specialSymbols{ ' ', '<', '>', '|', '/', '.' }; // Symbols with special meaning
+static std::unordered_set<char> specialSymbols{ ' ', '<', '>', '|', '.' }; // Symbols with special meaning
 
 bool parser::checkSpace()
 {
@@ -20,7 +20,7 @@ bool parser::checkSpace()
 bool parser::saveData()
 {
 	if (getStdin) {
-		if (std::regex_search(temp, validFilename)) {
+		if (std::regex_search(temp, validFilename) || temp.empty()) {
 			vmprintf(THANDLE_STDERR, "Stdin is not valid.\n");
 			return false;
 		}
@@ -30,7 +30,7 @@ bool parser::saveData()
 		temp = "";
 	}
 	else if (getStdout) {
-		if (std::regex_search(temp, validFilename)) {
+		if (std::regex_search(temp, validFilename) || temp.empty()) {
 			vmprintf(THANDLE_STDERR, "Stdout is not valid.\n");
 			return false;
 		}
@@ -40,7 +40,7 @@ bool parser::saveData()
 		temp = "";
 	}
 	else if (getAStdout) {
-		if (std::regex_search(temp, validFilename)) {
+		if (std::regex_search(temp, validFilename) || temp.empty()) {
 			vmprintf(THANDLE_STDERR, "Stdout is not valid.\n");
 			return false;
 		}
@@ -51,7 +51,7 @@ bool parser::saveData()
 	}
 	else {
 		if (temp != "" && temp != " ") {
-			commandList.back().data.push_back(temp); // add data for command to struct
+			commandList.back().params.push_back(temp); // add data for command to struct
 			temp = "";
 		}
 	}
@@ -134,12 +134,6 @@ bool parser::parse(std::string input)
 						pipe = true;
 						temp = "";
 						break;
-					// Start of param
-					case PARAMPREFIX:
-						if (!saveData()) // Save data for command
-							return false;
-						getParam = true;
-						break;
 					// Start of stdin
 					case STDIN:
 						if (!saveData()) // Save data for command
@@ -163,20 +157,7 @@ bool parser::parse(std::string input)
 							return false;
 						break;
 					default:
-						// Save parameter
-						if (getParam) {
-							if (isalpha(c) || c == '?') {
-								commandList.back().params.push_back(c); // add param for command to struct
-								getParam = false;
-							}
-							else {
-								vmprintf(THANDLE_STDERR, "Parameter %c is not supported.\n", c);
-								return false;
-							}
-						}
-						else {
-							temp += c;
-						}
+						temp += c;						
 						break;
 				}
 			}

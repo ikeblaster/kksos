@@ -20,12 +20,11 @@ bool Do_SysCall(CONTEXT &regs)
 
 // ================================= PROCESSES =================================
 
-pid_t Create_Process(std::string process_name, std::vector<char> params, std::vector<std::string> data, const THandle hstdin, const THandle hstdout, const THandle hstderr)
+pid_t Create_Process(std::string process_name, std::vector<std::string> params, const THandle hstdin, const THandle hstdout, const THandle hstderr)
 {
 	PROCESSSTARTUPINFO psi;
 	psi.process_name = process_name;
 	psi.params = params;
-	psi.data = data;
 	psi.h_stdin = hstdin;
 	psi.h_stdout = hstdout;
 	psi.h_stderr = hstderr;

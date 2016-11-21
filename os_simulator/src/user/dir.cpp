@@ -7,8 +7,8 @@ size_t __stdcall dir(const CONTEXT &regs)
 {
 	PROCESSSTARTUPINFO psi = *(PROCESSSTARTUPINFO*) regs.Rcx;
 
-	if (psi.data.size() > 0) {
-		std::string path = psi.data.at(0);
+	if (psi.params.size() > 0) {
+		std::string path = psi.params.at(0);
 		Set_Cwd(path);
 	}
 

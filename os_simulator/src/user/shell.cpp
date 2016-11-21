@@ -125,23 +125,23 @@ size_t __stdcall shell(const CONTEXT &regs)
 
 				/* Prepare commands to launch */
 				if (command.name == "cd") { /* cd command */
-					if (command.data.size() > 0) {
-						Set_Cwd(command.data.at(0));
+					if (command.params.size() > 0) {
+						Set_Cwd(command.params.at(0));
 					}
 					else {
 						vmprintf(hstdout, "%s\n", Get_Cwd().c_str());
 					}
 				}
 				else if (command.name == "rd") { /* rd command */
-					if (command.data.size() > 0) {
-						if (!Remove_Directory(command.data.at(0))) {
+					if (command.params.size() > 0) {
+						if (!Remove_Directory(command.params.at(0))) {
 							vmprintf(hstderr, "Failed.\n");
 						}
 					}
 				}
 				else if (command.name == "md") { /* md command */
-					if (command.data.size() > 0) {
-						if (!Make_Directory(command.data.at(0))) {
+					if (command.params.size() > 0) {
+						if (!Make_Directory(command.params.at(0))) {
 							vmprintf(hstderr, "Failed.\n");
 						}
 					}
@@ -150,7 +150,7 @@ size_t __stdcall shell(const CONTEXT &regs)
 					runShell = false;
 				}
 				else { /* Creating process for users programs */
-					pid_t process = Create_Process(command.name, command.params, command.data, hstdin, hstdout, hstderr);
+					pid_t process = Create_Process(command.name, command.params, hstdin, hstdout, hstderr);
 					if (process == -1) {
 						vmprintf(THANDLE_STDERR, "'%s' is not recognized as an internal or external command\nor operable program.\n", command.name.c_str());
 					}

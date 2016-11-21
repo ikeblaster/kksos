@@ -19,7 +19,7 @@ size_t Get_Last_Error();
 /// <returns>PID of created process or error code.</returns>
 pid_t Create_Process(
 	std::string process_name,
-	std::vector<char> params, std::vector<std::string> data,
+	std::vector<std::string> params,
 	const THandle hstdin, const THandle hstdout, const THandle hstderr
 );
 

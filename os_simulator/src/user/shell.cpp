@@ -4,6 +4,7 @@
 
 extern "C" size_t __stdcall shell(const CONTEXT &regs)
 {
+	// TODO: smazat
 	{
 		size_t written;
 
@@ -34,7 +35,7 @@ extern "C" size_t __stdcall shell(const CONTEXT &regs)
 	bool stdinIsRedirected = (Probe_File(THANDLE_STDIN, PROBE__IS_INTERACTIVE) == FALSE);
 	bool runShell = true;
 
-	/* Shell loop */
+	// Shell loop 
 	while (runShell) {
 		if (!stdinIsRedirected) {
 			vmprintf("%s>", Get_Cwd().c_str());
@@ -48,13 +49,13 @@ extern "C" size_t __stdcall shell(const CONTEXT &regs)
 		}
 
 		parser p;
-		/* If is parsing ok */
+		// If is parsing ok
 		if (p.parse(line.get())) {
 			int commandOrder = 0;
-			std::vector<pid_t> processes; //all processes from command line
-			std::vector<std::pair<THandle, THandle>> pipes; //pipes for commands
+			std::vector<pid_t> processes; // all processes from command line
+			std::vector<std::pair<THandle, THandle>> pipes; // pipes for commands
 
-			/* Sets up pipes */
+			// Sets up pipes 
 			if(p.commandList.size() > 1) {
 				for (int i = 0; i < p.commandList.size() - 1; i++) {
 					THandle pRead, pWrite;
@@ -63,7 +64,7 @@ extern "C" size_t __stdcall shell(const CONTEXT &regs)
 				}
 			}
 
-			/* Processes whole input command */
+			// Processes whole input command 
 			while (p.commandList.size() > 0) {
 				Command* command = &p.commandList.front();
 				THandle hstdin;
@@ -72,7 +73,7 @@ extern "C" size_t __stdcall shell(const CONTEXT &regs)
 				bool closeHstdin = true;
 				bool closeHstdout = true;
 
-				/* Sets up Handler for stdin */
+				// Sets up Handler for stdin 
 				if (command->redirectStdin.length() > 0) { // stdin from file
 					hstdin = Create_File(command->redirectStdin, FH_OPEN_EXISTING | FH_SHARED_READ);
 					if (commandOrder != 0)
@@ -91,7 +92,7 @@ extern "C" size_t __stdcall shell(const CONTEXT &regs)
 					hstdin = pipes.at(commandOrder - 1).first;
 				}
 
-				/* Sets up Handler for stdout */
+				// Sets up Handler for stdout 
 				if (command->redirectStdout.length() > 0) { // stdout into file
 					hstdout = Create_File(command->redirectStdout, FH_CREATE_ALWAYS);
 					if (p.commandList.size() > 1)
@@ -123,8 +124,8 @@ extern "C" size_t __stdcall shell(const CONTEXT &regs)
 				}
 
 
-				/* Prepare commands to launch */
-				if (command->name == "cd") { /* cd command */
+				// Prepare commands to launch 
+				if (command->name == "cd") { // cd command 
 					if (command->params.size() > 0) {
 						Set_Cwd(command->params.at(0));
 					}
@@ -132,24 +133,24 @@ extern "C" size_t __stdcall shell(const CONTEXT &regs)
 						vmprintf(hstdout, "%s\n", Get_Cwd().c_str());
 					}
 				}
-				else if (command->name == "rd") { /* rd command */
+				else if (command->name == "rd") { // rd command 
 					if (command->params.size() > 0) {
 						if (!Remove_Directory(command->params.at(0))) {
 							vmprintf(hstderr, "Failed.\n");
 						}
 					}
 				}
-				else if (command->name == "md") { /* md command */
+				else if (command->name == "md") { // md command 
 					if (command->params.size() > 0) {
 						if (!Make_Directory(command->params.at(0))) {
 							vmprintf(hstderr, "Failed.\n");
 						}
 					}
 				}
-				else if (command->name == "exit") { /* exit command */
+				else if (command->name == "exit") { // exit command 
 					runShell = false;
 				}
-				else { /* Creating process for users programs */
+				else { // Creating process for users programs 
 					pid_t process = Create_Process(command->name, command->params, hstdin, hstdout, hstderr);
 					if (process == -1) {
 						vmprintf(THANDLE_STDERR, "'%s' is not recognized as an internal or external command\nor operable program.\n", command->name.c_str());
@@ -168,16 +169,13 @@ extern "C" size_t __stdcall shell(const CONTEXT &regs)
 				commandOrder++;
 			}
 
-			//join all processes
+			// join all processes
 			while (!processes.empty()) {
 				Join_Process(processes.back());
 				processes.pop_back();
 			}
 
 			if(runShell) vmprintf("\n");
-		}
-		else {
-			//vmprintf("Parsing failed\n");
 		}
 		Probe_File(THANDLE_STDIN, PROBE__CLEAR_BUFFER); // reset stdin buffer
 	}

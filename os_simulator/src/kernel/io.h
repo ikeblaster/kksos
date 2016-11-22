@@ -7,10 +7,34 @@
 
 namespace IO
 {
-	FileSystem::FileHandle* CreateHandle(FileSystem::Directory* cwd, char* path, flags_t flags);
+	/// <summary>
+	/// Creates new <c>FileHandle</c> to file specified by path.
+	/// </summary>
+	/// <param name="cwd">Current working directory (starting point for path).</param>
+	/// <param name="path">Path to file.</param>
+	/// <param name="flags">Flags for filehandle.</param>
+	/// <returns>Handle to file.</returns>
+	FileSystem::FileHandle* CreateHandle(FileSystem::Directory* cwd, std::string path, flags_t flags);
+
+	/// <summary>
+	/// Gets content of directory.
+	/// </summary>
+	/// <param name="items">[out] Vector of items.</param>
 	void list_directory(std::vector<std::string>* items);
-	bool check_directory_open(FileSystem::Directory* dir);	
-	bool check_file_open(FileSystem::File * file);
+
+	/// <summary>
+	/// Checks whether specified directory is opened by some process.
+	/// </summary>
+	/// <param name="dir">Directory to be checked.</param>
+	/// <returns>Result.</returns>
+	bool check_directory_open(FileSystem::Directory* dir);
+
+	/// <summary>
+	/// Checks whether specified file is opened by some process.
+	/// </summary>
+	/// <param name="file">File to be checked.</param>
+	/// <returns>Result.</returns>
+	bool check_file_open(FileSystem::File* file);
 }
 
 void HandleIO(CONTEXT &regs);

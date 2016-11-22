@@ -21,7 +21,7 @@ size_t __stdcall sort(const CONTEXT &regs)
 	while(true) {
 		auto line = vmgetline(input);
 		if (line == nullptr) break;
-		lines.insert(std::make_pair(line.get(), std::move(line))); // TODO: 1. parametr, razeni podle urciteho sloupce
+		lines.insert(std::make_pair(line.get(), std::move(line))); // NOTE: possible to parse column as sorting key
 	}
 
 	for (const auto& kv : lines) {

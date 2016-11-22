@@ -98,6 +98,16 @@ namespace FileSystem {
 		return file == NULL ? nullptr : file;
 	}
 
+	RESULT Directory::deleteFile(std::string name)
+	{
+		File* file = this->findFile(name);
+		if (file == nullptr)
+			return RESULT::FILE_NOT_FOUND;
+
+		return file->destroy();
+	}
+
+
 	Directory* Directory::createDirectory(std::string name)
 	{
 		if (name.empty())
@@ -129,39 +139,6 @@ namespace FileSystem {
 		return dir == NULL ? nullptr : dir;
 	}
 
-	std::map<std::string, Node*> Directory::getFiles()
-	{
-		return this->children;
-	}
-
-	RESULT Directory::destroy()
-	{
-		if (IO::check_directory_open(this)) {
-			return RESULT::UNABLE_TO_DELETE;
-		}
-
-		while (!this->children.empty()) {
-			auto item = *(this->children.begin());
-
-			if (item.second->destroy() != RESULT::OK) {
-				return RESULT::UNABLE_TO_DELETE;
-			}
-		}
-
-		delete this;
-
-		return RESULT::OK;
-	}
-
-	RESULT Directory::deleteFile(std::string name)
-	{
-		File* file = this->findFile(name);
-		if (file == nullptr)
-			return RESULT::FILE_NOT_FOUND;
-
-		return file->destroy();
-	}
-
 	RESULT Directory::deleteDirectory(std::string name)
 	{
 		Directory* dir = this->findDirectory(name);
@@ -171,6 +148,7 @@ namespace FileSystem {
 		delete dir;
 		return RESULT::OK;
 	}
+
 
 	RESULT Directory::moveChild(std::string name, Directory* dstdir, std::string dstname)
 	{
@@ -196,5 +174,29 @@ namespace FileSystem {
 		return RESULT::OK;
 	}
 
+
+	std::map<std::string, Node*> Directory::getFiles()
+	{
+		return this->children;
+	}
+
+	RESULT Directory::destroy()
+	{
+		if (IO::check_directory_open(this)) {
+			return RESULT::UNABLE_TO_DELETE;
+		}
+
+		while (!this->children.empty()) {
+			auto item = *(this->children.begin());
+
+			if (item.second->destroy() != RESULT::OK) {
+				return RESULT::UNABLE_TO_DELETE;
+			}
+		}
+
+		delete this;
+
+		return RESULT::OK;
+	}
 
 }

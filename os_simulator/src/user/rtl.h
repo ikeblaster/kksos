@@ -2,8 +2,6 @@
 #include <memory>
 #include "..\common\api.h"
 
-size_t Get_Last_Error();
-
 
 // ================================= PROCESSES =================================
 
@@ -23,6 +21,11 @@ pid_t Create_Process(
 	const THandle hstdin, const THandle hstdout, const THandle hstderr
 );
 
+/// <summary>
+/// Creates new process.
+/// </summary>
+/// <param name="entry">Subprocess entry point.</param>
+/// <returns>PID of created process or error code.</returns>
 pid_t Create_Subprocess(TEntryPoint entry);
 
 /// <summary>

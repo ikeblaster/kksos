@@ -6,7 +6,6 @@ namespace Process
 {
 	std::mutex table_mtx, handles_mtx;
 	PCB* table[PROCESS_TABLE_SIZE] = { nullptr };
-	OpenFiles::OFHandle file_descriptors[FILE_DESCRIPTORS_TABLE_SIZE] = { nullptr };
 	thread_local PCB* current_thread_pcb = nullptr;
 
 	void program_thread(TEntryPoint program, PCB* pcb)
@@ -71,11 +70,6 @@ namespace Process
 
 			pcb->thread = new std::thread(program_thread, program, pcb);
 		}
-		else if(current_thread_pcb != nullptr) {
-			close_handle(psi->h_stdin);
-			close_handle(psi->h_stdout);
-			close_handle(psi->h_stderr);
-		}
 
 		return pid;
 	}
@@ -97,6 +91,23 @@ namespace Process
 		return true;
 	}
 
+	void list_processes(std::vector<std::string>* items)
+	{
+		std::unique_lock<std::mutex> lck(table_mtx);
+
+		for (int i = 0; i < PROCESS_TABLE_SIZE; i++) {
+			if (table[i] != nullptr) {
+				State state = table[i]->state;
+				items->push_back(
+					table[i]->psi.process_name +
+					"\tPID: " + std::to_string(table[i]->pid) +
+					"\tPPID: " + (table[i]->ppid == -1 ? "-" : std::to_string(table[i]->ppid)) +
+					"\tState: " + (state == State::Terminated ? "Terminated" : state == State::Running ? "Running" : "New")
+				);
+			}
+		}
+	}
+
 	std::string get_cwd() 
 	{
 		return FileSystem::Path::generate(current_thread_pcb->current_dir);
@@ -115,36 +126,20 @@ namespace Process
 		return true;
 	}
 
-	FileSystem::FSHandle* get_handle(THandle fd) 
+
+
+	// private functions
+	FileSystem::FSHandle* get_handle(THandle fd)
 	{
 		std::unique_lock<std::mutex> lck(handles_mtx);
 
-		if (fd < 0 || (intptr_t) fd > FILE_DESCRIPTORS_TABLE_SIZE) 
+		if (fd < 0 || (intptr_t) fd > FILE_DESCRIPTORS_TABLE_SIZE)
 			return nullptr;
 
 		OpenFiles::OFHandle of = current_thread_pcb->file_descriptors[(intptr_t) fd];
 		return OpenFiles::GetFSHandle(of);
 	}
 
-	void list_processes(std::vector<std::string>* items)
-	{
-		std::unique_lock<std::mutex> lck(table_mtx);
-
-		for (int i = 0; i < PROCESS_TABLE_SIZE; i++) {
-			if (table[i] != nullptr) {
-				State state = table[i]->state;
-				items->push_back(
-					table[i]->psi.process_name +
-					"\tPID: " + std::to_string(table[i]->pid) +
-					"\tPPID: " + (table[i]->ppid == -1 ? "-" : std::to_string(table[i]->ppid)) +
-					"\tState: " + (state == State::Terminated ? "Terminated" : state == State::Running ? "Running" : "New")
-				);
-			}
-		}
-	}
-
-
-	// private functions
 	bool set_handle(PCB* pcb, THandle fd, FileSystem::FSHandle* handle) 
 	{
 		std::unique_lock<std::mutex> lck(handles_mtx);

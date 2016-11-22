@@ -5,6 +5,9 @@
 
 namespace FileSystem {
 
+	/// <summary>
+	/// Interface common for basic handles (file, console, pipe)
+	/// </summary>
 	class FSHandle {
 		public:
 

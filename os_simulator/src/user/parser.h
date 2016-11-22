@@ -23,17 +23,17 @@ struct Command {
 class parser {
 	public:
 	/// <summary>
-	/// Saves data into command struct
+	/// Saves data into command struct.
 	/// </summary>
 	bool saveData();
 
 	/// <summary>
-	/// Saves data after space
+	/// Checks for spaces and consequently saves data.
 	/// </summary>
 	bool checkSpace();
 
 	/// <summary>
-	/// Parsing string input
+	/// Parses command string.
 	/// </summary>
 	/// <param name="input">Input from stdin</param>
 	/// <returns>True if parsing ok, false if not</returns>
@@ -58,6 +58,6 @@ class parser {
 	bool getStdout = false; // Next is stdout
 	bool openQuote = false; // Is processing line in quote
 	std::string temp = ""; // Actual processing string
-	int i; // Actual position in input
+	size_t i; // Actual position in input
 	size_t last; // Position of last char in input
 };

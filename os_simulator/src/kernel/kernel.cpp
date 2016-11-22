@@ -13,7 +13,6 @@ void Set_Error(const bool failed, CONTEXT &regs) {
 }
 
 void __stdcall SysCall(CONTEXT &regs) {
-
 	switch (Get_AH((__int16) regs.Rax)) {
 		case scIO:
 			HandleIO(regs);
@@ -22,7 +21,6 @@ void __stdcall SysCall(CONTEXT &regs) {
 			HandleProcess(regs);
 			break;
 	}
-
 }
 
 void Initialize_Kernel() {

@@ -26,6 +26,7 @@ namespace Process
 		FileSystem::Directory* current_dir; // current directory
 		OpenFiles::OFHandle file_descriptors[FILE_DESCRIPTORS_TABLE_SIZE]; // table of file descriptors
 		State state; // process state
+		size_t exit_code; // exit code (only when process is in terminated state)
 	};
 
 

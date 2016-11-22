@@ -8,7 +8,7 @@
 #define FH_OPEN_OR_CREATE 2
 #define FH_CREATE_ALWAYS 4
 #define FH_FILE_APPEND 8
-#define FH_SHARED_READ 16 // default file access is "exclusive open"
+#define FH_SHARED_READ 16 // default file access is "exclusive open (rw)"
 
 // Filesystem constants
 #define FS_MAKE_MISSING_DIRS 1
@@ -33,7 +33,6 @@ typedef DWORD64 flags_t;
 typedef HANDLE THandle;
 
 typedef size_t (__stdcall *TEntryPoint)(const CONTEXT syscall); // vstupni bod uzivatelskeho programu
-typedef void (__stdcall *TSysCall)(CONTEXT &context); // prototyp funkce, ktera realizuje syscall
 
 struct PROCESSSTARTUPINFO
 {

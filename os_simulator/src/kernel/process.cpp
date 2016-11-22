@@ -14,8 +14,8 @@ namespace Process
 		pcb->state = State::Running;
 
 		CONTEXT regs;
-		regs.Rcx = (decltype(regs.Rcx)) const_cast<const std::vector<std::string>*>(&pcb->psi.params);
-		program(regs);
+		regs.Rcx = (decltype(regs.Rcx)) const_cast<const std::vector<std::string>*>(&(pcb->psi.params));
+		pcb->exit_code = program(regs);
 
 		free_handles();
 		pcb->state = State::Terminated;

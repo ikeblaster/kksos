@@ -56,8 +56,8 @@ namespace IO
 
 
 void HandleIO(CONTEXT &regs) {
-
 	switch (Get_AL((__int16) regs.Rax)) {
+
 		case scCreateFile:
 			{
 				FileHandle* fh = IO::CreateHandle(Process::current_thread_pcb->current_dir, *(std::string*) regs.Rdx, (flags_t) regs.Rcx);
@@ -172,6 +172,6 @@ void HandleIO(CONTEXT &regs) {
 				}
 			}
 			break;
-	}
 
+	}
 }

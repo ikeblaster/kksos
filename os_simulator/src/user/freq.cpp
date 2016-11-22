@@ -10,7 +10,7 @@ extern "C" size_t __stdcall freq(const CONTEXT &regs)
 		input = Create_File(args->at(0), FH_OPEN_EXISTING);
 	}
 
-	if (input == nullptr) {
+	if (input == INVALID_THANDLE) {
 		vmprintf(THANDLE_STDERR, "Unable to open file.\n");
 		return 1;
 	}

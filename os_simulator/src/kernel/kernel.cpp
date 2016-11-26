@@ -33,8 +33,11 @@ void Shutdown_Kernel() {
 void Initialize_FS() {
 	FileSystem::fs = new FileSystem::Directory();
 	FileSystem::fs_root = FileSystem::fs->createDirectory("C:");
-	FileSystem::fs_root->createDirectory("slozka")->createDirectory("podslozka"); // TODO: smazat
 	FileSystem::console = new FileSystem::ConsoleHandle();
+
+	#ifdef _DEBUG
+	FileSystem::fs_root->createDirectory("slozka")->createDirectory("podslozka");
+	#endif
 }
 void Shutdown_FS() {
 	FileSystem::fs->destroy();

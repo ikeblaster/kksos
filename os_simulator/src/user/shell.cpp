@@ -4,7 +4,7 @@
 
 extern "C" size_t __stdcall shell(const CONTEXT &regs)
 {
-	// TODO: smazat
+	#ifdef _DEBUG
 	{
 		size_t written;
 
@@ -31,6 +31,7 @@ extern "C" size_t __stdcall shell(const CONTEXT &regs)
 		buffer[read] = 0;
 		Close_File(testtxt);
 	}
+	#endif
 
 	bool stdinIsRedirected = (Probe_File(THANDLE_STDIN, PROBE__IS_INTERACTIVE) == FALSE);
 	bool runShell = true;

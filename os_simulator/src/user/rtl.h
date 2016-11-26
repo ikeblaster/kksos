@@ -3,60 +3,6 @@
 #include "..\common\api.h"
 
 
-// ================================= PROCESSES =================================
-
-/// <summary>
-/// Creates new process.
-/// </summary>
-/// <param name="process_name">Name of program to run (future process name).</param>
-/// <param name="params">Program parameters.</param>
-/// <param name="data">Program data parameters.</param>
-/// <param name="hstdin">Handle to standard input stream.</param>
-/// <param name="hstdout">Handle to standard output stream.</param>
-/// <param name="hstderr">Handle to standard error stream.</param>
-/// <returns>PID of created process or error code.</returns>
-pid_t Create_Process(
-	std::string &process_name,
-	std::vector<std::string> &params,
-	const THandle hstdin, const THandle hstdout, const THandle hstderr
-);
-
-/// <summary>
-/// Creates new process.
-/// </summary>
-/// <param name="entry">Subprocess entry point.</param>
-/// <returns>PID of created process or error code.</returns>
-pid_t Create_Subprocess(TEntryPoint entry);
-
-/// <summary>
-/// Waits for process to end.
-/// </summary>
-/// <param name="PID">PID of process.</param>
-/// <returns>Success.</returns>
-bool Join_Process(pid_t PID);
-
-/// <summary>
-/// Gets current working directory path.
-/// </summary>
-/// <param name="pid">PID of desired process; -1 for current process.</param>
-/// <returns>Path.</returns>
-std::string Get_Cwd();
-
-/// <summary>
-/// Sets current working directory.
-/// </summary>
-/// <param name="path">Path.</param>
-/// <param name="pid">PID of desired process; -1 for current process.</param>
-/// <returns>Success.</returns>
-bool Set_Cwd(std::string path);
-
-/// <summary>
-/// Gets listing of processes
-/// </summary>
-/// <param name="items">Processes</param>
-void List_Processes(std::vector<std::string> &items);
-
-
 // =================================== IO ===================================
 
 /// <summary>
@@ -138,3 +84,58 @@ void List_Directory(std::vector<std::string> &items);
 /// <param name="flags">Flags.</param>
 /// <returns>Result.</returns>
 flags_t Probe_File(const THandle file_handle, const flags_t flags);
+
+
+
+// ================================= PROCESSES =================================
+
+/// <summary>
+/// Creates new process.
+/// </summary>
+/// <param name="process_name">Name of program to run (future process name).</param>
+/// <param name="params">Program parameters.</param>
+/// <param name="data">Program data parameters.</param>
+/// <param name="hstdin">Handle to standard input stream.</param>
+/// <param name="hstdout">Handle to standard output stream.</param>
+/// <param name="hstderr">Handle to standard error stream.</param>
+/// <returns>PID of created process or error code.</returns>
+pid_t Create_Process(
+	std::string &process_name,
+	std::vector<std::string> &params,
+	const THandle hstdin, const THandle hstdout, const THandle hstderr
+);
+
+/// <summary>
+/// Creates new process.
+/// </summary>
+/// <param name="entry">Subprocess entry point.</param>
+/// <returns>PID of created process or error code.</returns>
+pid_t Create_Subprocess(TEntryPoint entry);
+
+/// <summary>
+/// Waits for process to end.
+/// </summary>
+/// <param name="PID">PID of process.</param>
+/// <returns>Success.</returns>
+bool Join_Process(pid_t PID);
+
+/// <summary>
+/// Gets current working directory path.
+/// </summary>
+/// <param name="pid">PID of desired process; -1 for current process.</param>
+/// <returns>Path.</returns>
+std::string Get_Cwd();
+
+/// <summary>
+/// Sets current working directory.
+/// </summary>
+/// <param name="path">Path.</param>
+/// <param name="pid">PID of desired process; -1 for current process.</param>
+/// <returns>Success.</returns>
+bool Set_Cwd(std::string path);
+
+/// <summary>
+/// Gets listing of processes
+/// </summary>
+/// <param name="items">Processes</param>
+void List_Processes(std::vector<std::string> &items);

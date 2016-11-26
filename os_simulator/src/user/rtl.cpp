@@ -18,70 +18,6 @@ bool Do_SysCall(CONTEXT &regs)
 }
 
 
-// ================================= PROCESSES =================================
-
-pid_t Create_Process(std::string &process_name, std::vector<std::string> &params, const THandle hstdin, const THandle hstdout, const THandle hstderr)
-{
-	PROCESSSTARTUPINFO psi;
-	psi.process_name = process_name;
-	psi.params = params;
-	psi.h_stdin = hstdin;
-	psi.h_stdout = hstdout;
-	psi.h_stderr = hstderr;
-
-	CONTEXT regs = Prepare_SysCall_Context(scProcess, scCreateProcess);
-	regs.Rcx = (decltype(regs.Rcx)) &psi;
-	Do_SysCall(regs);
-	return (pid_t) regs.Rax;
-}
-
-pid_t Create_Subprocess(TEntryPoint entry)
-{
-	PROCESSSTARTUPINFO psi;
-	psi.subprocess_entry = entry;
-	psi.h_stdin = THANDLE_STDIN;
-	psi.h_stdout = THANDLE_STDOUT;
-	psi.h_stderr = THANDLE_STDERR;
-
-	CONTEXT regs = Prepare_SysCall_Context(scProcess, scCreateProcess);
-	regs.Rcx = (decltype(regs.Rcx)) &psi;
-	Do_SysCall(regs);
-	return (pid_t) regs.Rax;
-}
-
-bool Join_Process(pid_t pid)
-{
-	CONTEXT regs = Prepare_SysCall_Context(scProcess, scJoinProcess);
-	regs.Rcx = (decltype(regs.Rcx)) pid;
-	return Do_SysCall(regs);
-}
-
-
-std::string Get_Cwd()
-{
-	std::string path;
-
-	CONTEXT regs = Prepare_SysCall_Context(scProcess, scGetCwd);
-	regs.Rcx = (decltype(regs.Rcx)) &path;
-	Do_SysCall(regs);
-
-	return path;
-}
-
-bool Set_Cwd(std::string path)
-{
-	CONTEXT regs = Prepare_SysCall_Context(scProcess, scSetCwd);
-	regs.Rcx = (decltype(regs.Rcx)) &path;
-	return Do_SysCall(regs);
-}
-
-void List_Processes(std::vector<std::string> &items)
-{
-	CONTEXT regs = Prepare_SysCall_Context(scProcess, scListProcesses);
-	regs.Rdx = (decltype(regs.Rdx))&items;
-	Do_SysCall(regs);
-}
-
 
 // ================================= IO =================================
 
@@ -181,4 +117,68 @@ flags_t Probe_File(const THandle file_handle, const flags_t flags)
 	regs.Rdx = (decltype(regs.Rdx)) file_handle;
 	regs.Rcx = (decltype(regs.Rcx)) flags;
 	return Do_SysCall(regs) ? regs.Rax : 0;
+}
+
+
+// ================================= PROCESSES =================================
+
+pid_t Create_Process(std::string &process_name, std::vector<std::string> &params, const THandle hstdin, const THandle hstdout, const THandle hstderr)
+{
+	PROCESSSTARTUPINFO psi;
+	psi.process_name = process_name;
+	psi.params = params;
+	psi.h_stdin = hstdin;
+	psi.h_stdout = hstdout;
+	psi.h_stderr = hstderr;
+
+	CONTEXT regs = Prepare_SysCall_Context(scProcess, scCreateProcess);
+	regs.Rcx = (decltype(regs.Rcx)) &psi;
+	Do_SysCall(regs);
+	return (pid_t) regs.Rax;
+}
+
+pid_t Create_Subprocess(TEntryPoint entry)
+{
+	PROCESSSTARTUPINFO psi;
+	psi.subprocess_entry = entry;
+	psi.h_stdin = THANDLE_STDIN;
+	psi.h_stdout = THANDLE_STDOUT;
+	psi.h_stderr = THANDLE_STDERR;
+
+	CONTEXT regs = Prepare_SysCall_Context(scProcess, scCreateProcess);
+	regs.Rcx = (decltype(regs.Rcx)) &psi;
+	Do_SysCall(regs);
+	return (pid_t) regs.Rax;
+}
+
+bool Join_Process(pid_t pid)
+{
+	CONTEXT regs = Prepare_SysCall_Context(scProcess, scJoinProcess);
+	regs.Rcx = (decltype(regs.Rcx)) pid;
+	return Do_SysCall(regs);
+}
+
+std::string Get_Cwd()
+{
+	std::string path;
+
+	CONTEXT regs = Prepare_SysCall_Context(scProcess, scGetCwd);
+	regs.Rcx = (decltype(regs.Rcx)) &path;
+	Do_SysCall(regs);
+
+	return path;
+}
+
+bool Set_Cwd(std::string path)
+{
+	CONTEXT regs = Prepare_SysCall_Context(scProcess, scSetCwd);
+	regs.Rcx = (decltype(regs.Rcx)) &path;
+	return Do_SysCall(regs);
+}
+
+void List_Processes(std::vector<std::string> &items)
+{
+	CONTEXT regs = Prepare_SysCall_Context(scProcess, scListProcesses);
+	regs.Rdx = (decltype(regs.Rdx))&items;
+	Do_SysCall(regs);
 }

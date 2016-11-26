@@ -52,23 +52,35 @@ struct PROCESSSTARTUPINFO
 	 AH - major cislo aka id skupiny fci
 	 AL - minor cislo aka cisle konkretni fce
 
-	 pokud je po volani nastaven carry flag, tj. CONTEXT::Eflags & CF != 0, pak Rax je kod chyby
-
+	 pokud je po volani nastaven carry flag, tj. CONTEXT::Eflags & CF != 0, pak nastala chyba
+	 
 	  AH == 1 : IO operace
-		AL: cislo IO operace	// konzole je take jenom soubor
-			1 - otevrit soubor				 IN: rdx je pointer na null-terminated string udavajici file_name; rcx jsou flags k otevreni souboru
+		AL: cislo operace
+			1 - otevri soubor				 IN: rdx je pointer na std::string udavajici cestu k souboru; rcx jsou flags k otevreni souboru
 											OUT: rax je handle nove otevreneho souboru
 			2 - zapis do souboru			 IN: rdx je handle souboru, rdi je pointer na buffer, rcx je pocet bytu v bufferu k zapsani
 											OUT: rax je pocet zapsanych bytu
-			3 - cti ze souboru
-			4 - nastav pozici v souboru
-			5 - zavri soubor				 IN: rdx  je handle souboru k zavreni
-											OUT: rax != 0 je uspech, jinak chyba
-
-
-												
-
-   Dalsi cisla si doplnte dle potreby
+			3 - cti ze souboru			     IN: rdx je handle souboru, rdi je pointer na buffer, rcx je max. pocet bytu k precteni 
+											OUT: rax je pocet prectenych bytu
+			4 - nastav pozici v souboru	     IN: rdx je handle souboru, rdi je nova pozice, rcx je "smer" kurzoru 
+											OUT: rax >= 0 je pozice v souboru, jinak chyba
+			5 - zavri soubor				 IN: rdx je handle souboru k zavreni
+			6 - vytvor pipe 				OUT: rcx je handle pro cteci konec roury, rdx pro zapisovaci konec roury
+			7 - vytvor adresar				 IN: rdx je pointer na std::string udavajici cestu ke slozce
+			8 - ziskej obsah adresare		 IN: rdx je pointer na std::list<std::string>, do ktereho se zapisi jednotlive polozky
+			9 - odstran adresar				 IN: rdx je pointer na std::string udavajici cestu ke slozce
+		   10 - probe souboru				 IN: rdx je handle; rcx jsou flags pro probe
+											OUT: rax je navratova hodnota dle probe funkce
+								
+	 
+	  AH == 2 : Process operace
+		AL: cislo operace
+			1 - vytvor proces				 IN: rcx je pointer na PROCESSSTARTUPINFO strukturu
+											OUT: rax >= 0 je PID noveho procesu, jinak chyba
+			2 - cekej na proces				 IN: rcx je PID procesu
+			3 - ziskej aktualni CWD			 IN: rcx je pointer na std::string
+			4 - zmen CWD					 IN: rcx je pointer na std::string
+			8 - ziskej seznam procesu		 IN: rdx je pointer na std::list<std::string>, do ktereho se zapisi jednotlive polozky
 
 
 */

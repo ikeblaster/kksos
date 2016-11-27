@@ -32,7 +32,7 @@ typedef DWORD64 pid_t;
 typedef DWORD64 flags_t;
 typedef HANDLE THandle;
 
-typedef size_t (__stdcall *TEntryPoint)(const CONTEXT syscall); // vstupni bod uzivatelskeho programu
+typedef size_t (__stdcall *TEntryPoint)(const CONTEXT syscall); // vstupni bod uzivatelskeho programu, v rcx je pointer ja std::list<std::string> s argumenty
 
 struct PROCESSSTARTUPINFO
 {
@@ -80,7 +80,7 @@ struct PROCESSSTARTUPINFO
 			2 - cekej na proces				 IN: rcx je PID procesu
 			3 - ziskej aktualni CWD			 IN: rcx je pointer na std::string
 			4 - zmen CWD					 IN: rcx je pointer na std::string
-			8 - ziskej seznam procesu		 IN: rdx je pointer na std::list<std::string>, do ktereho se zapisi jednotlive polozky
+			5 - ziskej seznam procesu		 IN: rdx je pointer na std::list<std::string>, do ktereho se zapisi jednotlive polozky
 
 
 */
